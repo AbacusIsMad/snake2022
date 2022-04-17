@@ -3,6 +3,7 @@
 Created on Wed Apr 25 15:19:25 2018
 
 @author: zou
+BingQi Ling
 """
 import pygame, random
 import numpy as np
