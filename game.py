@@ -10,8 +10,12 @@ import numpy as np
 
 class Settings:
     def __init__(self):
-        self.width = 28
-        self.height = 28
+        #self.width = 28
+        #self.height = 28
+        #self.rect_len = 15
+        #size of game, and then size of individual grids. 
+        self.width = 52
+        self.height = 52
         self.rect_len = 15
 
 class Snake:
@@ -35,6 +39,7 @@ class Snake:
     def initialize(self):
         self.position = [6, 6]
         self.segments = [[6 - i, 6] for i in range(3)]
+        #this is so wacky
         self.score = 0
 
     def blit_body(self, x, y, screen):
@@ -52,6 +57,8 @@ class Snake:
             
     def blit_tail(self, x, y, screen):
         tail_direction = [self.segments[-2][i] - self.segments[-1][i] for i in range(2)]
+        print(tail_direction)
+        #ls[big iterator][small iterator]
         
         if tail_direction == [0, -1]:
             screen.blit(self.tail_up, (x, y))
@@ -64,7 +71,8 @@ class Snake:
     
     def blit(self, rect_len, screen):
         self.blit_head(self.segments[0][0]*rect_len, self.segments[0][1]*rect_len, screen)                
-        for position in self.segments[1:-1]:
+        for index, position in enumerate(self.segments[1:-1]):
+            #body_direction = []
             self.blit_body(position[0]*rect_len, position[1]*rect_len, screen)
         self.blit_tail(self.segments[-1][0]*rect_len, self.segments[-1][1]*rect_len, screen)                
             
@@ -79,6 +87,7 @@ class Snake:
         if self.facing == 'down':
             self.position[1] += 1
         self.segments.insert(0, list(self.position))
+        #called by moving. ill look at it later.
         
 class Strawberry():
     def __init__(self, settings):
@@ -146,6 +155,7 @@ class Game:
         move_dict = self.move_dict
         
         change_direction = move_dict[move]
+        #this translates the number back to the string again. Kinda redundant tbh.
         
         if change_direction == 'right' and not self.snake.facing == 'left':
             self.snake.facing = change_direction
@@ -157,6 +167,7 @@ class Game:
             self.snake.facing = change_direction
 
         self.snake.update()
+        #moves maybe? Yes.
         
         if self.snake.position == self.strawberry.position:
             self.strawberry.random_pos(self.snake)
@@ -165,7 +176,8 @@ class Game:
         else:
             self.snake.segments.pop()
             reward = 0
-                
+        #point and eating        
+        
         if self.game_end():
             return -1
                     
@@ -179,7 +191,7 @@ class Game:
             end = True
         if self.snake.segments[0] in self.snake.segments[1:]:
             end = True
-
+        #this is great but the third if gives a bug. So be careful of this!
         return end
     
     def blit_score(self, color, screen):
