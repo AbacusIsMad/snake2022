@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed May 16 15:22:20 2018
+Created on Wed May 16 15:22:20 2018 bruh are you serious
 
 @author: zou
 """
@@ -23,6 +23,15 @@ blue = pygame.Color(32, 178, 170)
 bright_blue = pygame.Color(32, 200, 200)
 yellow = pygame.Color(255, 205, 0)
 bright_yellow = pygame.Color(255, 255, 0)
+
+'''The Strat:
+Load default from folder
+Load into temp location
+copy level to playing zone
+pass any pass-death features to intermediate
+when level quit, unload on both levels
+ALWAYS PICKLE IT!
+'''
 
 game = Game()
 rect_len = game.settings.rect_len
@@ -96,6 +105,7 @@ def initial_interface():
         pygame.time.Clock().tick(15)
 
 
+#def game_loop(player, fps=10):
 def game_loop(player, fps=10):
     game.restart_game()
 
@@ -104,9 +114,12 @@ def game_loop(player, fps=10):
         pygame.event.pump()
 
         move = human_move()
-        fps = 5
+        #control speed here!
+        #fps = 5
+        fps = 10
 
         game.do_move(move)
+        #give me a second, in game.py
 
         screen.fill(black)
 
@@ -141,6 +154,9 @@ def human_move():
                 pygame.event.post(pygame.event.Event(QUIT))
 
     move = game.direction_to_int(direction)
+    #0 - 3 here
+    #print("move: ", move)
+    print(game.snake.segments)
     return move
 
 
