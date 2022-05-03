@@ -115,8 +115,8 @@ def game_loop(player, fps=10):
 
         move = human_move()
         #control speed here!
-        #fps = 5
-        fps = 10
+        fps = 5
+        # fps = 10
 
         game.do_move(move)
         #give me a second, in game.py
@@ -126,6 +126,7 @@ def game_loop(player, fps=10):
         game.snake.blit(rect_len, screen)
         game.strawberry.blit(screen)
         game.blit_score(white, screen)
+        game.blit_border(screen)
 
         pygame.display.flip()
 
@@ -156,7 +157,7 @@ def human_move():
     move = game.direction_to_int(direction)
     #0 - 3 here
     #print("move: ", move)
-    print(game.snake.segments)
+    # print(game.snake.segments)
     return move
 
 

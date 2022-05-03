@@ -10,13 +10,13 @@ import numpy as np
 
 class Settings:
     def __init__(self):
-        #self.width = 28
-        #self.height = 28
-        #self.rect_len = 15
-        #size of game, and then size of individual grids. 
-        self.width = 52
-        self.height = 52
+        self.width = 28
+        self.height = 28
         self.rect_len = 15
+        #size of game, and then size of individual grids. 
+        # self.width = 52
+        # self.height = 52
+        # self.rect_len = 15
 
 class Snake:
     def __init__(self):
@@ -153,7 +153,7 @@ class Game:
         
     def do_move(self, move):
         move_dict = self.move_dict
-        
+
         change_direction = move_dict[move]
         #this translates the number back to the string again. Kinda redundant tbh.
         
@@ -191,7 +191,6 @@ class Game:
             end = True
         if self.snake.segments[0] in self.snake.segments[1:]:
             end = True
-        #this is great but the third if gives a bug. So be careful of this!
         return end
     
     def blit_score(self, color, screen):
@@ -199,3 +198,20 @@ class Game:
         text = font.render('Score: ' + str(self.snake.score), True, color)
         screen.blit(text, (0, 0))
 
+    def blit_border(self, screen):
+        # using one of the food tiles as a wall for the time being 
+        # no changes yet to make it so that the player dies when it hits the walls- 
+        # this would be better implemented with the use of a map class
+        for i in range(1, 28): 
+            screen.blit(pygame.image.load('images/food8.bmp'), (0, 15*i))
+            screen.blit(pygame.image.load('images/food8.bmp'), (15*i, 15))
+            screen.blit(pygame.image.load('images/food8.bmp'), (405, 15*i))
+            screen.blit(pygame.image.load('images/food8.bmp'), (15*i, 405))
+
+# class Map() :
+#     def __init__(self):
+#         
+# ideally, this map oculd be loaded in from like a text file or something...., so that players could make their own levels? 
+
+
+        
