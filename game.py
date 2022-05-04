@@ -7,6 +7,9 @@ BingQi Ling
 """
 import pygame, random
 import numpy as np
+import threading
+import time
+
 
 class Settings:
     def __init__(self):
@@ -22,6 +25,7 @@ class Snake:
     def __init__(self):
         
         self.image_up = pygame.image.load('images/head_up.bmp')
+        self.image_up_t = pygame.image.load('images/head_up_t.bmp')
 
         self.tail_up = pygame.image.load('images/tail_up.bmp')
         
@@ -61,6 +65,7 @@ class Snake:
 
     def blit_head(self, loc, dire, screen, size):
         x, y = loc[0]*size, loc[1]*size
+
         if dire == [0, 1]:
             screen.blit(self.image_up, (x, y))
         elif dire == [0, -1]:
@@ -69,6 +74,7 @@ class Snake:
             screen.blit(pygame.transform.rotate(self.image_up, 90), (x, y)) 
         else:
             screen.blit(pygame.transform.rotate(self.image_up, 270), (x, y))
+
 
     def blit_tail(self, x, y, screen, size):
         #tail_direction = [self.segments[-2][i] - self.segments[-1][i] for i in range(2)]

@@ -9,6 +9,7 @@ import pygame
 import time
 from pygame.locals import KEYDOWN, K_RIGHT, K_LEFT, K_UP, K_DOWN, K_ESCAPE
 from pygame.locals import QUIT
+import threading
 
 from game import Game
 
@@ -42,7 +43,7 @@ screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height
 pygame.display.set_caption('Gluttonous')
 
 #osx problem?
-pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+#pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 crash_sound = pygame.mixer.Sound('./sound/crash.wav')
 
 
