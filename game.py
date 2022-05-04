@@ -116,7 +116,7 @@ class Snake:
         self.segments.insert(0, list(self.position))
         #called by moving. ill look at it later.
     '''
-    def update(self):
+    def update(self, straw):
         pos = [0, 0]
         if self.facing == 'right':
             pos[0] += 1
@@ -130,7 +130,15 @@ class Snake:
         #wrap_check()
         #add collision check too
         #collision_check()
-        self.segments.insert(0, [self.segments[0][0] + pos[0], self.segments[0][1] + pos[1]]) 
+        self.segments.insert(0, [self.segments[0][0] + pos[0], self.segments[0][1] + pos[1]])
+        #check for strawberry at head pos now.
+        print("pos: ", straw)
+        if self.segments[0] == straw.position:
+            straw.random_pos(self)
+            reward = 1
+            self.score += 1
+        else:
+            self.segments.pop()
         self.segments[1] = [-pos[0], -pos[1]]
 
 class Strawberry():
@@ -195,7 +203,7 @@ class Game:
         direction_dict = {value : key for key,value in self.move_dict.items()}
         return direction_dict[direction]
         
-    def do_move(self, move):
+    def do_move(self, move, pos):
         move_dict = self.move_dict
 
         change_direction = move_dict[move]
@@ -210,7 +218,7 @@ class Game:
         if change_direction == 'down' and not self.snake.facing == 'up':
             self.snake.facing = change_direction
 
-        self.snake.update()
+        self.snake.update(pos)
         #moves maybe? Yes.
         
         if self.snake.position == self.strawberry.position:
@@ -218,7 +226,7 @@ class Game:
             reward = 1
             self.snake.score += 1
         else:
-            self.snake.segments.pop()
+            #self.snake.segments.pop()
             reward = 0
         #point and eating        
         
