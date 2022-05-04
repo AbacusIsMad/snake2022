@@ -22,17 +22,13 @@ class Snake:
     def __init__(self):
         
         self.image_up = pygame.image.load('images/head_up.bmp')
-        self.image_down = pygame.image.load('images/head_down.bmp')
-        self.image_left = pygame.image.load('images/head_left.bmp')
-        self.image_right = pygame.image.load('images/head_right.bmp')
 
         self.tail_up = pygame.image.load('images/tail_up.bmp')
-        self.tail_down = pygame.image.load('images/tail_down.bmp')
-        self.tail_left = pygame.image.load('images/tail_left.bmp')
-        self.tail_right = pygame.image.load('images/tail_right.bmp')
-            
+        
         self.image_body = pygame.image.load('images/body.bmp')
-
+        self.image_body_s = pygame.image.load('images/body_s.bmp')
+        self.image_body_c = pygame.image.load('images/body_c.bmp')
+        
         self.facing = "right"
         self.initialize()
 
@@ -47,28 +43,33 @@ class Snake:
 
     def blit_body(self, loc, cur, next, screen, size):
         x, y = loc[0]*size, loc[1]*size
-        screen.blit(self.image_body, (x, y))
-    '''
-    def blit_head(self, x, y, screen):
-        if self.facing == "up":
-            screen.blit(self.image_up, (x, y))
-        elif self.facing == "down":
-            screen.blit(self.image_down, (x, y))  
-        elif self.facing == "left":
-            screen.blit(self.image_left, (x, y))  
+        direction = [2*cur[0] + next[0], 2*cur[1] + next[1]]
+        if direction[0] == 0:
+            screen.blit(self.image_body_s, (x, y))
+        elif direction[1] == 0:
+            screen.blit(pygame.transform.rotate(self.image_body_s, 90), (x, y))
+        elif direction == [2, 1] or direction == [-1, -2]:
+            screen.blit(self.image_body_c, (x, y))
+        elif direction == [-2, 1] or direction == [1, -2]:
+            screen.blit(pygame.transform.rotate(self.image_body_c, 90), (x, y))
+        elif direction == [-2, -1] or direction == [1, 2]:
+            screen.blit(pygame.transform.rotate(self.image_body_c, 180), (x, y))
+        elif direction == [2, -1] or direction == [-1, 2]:
+            screen.blit(pygame.transform.rotate(self.image_body_c, 270), (x, y))
         else:
             screen.blit(self.image_right, (x, y))  
-    '''
+
     def blit_head(self, loc, dire, screen, size):
         x, y = loc[0]*size, loc[1]*size
         if dire == [0, 1]:
             screen.blit(self.image_up, (x, y))
         elif dire == [0, -1]:
-            screen.blit(self.image_down, (x, y))  
+            screen.blit(pygame.transform.rotate(self.image_up, 180), (x, y))  
         elif dire == [1, 0]:
-            screen.blit(self.image_left, (x, y))  
+            screen.blit(pygame.transform.rotate(self.image_up, 90), (x, y)) 
         else:
-            screen.blit(self.image_right, (x, y))     
+            screen.blit(pygame.transform.rotate(self.image_up, 270), (x, y))
+
     def blit_tail(self, x, y, screen, size):
         #tail_direction = [self.segments[-2][i] - self.segments[-1][i] for i in range(2)]
         tail_direction = self.segments[-1]
@@ -82,11 +83,11 @@ class Snake:
         if tail_direction == [0, 1]:
             screen.blit(self.tail_up, (x, y))
         elif tail_direction == [0, -1]:
-            screen.blit(self.tail_down, (x, y))  
+            screen.blit(pygame.transform.rotate(self.tail_up, 180), (x, y))    
         elif tail_direction == [1, 0]:
-            screen.blit(self.tail_left, (x, y))  
+            screen.blit(pygame.transform.rotate(self.tail_up, 90), (x, y))
         else:
-            screen.blit(self.tail_right, (x, y))  
+            screen.blit(pygame.transform.rotate(self.tail_up, 270), (x, y)) 
     '''
     def blit(self, rect_len, screen):
         self.blit_head(self.segments[0][0]*rect_len, self.segments[0][1]*rect_len, screen)                
@@ -127,9 +128,9 @@ class Snake:
         headpos = [self.segments[0][0] + pos[0], self.segments[0][1] + pos[1]]
         #convert headpos for wrap or solid tile collision
 
-        #check for body collision
+        #check for body collision, if yes the snake doesnt move forward.
         if headpos in self.segmentd[:-1]:
-            pass
+            return -1
         self.segments.insert(0, headpos)
         self.segmentd.insert(0, headpos)
 
@@ -142,6 +143,7 @@ class Snake:
             self.segments.pop()
             self.segmentd.pop()
         self.segments[1] = [-pos[0], -pos[1]]
+        return 0
 
 class Strawberry():
     def __init__(self, settings):
@@ -172,8 +174,6 @@ class Strawberry():
       
         
 class Game:
-    """
-    """
     def __init__(self):
         self.settings = Settings()
         self.snake = Snake()
@@ -220,7 +220,7 @@ class Game:
         if change_direction == 'down' and not self.snake.facing == 'up':
             self.snake.facing = change_direction
 
-        self.snake.update(pos)
+        state = self.snake.update(pos)
         #moves maybe? Yes.
         '''
         if self.snake.position == self.strawberry.position:
@@ -231,11 +231,15 @@ class Game:
             #self.snake.segments.pop()
             reward = 0
         #point and eating        
-        '''
+        
         if self.game_end():
             return -1
         return 0            
         #return reward
+        '''
+        if state == -1:
+            return -1
+        return 0
     
     def game_end(self):
         end = False

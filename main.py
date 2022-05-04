@@ -108,8 +108,9 @@ def initial_interface():
 #def game_loop(player, fps=10):
 def game_loop(player, fps=10):
     game.restart_game()
-
-    while not game.game_end():
+    
+    cont = 1
+    while cont:
 
         pygame.event.pump()
 
@@ -118,8 +119,8 @@ def game_loop(player, fps=10):
         fps = 5
         # fps = 10
 
-        game.do_move(move, game.strawberry)
-        #give me a second, in game.py
+        if game.do_move(move, game.strawberry) == -1:
+            cont = 0
 
         screen.fill(black)
 
