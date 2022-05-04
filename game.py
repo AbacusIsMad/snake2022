@@ -37,14 +37,17 @@ class Snake:
         self.initialize()
 
     def initialize(self):
+        #self.position = [6, 6]
+        #self.segments = [[6 - i, 6] for i in range(3)]
         self.position = [6, 6]
-        self.segments = [[6 - i, 6] for i in range(3)]
+        self.segments = [self.position, [-1, 0], [-1, 0]]
         #this is so wacky
         self.score = 0
 
-    def blit_body(self, x, y, screen):
+    def blit_body(self, loc, cur, next, screen, size):
+        x, y = loc[0]*size, loc[1]*size
         screen.blit(self.image_body, (x, y))
-        
+    '''
     def blit_head(self, x, y, screen):
         if self.facing == "up":
             screen.blit(self.image_up, (x, y))
@@ -54,29 +57,53 @@ class Snake:
             screen.blit(self.image_left, (x, y))  
         else:
             screen.blit(self.image_right, (x, y))  
-            
-    def blit_tail(self, x, y, screen):
-        tail_direction = [self.segments[-2][i] - self.segments[-1][i] for i in range(2)]
+    '''
+    def blit_head(self, loc, dire, screen, size):
+        x, y = loc[0]*size, loc[1]*size
+        if dire == [0, 1]:
+            screen.blit(self.image_up, (x, y))
+        elif dire == [0, -1]:
+            screen.blit(self.image_down, (x, y))  
+        elif dire == [1, 0]:
+            screen.blit(self.image_left, (x, y))  
+        else:
+            screen.blit(self.image_right, (x, y))     
+    def blit_tail(self, x, y, screen, size):
+        #tail_direction = [self.segments[-2][i] - self.segments[-1][i] for i in range(2)]
+        tail_direction = self.segments[-1]
+        x *= size
+        y *= size
         print(tail_direction)
+        print(self.segments)
         #ls[big iterator][small iterator]
         
-        if tail_direction == [0, -1]:
+        if tail_direction == [0, 1]:
             screen.blit(self.tail_up, (x, y))
-        elif tail_direction == [0, 1]:
+        elif tail_direction == [0, -1]:
             screen.blit(self.tail_down, (x, y))  
-        elif tail_direction == [-1, 0]:
+        elif tail_direction == [1, 0]:
             screen.blit(self.tail_left, (x, y))  
         else:
             screen.blit(self.tail_right, (x, y))  
-    
+    '''
     def blit(self, rect_len, screen):
         self.blit_head(self.segments[0][0]*rect_len, self.segments[0][1]*rect_len, screen)                
         for index, position in enumerate(self.segments[1:-1]):
             #body_direction = []
             self.blit_body(position[0]*rect_len, position[1]*rect_len, screen)
-        self.blit_tail(self.segments[-1][0]*rect_len, self.segments[-1][1]*rect_len, screen)                
-            
-    
+        self.blit_tail(self.segments[-1][0]*rect_len, self.segments[-1][1]*rect_len, screen)  
+    '''
+    def blit(self, rect_len, screen):
+        self.blit_head(self.segments[0], self.segments[1], screen, rect_len)
+        location = self.segments[0]
+        for index, position in enumerate(self.segments[1:-1]):
+            #add wrapping logic later here
+            location = [location[0] + position[0], location[1] + position[1]]
+            self.blit_body(location, position, self.segments[index + 1], screen, rect_len)
+        location = [location[0] + self.segments[-1][0], location[1] + self.segments[-1][1]]
+        self.blit_tail(location[0], location[1], screen, rect_len)
+          
+    '''
     def update(self):
         if self.facing == 'right':
             self.position[0] += 1
@@ -88,7 +115,24 @@ class Snake:
             self.position[1] += 1
         self.segments.insert(0, list(self.position))
         #called by moving. ill look at it later.
-        
+    '''
+    def update(self):
+        pos = [0, 0]
+        if self.facing == 'right':
+            pos[0] += 1
+        if self.facing == 'left':
+            pos[0] -= 1
+        if self.facing == 'up':
+            pos[1] -= 1
+        if self.facing == 'down':
+            pos[1] += 1
+        #add wrap checking here later
+        #wrap_check()
+        #add collision check too
+        #collision_check()
+        self.segments.insert(0, [self.segments[0][0] + pos[0], self.segments[0][1] + pos[1]]) 
+        self.segments[1] = [-pos[0], -pos[1]]
+
 class Strawberry():
     def __init__(self, settings):
         self.settings = settings
@@ -106,7 +150,7 @@ class Strawberry():
 
         self.position[0] = random.randint(9, 19)
         self.position[1] = random.randint(9, 19)
-        
+        #yo recursion?
         if self.position in snake.segments:
             self.random_pos(snake)
 
