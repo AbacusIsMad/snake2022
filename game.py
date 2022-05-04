@@ -40,7 +40,8 @@ class Snake:
         #self.position = [6, 6]
         #self.segments = [[6 - i, 6] for i in range(3)]
         self.position = [6, 6]
-        self.segments = [self.position, [-1, 0], [-1, 0]]
+        self.segments = [[6, 6], [-1, 0], [-1, 0]]
+        self.segmentd = [[6, 6], [5, 6], [4, 6]]
         #this is so wacky
         self.score = 0
 
@@ -75,6 +76,7 @@ class Snake:
         y *= size
         print(tail_direction)
         print(self.segments)
+        print(self.segmentd)
         #ls[big iterator][small iterator]
         
         if tail_direction == [0, 1]:
@@ -94,14 +96,10 @@ class Snake:
         self.blit_tail(self.segments[-1][0]*rect_len, self.segments[-1][1]*rect_len, screen)  
     '''
     def blit(self, rect_len, screen):
-        self.blit_head(self.segments[0], self.segments[1], screen, rect_len)
-        location = self.segments[0]
+        self.blit_head(self.segmentd[0], self.segments[1], screen, rect_len)
         for index, position in enumerate(self.segments[1:-1]):
-            #add wrapping logic later here
-            location = [location[0] + position[0], location[1] + position[1]]
-            self.blit_body(location, position, self.segments[index + 1], screen, rect_len)
-        location = [location[0] + self.segments[-1][0], location[1] + self.segments[-1][1]]
-        self.blit_tail(location[0], location[1], screen, rect_len)
+            self.blit_body(self.segmentd[index + 1], position, self.segments[index + 2], screen, rect_len)
+        self.blit_tail(self.segmentd[-1][0], self.segmentd[-1][1], screen, rect_len)
           
     '''
     def update(self):
@@ -126,19 +124,23 @@ class Snake:
             pos[1] -= 1
         if self.facing == 'down':
             pos[1] += 1
-        #add wrap checking here later
-        #wrap_check()
-        #add collision check too
-        #collision_check()
-        self.segments.insert(0, [self.segments[0][0] + pos[0], self.segments[0][1] + pos[1]])
+        headpos = [self.segments[0][0] + pos[0], self.segments[0][1] + pos[1]]
+        #convert headpos for wrap or solid tile collision
+
+        #check for body collision
+        if headpos in self.segmentd[:-1]:
+            pass
+        self.segments.insert(0, headpos)
+        self.segmentd.insert(0, headpos)
+
         #check for strawberry at head pos now.
-        print("pos: ", straw)
         if self.segments[0] == straw.position:
             straw.random_pos(self)
             reward = 1
             self.score += 1
         else:
             self.segments.pop()
+            self.segmentd.pop()
         self.segments[1] = [-pos[0], -pos[1]]
 
 class Strawberry():
@@ -159,7 +161,7 @@ class Strawberry():
         self.position[0] = random.randint(9, 19)
         self.position[1] = random.randint(9, 19)
         #yo recursion?
-        if self.position in snake.segments:
+        if self.position in snake.segmentd:
             self.random_pos(snake)
 
     def blit(self, screen):
@@ -220,7 +222,7 @@ class Game:
 
         self.snake.update(pos)
         #moves maybe? Yes.
-        
+        '''
         if self.snake.position == self.strawberry.position:
             self.strawberry.random_pos(self.snake)
             reward = 1
@@ -229,11 +231,11 @@ class Game:
             #self.snake.segments.pop()
             reward = 0
         #point and eating        
-        
+        '''
         if self.game_end():
             return -1
-                    
-        return reward
+        return 0            
+        #return reward
     
     def game_end(self):
         end = False
