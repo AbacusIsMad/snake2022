@@ -41,6 +41,8 @@ fpsClock = pygame.time.Clock()
 screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height * 15))
 pygame.display.set_caption('Gluttonous')
 
+#osx problem?
+# pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 crash_sound = pygame.mixer.Sound('./sound/crash.wav')
 
 
@@ -120,6 +122,23 @@ def game_loop(player, fps=10):
 
         game.do_move(move)
         #give me a second, in game.py
+        if stop:
+            #build restart screen
+            button('Quit', 270, 240, 80, 40, red, bright_red, quitgame)
+            button('Restart', 80, 240, 80, 40, green, bright_green, quitgame)
+            pygame.display.flip()
+            fpsClock.tick(30)
+        else:
+            if game.do_move(move, game.strawberry) == -1:
+                cont = 0
+
+            screen.fill(white)
+            game.blit_map(screen, "map.txt")
+            game.snake.blit(rect_len, screen)
+            game.strawberry.blit(screen)
+            game.blit_score(white, screen)
+            # game.blit_border(screen)
+
 
         screen.fill(black)
 
