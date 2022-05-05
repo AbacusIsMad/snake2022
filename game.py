@@ -115,8 +115,12 @@ class Strawberry():
    
     def initialize(self):
         self.position = [15, 10]
+    
+    def playSound(self):
+        eat_sound = pygame.mixer.Sound('./sound/eat.wav')
+        pygame.mixer.Sound.play(eat_sound)
+
       
-        
 class Game:
     """
     """
@@ -171,6 +175,7 @@ class Game:
         
         if self.snake.position == self.strawberry.position:
             self.strawberry.random_pos(self.snake)
+            self.strawberry.playSound()
             reward = 1
             self.snake.score += 1
         else:
