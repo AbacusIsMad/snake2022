@@ -142,10 +142,11 @@ def game_loop(player, fps=10):
 
             screen.fill(white)
 
+
+            game.blit_map(screen, "map.txt")
             game.snake.blit(rect_len, screen)
             game.strawberry.blit(screen)
             game.blit_score(white, screen)
-            game.blit_border(screen)
 
             pygame.display.flip()
 
