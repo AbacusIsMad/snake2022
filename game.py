@@ -277,7 +277,7 @@ class Game:
         map = Map(mapfile)
         map.loadMap()
         for i in range(0, 28):
-            for k in range(0, 28): 
+            for k in range(0, 28):
                 tile = map.tiles[k][i]
                 if tile.type == "Solid":
                     screen.blit(pygame.image.load('images/food1.bmp'), (i*15, k*15))
