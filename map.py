@@ -6,8 +6,9 @@ class Tile():
 
 
 class Map():
-    def __init__(self, mapdir=None, custom=False):
+    def __init__(self, mapdir=None, custom=False, config=None):
         self.tiles = []
+        #can create an empty instance to write to!
         if mapdir is not None:
             self.loadMap(mapdir, custom)
 
