@@ -34,15 +34,32 @@ class Snake:
         self.image_body_c = pygame.image.load('images/body_c.bmp')
         self.image_space = pygame.image.load('images/space.bmp')
         
-        self.facing = "right"
+        #self.facing = "right"
         self.initialize()
 
-    def initialize(self):
-        #self.position = [6, 6]
-        #self.segments = [[6 - i, 6] for i in range(3)]
-        self.position = [6, 6]
-        self.segments = [[6, 6], [-1, 0], [-1, 0], [-1, 0]]
-        self.segmentd = [[6, 6], [5, 6], [4, 6], [3, 6]]
+    def initialize(self, mapdir=None):
+        if mapdir is not None:
+            with open("levels/" + mapdir + "/snake.txt", "r") as f:
+                t = f.readlines()
+            self.segments = []
+            self.segmentd = []
+            for pair in t:
+                mid = pair[:-1].split(",")
+                self.segments.append([int(mid[0]), int(mid[1])])
+                self.segmentd.append([int(mid[2]), int(mid[3])])
+            dire = self.segments[1]
+            if dire == [-1, 0]:
+                self.facing = "right"
+            if dire == [0, 1]:
+                self.facing = "up"
+            if dire == [1, 0]:
+                self.facing = "left"
+            if dire == [0, -1]:
+                self.facing = "down"
+        else: #default to fallback to
+            self.segments = [[6, 6], [-1, 0], [-1, 0], [-1, 0]]
+            self.segmentd = [[6, 6], [5, 6], [4, 6], [3, 6]]
+            self.facing = "right"
         #this is so wacky
         self.score = 0
 
@@ -96,12 +113,11 @@ class Snake:
         else:
             screen.blit(pygame.transform.rotate(self.tail_up, 270), (x, y)) 
 
-    def blit(self, rect_len, screen, last):
+    def blit(self, rect_len, screen, last=None):
         for index, position in enumerate(self.segments[1:-1]):
             self.blit_body(self.segmentd[index + 1], position, self.segments[index + 2], screen, rect_len)
         self.blit_tail(self.segmentd[-1][0], self.segmentd[-1][1], screen, rect_len)
         if isinstance(last, list):
-            print('yes', last)
             #this only outputs regular spaces, since the features in it get added later than the snake!
             screen.blit(self.image_space, (last[0]*rect_len, last[1]*rect_len))
         self.blit_head(self.segmentd[0], self.segments[1], screen, rect_len)
@@ -182,10 +198,13 @@ class Game:
         self.map = Map(mapfile)
     '''
 
-    def restart_game(self, mapfile):
-        self.snake.initialize()
+    def restart_game(self, mapdir):
+        #set map
+        self.map = Map(mapdir)
+        #set snake
+        self.snake.initialize(mapdir)
+        #set stawberry if it exists.
         self.strawberry.initialize()
-        self.map = Map(mapfile)
 
     def current_state(self):         
         state = np.zeros((self.settings.width+2, self.settings.height+2, 2))
@@ -281,41 +300,4 @@ class Game:
                     screen.blit(self.space_img, (i*15, k*15))
                 else:
                     pass
-
-'''
-class Tile(): 
-    def __init__(self, type, x, y):
-        self.type = type
-        self.x = x
-        self.y = y
-
-class Map():
-    def __init__(self, mapfile=None):
-        self.tiles = []
-        self.loadMap(mapfile)
-
-    def loadMap(self, mapfile): 
-        f = open(mapfile, "r")
-        for i in range(0, 28): 
-            line = f.readline()
-            tileLine = []
-            for k in range(0, 28): 
-                letter = line[k]
-                if (letter == "W"):
-                    tile = Tile("Solid", k, i)
-                elif (letter == " "):
-                    tile = Tile("Empty", k, i)
-                elif (letter == "B" or letter == "G" or letter == "Y" or letter == "R" or letter == "P"): 
-                    tile = Tile("Other", k, i)
-                tileLine.append(tile)
-            self.tiles.append(tileLine)
-
-    def readMap(self):
-        for i in range(0, 28): 
-            tiles = "Tiles on line " + str(i) + " "
-            for k in range(0, 28): 
-                tiles = tiles + self.tiles[i][k].type + " "
-            print(tiles)
-'''
-
         
