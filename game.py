@@ -9,6 +9,7 @@ import pygame, random
 import numpy as np
 import threading
 import time
+from map import Map
 
 
 class Settings:
@@ -25,13 +26,13 @@ class Snake:
     def __init__(self):
         
         self.image_up = pygame.image.load('images/head_up.bmp')
-        self.image_up_t = pygame.image.load('images/head_up_t.bmp')
 
         self.tail_up = pygame.image.load('images/tail_up.bmp')
         
         self.image_body = pygame.image.load('images/body.bmp')
         self.image_body_s = pygame.image.load('images/body_s.bmp')
         self.image_body_c = pygame.image.load('images/body_c.bmp')
+        self.image_space = pygame.image.load('images/space.bmp')
         
         self.facing = "right"
         self.initialize()
@@ -40,8 +41,8 @@ class Snake:
         #self.position = [6, 6]
         #self.segments = [[6 - i, 6] for i in range(3)]
         self.position = [6, 6]
-        self.segments = [[6, 6], [-1, 0], [-1, 0]]
-        self.segmentd = [[6, 6], [5, 6], [4, 6]]
+        self.segments = [[6, 6], [-1, 0], [-1, 0], [-1, 0]]
+        self.segmentd = [[6, 6], [5, 6], [4, 6], [3, 6]]
         #this is so wacky
         self.score = 0
 
@@ -94,33 +95,17 @@ class Snake:
             screen.blit(pygame.transform.rotate(self.tail_up, 90), (x, y))
         else:
             screen.blit(pygame.transform.rotate(self.tail_up, 270), (x, y)) 
-    '''
-    def blit(self, rect_len, screen):
-        self.blit_head(self.segments[0][0]*rect_len, self.segments[0][1]*rect_len, screen)                
-        for index, position in enumerate(self.segments[1:-1]):
-            #body_direction = []
-            self.blit_body(position[0]*rect_len, position[1]*rect_len, screen)
-        self.blit_tail(self.segments[-1][0]*rect_len, self.segments[-1][1]*rect_len, screen)  
-    '''
-    def blit(self, rect_len, screen):
-        self.blit_head(self.segmentd[0], self.segments[1], screen, rect_len)
+
+    def blit(self, rect_len, screen, last):
         for index, position in enumerate(self.segments[1:-1]):
             self.blit_body(self.segmentd[index + 1], position, self.segments[index + 2], screen, rect_len)
         self.blit_tail(self.segmentd[-1][0], self.segmentd[-1][1], screen, rect_len)
-          
-    '''
-    def update(self):
-        if self.facing == 'right':
-            self.position[0] += 1
-        if self.facing == 'left':
-            self.position[0] -= 1
-        if self.facing == 'up':
-            self.position[1] -= 1
-        if self.facing == 'down':
-            self.position[1] += 1
-        self.segments.insert(0, list(self.position))
-        #called by moving. ill look at it later.
-    '''
+        if isinstance(last, list):
+            print('yes', last)
+            #this only outputs regular spaces, since the features in it get added later than the snake!
+            screen.blit(self.image_space, (last[0]*rect_len, last[1]*rect_len))
+        self.blit_head(self.segmentd[0], self.segments[1], screen, rect_len)
+        
     def update(self, straw):
         pos = [0, 0]
         if self.facing == 'right':
@@ -136,7 +121,7 @@ class Snake:
 
         #check for body collision, if yes the snake doesnt move forward.
         if headpos in self.segmentd[:-1]:
-            return -1
+            return -1, []
         self.segments.insert(0, headpos)
         self.segmentd.insert(0, headpos)
 
@@ -145,11 +130,13 @@ class Snake:
             straw.random_pos(self)
             reward = 1
             self.score += 1
+            last_tail = [-1, -1]
         else:
             self.segments.pop()
-            self.segmentd.pop()
+            #unblit tail
+            last_tail = self.segmentd.pop()
         self.segments[1] = [-pos[0], -pos[1]]
-        return 0
+        return 0, last_tail
 
 class Strawberry():
     def __init__(self, settings):
@@ -187,11 +174,18 @@ class Game:
         self.move_dict = {0 : 'up',
                           1 : 'down',
                           2 : 'left',
-                          3 : 'right'}       
-        
-    def restart_game(self):
+                          3 : 'right'}   
+        self.tile_img = pygame.image.load('images/tile.bmp')
+        self.space_img = pygame.image.load('images/space.bmp')
+    '''
+    def load_map(self, mapfile)
+        self.map = Map(mapfile)
+    '''
+
+    def restart_game(self, mapfile):
         self.snake.initialize()
         self.strawberry.initialize()
+        self.map = Map(mapfile)
 
     def current_state(self):         
         state = np.zeros((self.settings.width+2, self.settings.height+2, 2))
@@ -226,7 +220,7 @@ class Game:
         if change_direction == 'down' and not self.snake.facing == 'up':
             self.snake.facing = change_direction
 
-        state = self.snake.update(pos)
+        state, replace = self.snake.update(pos)
         #moves maybe? Yes.
         '''
         if self.snake.position == self.strawberry.position:
@@ -245,6 +239,8 @@ class Game:
         '''
         if state == -1:
             return -1
+        if replace and replace != [-1, -1]:
+            return replace
         return 0
     
     def game_end(self):
@@ -273,17 +269,20 @@ class Game:
             screen.blit(pygame.image.load('images/food8.bmp'), (405, 15*i))
             screen.blit(pygame.image.load('images/food8.bmp'), (15*i, 405))
 
-    def blit_map(self, screen, mapfile): 
-        map = Map(mapfile)
-        map.loadMap()
+    def blit_map(self, screen): 
         for i in range(0, 28):
             for k in range(0, 28):
-                tile = map.tiles[k][i]
-                if tile.type == "Solid":
-                    screen.blit(pygame.image.load('images/food1.bmp'), (i*15, k*15))
-                if tile.type == "Empty": 
-                    screen.blit(pygame.image.load('images/food2.bmp'), (i*15, k*15))
+                tile = self.map.tiles[k][i]
+                if tile.type == "Other":
+                    pass
+                elif tile.type == "Solid":
+                    screen.blit(self.tile_img, (i*15, k*15))
+                elif tile.type == "Empty": 
+                    screen.blit(self.space_img, (i*15, k*15))
+                else:
+                    pass
 
+'''
 class Tile(): 
     def __init__(self, type, x, y):
         self.type = type
@@ -291,12 +290,12 @@ class Tile():
         self.y = y
 
 class Map():
-    def __init__(self, mapfile):
+    def __init__(self, mapfile=None):
         self.tiles = []
-        self.mapfile = mapfile
+        self.loadMap(mapfile)
 
-    def loadMap(self): 
-        f = open(self.mapfile, "r")
+    def loadMap(self, mapfile): 
+        f = open(mapfile, "r")
         for i in range(0, 28): 
             line = f.readline()
             tileLine = []
@@ -317,11 +316,6 @@ class Map():
             for k in range(0, 28): 
                 tiles = tiles + self.tiles[i][k].type + " "
             print(tiles)
-
-# class Map() :
-#     def __init__(self):
-#         
-# ideally, this map oculd be loaded in from like a text file or something...., so that players could make their own levels? 
-
+'''
 
         

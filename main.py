@@ -112,7 +112,10 @@ def initial_interface():
 
 #def game_loop(player, fps=10):
 def game_loop(player, fps=10):
-    game.restart_game()
+    game.restart_game("map.txt")
+    screen.fill(white)
+    game.blit_map(screen)
+    pygame.display.update()
     #whether the game is stopped
     stop = False
     #if the snake has crashed or lost
@@ -137,14 +140,16 @@ def game_loop(player, fps=10):
             pygame.display.flip()
             fpsClock.tick(30)
         else:
-            if game.do_move(move, game.strawberry) == -1:
+            result = game.do_move(move, game.strawberry)
+            if result == -1:
                 cont = 0
 
-            screen.fill(white)
+            #screen.fill(white)
 
 
-            game.blit_map(screen, "map.txt")
-            game.snake.blit(rect_len, screen)
+            #game.blit_map(screen, "map.txt")
+            game.snake.blit(rect_len, screen, result)
+            #game.features.blit()
             game.strawberry.blit(screen)
             game.blit_score(white, screen)
 
