@@ -203,20 +203,49 @@ class Game:
         text = font.render('Score: ' + str(self.snake.score), True, color)
         screen.blit(text, (0, 0))
 
-    def blit_border(self, screen):
-        # using one of the food tiles as a wall for the time being 
-        # no changes yet to make it so that the player dies when it hits the walls- 
-        # this would be better implemented with the use of a map class
-        for i in range(1, 28): 
-            screen.blit(pygame.image.load('images/food8.bmp'), (0, 15*i))
-            screen.blit(pygame.image.load('images/food8.bmp'), (15*i, 15))
-            screen.blit(pygame.image.load('images/food8.bmp'), (405, 15*i))
-            screen.blit(pygame.image.load('images/food8.bmp'), (15*i, 405))
+    def blit_map(self, screen, mapfile): 
+        map = Map(mapfile)
+        map.loadMap()
+        for i in range(0, 28):
+            for k in range(0, 28): 
+                tile = map.tiles[i][k]
+                if tile.type == "Solid":
+                    screen.blit(pygame.image.load('images/food1.bmp'), (i*15, k*15))
+                if tile.type == "Empty": 
+                    screen.blit(pygame.image.load('images/food2.bmp'), (i*15, k*15))
 
-# class Map() :
-#     def __init__(self):
-#         
-# ideally, this map oculd be loaded in from like a text file or something...., so that players could make their own levels? 
+class Tile(): 
+    def __init__(self, type, x, y):
+        self.type = type
+        self.x = x
+        self.y = y
 
+class Map():
+    def __init__(self, mapfile):
+        self.tiles = []
+        self.mapfile = mapfile
+    
+    def loadMap(self): 
+        f = open(self.mapfile, "r")
+        for i in range(0, 28): 
+            line = f.readline()
+            tileLine = []
+            for k in range(0, 28): 
+                letter = line[k]
+                if (letter == "W"):
+                    tile = Tile("Solid", k, i)
+                elif (letter == " "):
+                    tile = Tile("Empty", k, i)
+                elif (letter == "B" or letter == "G" or letter == "Y" or letter == "R" or letter == "P"): 
+                    tile = Tile("Other", k, i)
+                tileLine.append(tile)
+            self.tiles.append(tileLine)
 
+    def readMap(self):
+        for i in range(0, 28): 
+            tiles = "Tiles on line " + str(i) + " "
+            for k in range(0, 28): 
+                tiles = tiles + self.tiles[i][k].type + " "
+            print(tiles)
+                
         
