@@ -41,8 +41,8 @@ class Snake:
             self.facing = "right"
         self.score = 0
 
-    def blit_body(self, loc, cur, next, screen, size):
-        x, y = loc[0]*size, loc[1]*size
+    def blit_body(self, loc, cur, next, screen, size, x0, y0):
+        x, y = (loc[0] + x0)*size, (loc[1] + y0)*size
         direction = [2*cur[0] + next[0], 2*cur[1] + next[1]]
         if direction[0] == 0:
             screen.blit(self.image_body_s, (x, y))
@@ -59,8 +59,8 @@ class Snake:
         else:
             screen.blit(self.image_right, (x, y))  
 
-    def blit_head(self, loc, dire, screen, size):
-        x, y = loc[0]*size, loc[1]*size
+    def blit_head(self, loc, dire, screen, size, x0, y0):
+        x, y = (loc[0] + x0)*size, (loc[1] + y0)*size
 
         if dire == [0, 1]:
             screen.blit(self.image_up, (x, y))
@@ -72,11 +72,11 @@ class Snake:
             screen.blit(pygame.transform.rotate(self.image_up, 270), (x, y))
 
 
-    def blit_tail(self, x, y, screen, size):
+    def blit_tail(self, x, y, screen, size, x0, y0):
         #tail_direction = [self.segments[-2][i] - self.segments[-1][i] for i in range(2)]
         tail_direction = self.segments[-1]
-        x *= size
-        y *= size
+        x = (x + x0)*size
+        y = (y + y0)*size
         print(tail_direction)
         print(self.segments)
         print(self.segmentd)
@@ -92,15 +92,17 @@ class Snake:
             screen.blit(pygame.transform.rotate(self.tail_up, 270), (x, y)) 
 
     def blit(self, rect_len, screen, last=None):
+        x0 = int(self.game.config.settings["xOffset"])
+        y0 = int(self.game.config.settings["yOffset"])
         for index, position in enumerate(self.segments[1:-1]):
-            self.blit_body(self.segmentd[index + 1], position, self.segments[index + 2], screen, rect_len)
-        self.blit_tail(self.segmentd[-1][0], self.segmentd[-1][1], screen, rect_len)
+            self.blit_body(self.segmentd[index + 1], position, self.segments[index + 2], screen, rect_len, x0, y0)
+        self.blit_tail(self.segmentd[-1][0], self.segmentd[-1][1], screen, rect_len, x0, y0)
         if isinstance(last, list):
             #this only outputs regular spaces, since the features in it get added later than the snake!
-            screen.blit(self.image_space, (last[0]*rect_len, last[1]*rect_len))
-        self.blit_head(self.segmentd[0], self.segments[1], screen, rect_len)
+            screen.blit(self.image_space, ((last[0] + x0)*rect_len, (last[1] + y0)*rect_len))
+        self.blit_head(self.segmentd[0], self.segments[1], screen, rect_len, x0, y0)
         
-    def update(self, tiles):
+    def update(self):
         pos = [0, 0]
         if self.facing == 'right':
             pos[0] += 1
@@ -113,34 +115,47 @@ class Snake:
         headpos = [self.segments[0][0] + pos[0], self.segments[0][1] + pos[1]]
         #convert headpos for wrap or solid tile collision
 
+        
+        dont_move = False
+        if self.game.map.tiles[headpos[1]][headpos[0]].type == 'Solid':
+            #transforms direction to a power of 2 to compare
+            vector = ((not not pos[0])*25 + pos[0]*15 + (not not pos[1])*50 - pos[1]*30)//10
+            opposite = ((not not pos[0])*25 - pos[0]*15 + (not not pos[1])*50 + pos[1]*30)//10
+            print(vector, opposite)
+
+            #actual comparison, bit mask black magic
+            if self.game.map.tiles[headpos[1]][headpos[0]].wrap_plate & vector:
+                print("yep")
+                #go on that specific direction
+                while not self.game.map.tiles[headpos[1]- pos[1]][headpos[0] - pos[0]].wrap_plate & opposite:
+                    headpos[0] -= pos[0]
+                    headpos[1] -= pos[1]
+                #found it!
+            elif self.game.map.tiles[headpos[1]][headpos[0]].pad_clone & vector:
+                dont_move = True
+            else:   
+                return -1, []
+
         #check for body collision, if yes the snake doesnt move forward.
         if headpos in self.segmentd[:-1]:
             return -1, []
-        if tiles[headpos[1]][headpos[0]].type == 'Solid':
-            if tiles[headpos[1]][headpos[0]].wrap_plate == 0:
-                return -1, []
-            elif tiles[headpos[1]][headpos[0]].wrap_plate == 1:
-                start = headpos[0]
-                end = 0
-                for index, x in enumerate(tiles[headpos[1]]):
-                    if x.wrap_plate == 4:
-                        end = index
-                        if end > start:
-                            break
-                headpos[0] = headpos[0] + (end - start - 1)
-            #return -1, []
-        self.segments.insert(0, headpos)
-        self.segmentd.insert(0, headpos)
 
+
+        if not dont_move:
+            self.segments.insert(0, headpos)
+            self.segmentd.insert(0, headpos)
+
+        last_tail = []
         #check for strawberry at head pos now.
         if self.segments[0] == self.game.strawberry.position:
-            self.game.strawberry.random_pos(self)
+            self.game.strawberry.random_pos()
             reward = 1
             self.score += 1
             last_tail = [-1, -1]
-        else:
+        elif not dont_move:
             self.segments.pop()
             #unblit tail
             last_tail = self.segmentd.pop()
-        self.segments[1] = [-pos[0], -pos[1]]
+        if not dont_move:
+            self.segments[1] = [-pos[0], -pos[1]]
         return 0, last_tail

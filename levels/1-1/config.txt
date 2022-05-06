@@ -1,3 +1,5 @@
-what:=2
-how:=3
-why:=4
+mapX:=15
+mapY:=15
+xOffset:=6
+yOffset:=6
+strawberry:=1

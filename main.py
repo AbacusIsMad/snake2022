@@ -113,7 +113,7 @@ def initial_interface():
 #def game_loop(player, fps=10):
 def game_loop(player, fps=10):
     game.restart_game("1-1")
-    screen.fill(white)
+    screen.fill(black)
     game.blit_map(rect_len, screen)
     
     #whether the game is stopped
@@ -125,7 +125,7 @@ def game_loop(player, fps=10):
     #always blit once before doing stuff, and sleep for a little bit! This allows for some time preparation.
     game.snake.blit(rect_len, screen)
     #game.features.blit
-    game.strawberry.blit(screen)
+    game.strawberry.blit(screen, int(game.config.settings["xOffset"]), int(game.config.settings["yOffset"]))
     pygame.display.update()
     pygame.time.delay(1000)
     print("done")
@@ -157,7 +157,7 @@ def game_loop(player, fps=10):
             #the result carries the last  place thte 
             game.snake.blit(rect_len, screen, result)
             #game.features.blit()
-            game.strawberry.blit(screen)
+            game.strawberry.blit(screen, int(game.config.settings["xOffset"]), int(game.config.settings["yOffset"]))
             game.blit_score(white, screen)
 
             pygame.display.update()

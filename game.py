@@ -25,28 +25,30 @@ class Settings:
         # self.rect_len = 15
 
 class Strawberry():
-    def __init__(self, settings):
+    def __init__(self, settings, parent):
         self.settings = settings
-        
+        self.parent = parent
+
         self.style = str(random.randint(1, 8))
         self.image = pygame.image.load('images/food' + str(self.style) + '.bmp')        
         self.initialize()
         
-    def random_pos(self, snake):
+    def random_pos(self):
         self.style = str(random.randint(1, 8))
         self.image = pygame.image.load('images/food' + str(self.style) + '.bmp')                
-        
-        self.position[0] = random.randint(0, self.settings.width-1)
-        self.position[1] = random.randint(0, self.settings.height-1)
+        print("called!")
+        self.position[0] = random.randint(0, int(self.parent.config.settings["mapX"])-1)
+        self.position[1] = random.randint(0, int(self.parent.config.settings["mapY"])-1)
 
-        self.position[0] = random.randint(9, 19)
-        self.position[1] = random.randint(9, 19)
+        #self.position[0] = random.randint(9, 19)
+        #self.position[1] = random.randint(9, 19)
         #yo recursion?
-        if self.position in snake.segmentd:
-            self.random_pos(snake)
+        if (self.position in self.parent.snake.segmentd[:-1]) or not self.parent.map.tiles[self.position[0]][self.position[1]].true_empty:
+            self.random_pos()
 
-    def blit(self, screen):
-        screen.blit(self.image, [p * self.settings.rect_len for p in self.position])
+    def blit(self, screen, x0, y0):
+        #screen.blit(self.image, [p * self.settings.rect_len for p in self.position])
+        screen.blit(self.image, ((self.position[0] + x0)*self.settings.rect_len, (self.position[1] + y0)*self.settings.rect_len))
    
     def initialize(self):
         self.position = [15, 10]
@@ -56,7 +58,7 @@ class Game:
     def __init__(self):
         self.settings = Settings()
         self.snake = Snake(self)
-        self.strawberry = Strawberry(self.settings)
+        self.strawberry = Strawberry(self.settings, self)
         self.move_dict = {0 : 'up',
                           1 : 'down',
                           2 : 'left',
@@ -70,11 +72,12 @@ class Game:
         #set config. This has a bunch of options that control stuff.
         self.config = Config(mapdir)
         #set map
-        self.map = Map(mapdir=mapdir, config=self.config.settings)
+        self.map = Map(parent=self, mapdir=mapdir)
         #set snake
         self.snake.initialize(mapdir)
         #set stawberry if it exists.
-        self.strawberry.initialize()
+        #self.strawberry.initialize()
+        self.strawberry.random_pos()
 
     def current_state(self):         
         state = np.zeros((self.settings.width+2, self.settings.height+2, 2))
@@ -109,7 +112,7 @@ class Game:
         if change_direction == 'down' and not self.snake.facing == 'up':
             self.snake.facing = change_direction
 
-        state, replace = self.snake.update(self.map.tiles)
+        state, replace = self.snake.update()
 
         if state == -1:
             return -1
@@ -134,21 +137,23 @@ class Game:
         screen.blit(text, (0, 0))
 
     def blit_map(self, rect_len, screen): 
-        for i in range(0, 28):
-            for k in range(0, 28):
+        x0 = int(self.config.settings["xOffset"])
+        y0 = int(self.config.settings["yOffset"])
+        for i in range(0, int(self.config.settings["mapY"])):
+            for k in range(0, int(self.config.settings["mapX"])):
                 tile = self.map.tiles[k][i]
                 if tile.type == "Other":
                     pass
                 elif tile.type == "Solid":
-                    screen.blit(self.tile_img, (i*rect_len, k*rect_len))
+                    screen.blit(self.tile_img, ((i + x0)*rect_len, (k + y0)*rect_len))
                     for j in range(4):
                         if tile.wrap_plate & (1 << j):
-                            screen.blit(pygame.transform.rotate(self.wrap_img, j*90), (i*rect_len, k*rect_len))
+                            screen.blit(pygame.transform.rotate(self.wrap_img, j*90), ((i + x0)*rect_len, (k + y0)*rect_len))
                     for j in range(4):
                         if tile.pad_clone & (1 << j):
-                            screen.blit(pygame.transform.rotate(self.pad_img, j*90), (i*rect_len, k*rect_len))
+                            screen.blit(pygame.transform.rotate(self.pad_img, j*90), ((i + x0)*rect_len, (k + y0)*rect_len))
                 elif tile.type == "Empty": 
-                    screen.blit(self.space_img, (i*rect_len, k*rect_len))
+                    screen.blit(self.space_img, ((i + x0)*rect_len, (k + y0)*rect_len))
                 else:
                     pass
         

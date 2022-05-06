@@ -5,6 +5,7 @@ class Tile():
         self.wrap_plate = 0
         self.pad_clone = 0
         self.movable = False
+        self.parent = parent
         self.x = x
         self.y = y
         #A completely empty tile
@@ -20,15 +21,20 @@ class Tile():
         if self.type == "Empty":
             if varient == 18:
                 self.wrap_plate = 1
-                parent.goals.append([self.x, self.y])
+                self.parent.goals.append([self.x, self.y])
             elif varient == 19:
                 self.wrap_plate = 2
-                parent.alt_goals.append([self.x, self.y])
+                self.parent.alt_goals.append([self.x, self.y])
             elif varient == 20:
                 self.pad_clone = 1
+
+    def __repr__(self):
+        return("{}, {}".format(self.x, self.y))
+
             
 class Map():
-    def __init__(self, mapdir=None, custom=False, config=None):
+    def __init__(self, parent=None, mapdir=None, custom=False):
+        self.parent = parent
         self.tiles = []
         #pressure plate goals
         self.goals = []
@@ -38,12 +44,13 @@ class Map():
             self.loadMap(mapdir, custom)
 
     def loadMap(self, mapdir, custom):
+        print(self.parent.config.settings["mapY"], self.parent.config.settings["mapX"])
         with open("levels/" + mapdir + "/map1.txt", "r") as f, open("levels/" + mapdir + "/map2.txt", "r") as g:
-            for i in range(0, 28): 
+            for i in range(0, int(self.parent.config.settings["mapY"])): 
                 line = f.readline()
                 line2 = g.readline()
                 tileLine = []
-                for k in range(0, 28): 
+                for k in range(0, int(self.parent.config.settings["mapX"])): 
                     letter = line[k]
                     letter2 = line2[k]
                     if (ord(letter) >= 65 and ord(letter) <= 80):
@@ -51,7 +58,7 @@ class Map():
                     elif (ord(letter) >= 81 and ord(letter) <= 85):
                         tile = Tile(self, "Empty", k, i, varient=ord(letter)-65)
                     elif (letter == ' '): 
-                        tile = Tile("Other", k, i)
+                        tile = Tile(self, "Other", k, i)
                     tileLine.append(tile)
                 self.tiles.append(tileLine)
 
