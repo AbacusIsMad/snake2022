@@ -133,22 +133,22 @@ class Game:
         text = font.render('Score: ' + str(self.snake.score), True, color)
         screen.blit(text, (0, 0))
 
-    def blit_map(self, screen): 
+    def blit_map(self, rect_len, screen): 
         for i in range(0, 28):
             for k in range(0, 28):
                 tile = self.map.tiles[k][i]
                 if tile.type == "Other":
                     pass
                 elif tile.type == "Solid":
-                    screen.blit(self.tile_img, (i*15, k*15))
+                    screen.blit(self.tile_img, (i*rect_len, k*rect_len))
                     for j in range(4):
                         if tile.wrap_plate & (1 << j):
-                            screen.blit(pygame.transform.rotate(self.wrap_img, j*90), (i*15, k*15))
+                            screen.blit(pygame.transform.rotate(self.wrap_img, j*90), (i*rect_len, k*rect_len))
                     for j in range(4):
                         if tile.pad_clone & (1 << j):
-                            screen.blit(pygame.transform.rotate(self.pad_img, j*90), (i*15, k*15))
+                            screen.blit(pygame.transform.rotate(self.pad_img, j*90), (i*rect_len, k*rect_len))
                 elif tile.type == "Empty": 
-                    screen.blit(self.space_img, (i*15, k*15))
+                    screen.blit(self.space_img, (i*rect_len, k*rect_len))
                 else:
                     pass
         

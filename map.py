@@ -2,8 +2,8 @@ class Tile():
     def __init__(self, parent, Type, x, y, varient=0, varient2=0):
         self.type = Type
         self.true_empty = False
-        self.wrap_plate = None
-        self.pad_clone = None
+        self.wrap_plate = 0
+        self.pad_clone = 0
         self.movable = False
         self.x = x
         self.y = y
@@ -16,6 +16,17 @@ class Tile():
             self.wrap_plate = varient
             self.pad_clone = varient2
 
+        #pressure plates and clone blocks on this end. 17, 18, 19, 20
+        if self.type == "Empty":
+            if varient == 18:
+                self.wrap_plate = 1
+                parent.goals.append([self.x, self.y])
+            elif varient == 19:
+                self.wrap_plate = 2
+                parent.alt_goals.append([self.x, self.y])
+            elif varient == 20:
+                self.pad_clone = 1
+            
 class Map():
     def __init__(self, mapdir=None, custom=False, config=None):
         self.tiles = []
