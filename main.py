@@ -144,22 +144,23 @@ def game_loop(player, fps=10):
             #build restart screen
             button('Quit', 270, 240, 80, 40, red, bright_red, quitgame)
             button('Restart', 80, 240, 80, 40, green, bright_green, quitgame)
-            pygame.display.flip()
+            pygame.display.update()
             fpsClock.tick(30)
         else:
-            result = game.do_move(move, game.strawberry)
+            #result = game.do_move(move, game.strawberry)
+            result = game.do_move(move)
             if result == -1:
                 break
 
 
             #game.blit_map(screen, "map.txt")
-            #the result carries the last place thte 
+            #the result carries the last  place thte 
             game.snake.blit(rect_len, screen, result)
             #game.features.blit()
             game.strawberry.blit(screen)
             game.blit_score(white, screen)
 
-            pygame.display.flip()
+            pygame.display.update()
             
             pygame.time.delay(1000//fps)
             #fpsClock.tick(fps)

@@ -3,8 +3,8 @@ import pygame
 
 
 class Snake:
-    def __init__(self):
-        
+    def __init__(self, parent):
+        self.game = parent
         self.image_up = pygame.image.load('images/head_up.bmp')
 
         self.tail_up = pygame.image.load('images/tail_up.bmp')
@@ -101,7 +101,7 @@ class Snake:
             screen.blit(self.image_space, (last[0]*rect_len, last[1]*rect_len))
         self.blit_head(self.segmentd[0], self.segments[1], screen, rect_len)
         
-    def update(self, straw):
+    def update(self):
         pos = [0, 0]
         if self.facing == 'right':
             pos[0] += 1
@@ -121,8 +121,8 @@ class Snake:
         self.segmentd.insert(0, headpos)
 
         #check for strawberry at head pos now.
-        if self.segments[0] == straw.position:
-            straw.random_pos(self)
+        if self.segments[0] == self.game.strawberry.position:
+            self.game.strawberry.random_pos(self)
             reward = 1
             self.score += 1
             last_tail = [-1, -1]

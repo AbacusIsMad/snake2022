@@ -55,7 +55,7 @@ class Strawberry():
 class Game:
     def __init__(self):
         self.settings = Settings()
-        self.snake = Snake()
+        self.snake = Snake(self)
         self.strawberry = Strawberry(self.settings)
         self.move_dict = {0 : 'up',
                           1 : 'down',
@@ -63,6 +63,8 @@ class Game:
                           3 : 'right'}   
         self.tile_img = pygame.image.load('images/tile.bmp')
         self.space_img = pygame.image.load('images/space.bmp')
+        self.wrap_img = pygame.image.load('images/wrap.bmp')
+        self.pad_img = pygame.image.load('images/pad.bmp')
 
     def restart_game(self, mapdir): 
         #set config. This has a bunch of options that control stuff.
@@ -92,7 +94,7 @@ class Game:
         direction_dict = {value : key for key,value in self.move_dict.items()}
         return direction_dict[direction]
         
-    def do_move(self, move, pos):
+    def do_move(self, move):
         move_dict = self.move_dict
 
         change_direction = move_dict[move]
@@ -107,7 +109,7 @@ class Game:
         if change_direction == 'down' and not self.snake.facing == 'up':
             self.snake.facing = change_direction
 
-        state, replace = self.snake.update(pos)
+        state, replace = self.snake.update()
 
         if state == -1:
             return -1
@@ -139,6 +141,12 @@ class Game:
                     pass
                 elif tile.type == "Solid":
                     screen.blit(self.tile_img, (i*15, k*15))
+                    for j in range(4):
+                        if tile.wrap_plate & (1 << j):
+                            screen.blit(pygame.transform.rotate(self.wrap_img, j*90), (i*15, k*15))
+                    for j in range(4):
+                        if tile.pad_clone & (1 << j):
+                            screen.blit(pygame.transform.rotate(self.pad_img, j*90), (i*15, k*15))
                 elif tile.type == "Empty": 
                     screen.blit(self.space_img, (i*15, k*15))
                 else:
