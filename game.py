@@ -109,7 +109,7 @@ class Game:
         if change_direction == 'down' and not self.snake.facing == 'up':
             self.snake.facing = change_direction
 
-        state, replace = self.snake.update()
+        state, replace = self.snake.update(self.map.tiles)
 
         if state == -1:
             return -1

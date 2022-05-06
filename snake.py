@@ -1,7 +1,6 @@
 import pygame
 
 
-
 class Snake:
     def __init__(self, parent):
         self.game = parent
@@ -101,7 +100,7 @@ class Snake:
             screen.blit(self.image_space, (last[0]*rect_len, last[1]*rect_len))
         self.blit_head(self.segmentd[0], self.segments[1], screen, rect_len)
         
-    def update(self):
+    def update(self, tiles):
         pos = [0, 0]
         if self.facing == 'right':
             pos[0] += 1
@@ -117,6 +116,19 @@ class Snake:
         #check for body collision, if yes the snake doesnt move forward.
         if headpos in self.segmentd[:-1]:
             return -1, []
+        if tiles[headpos[1]][headpos[0]].type == 'Solid':
+            if tiles[headpos[1]][headpos[0]].wrap_plate == 0:
+                return -1, []
+            elif tiles[headpos[1]][headpos[0]].wrap_plate == 1:
+                start = headpos[0]
+                end = 0
+                for index, x in enumerate(tiles[headpos[1]]):
+                    if x.wrap_plate == 4:
+                        end = index
+                        if end > start:
+                            break
+                headpos[0] = headpos[0] + (end - start - 1)
+            #return -1, []
         self.segments.insert(0, headpos)
         self.segmentd.insert(0, headpos)
 
