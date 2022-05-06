@@ -114,7 +114,7 @@ def initial_interface():
 def game_loop(player, fps=10):
     game.restart_game("1-1")
     screen.fill(white)
-    game.blit_map(screen)
+    game.blit_map(rect_len, screen)
     
     #whether the game is stopped
     stop = False
