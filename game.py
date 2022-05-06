@@ -102,7 +102,7 @@ class Game:
 
         change_direction = move_dict[move]
         #this translates the number back to the string again. Kinda redundant tbh.
-        
+        '''
         if change_direction == 'right' and not self.snake.facing == 'left':
             self.snake.facing = change_direction
         if change_direction == 'left' and not self.snake.facing == 'right':
@@ -111,7 +111,15 @@ class Game:
             self.snake.facing = change_direction
         if change_direction == 'down' and not self.snake.facing == 'up':
             self.snake.facing = change_direction
-
+        '''
+        if change_direction == 'right' and not self.snake.segments[1] == [1, 0]:
+            self.snake.facing = change_direction
+        if change_direction == 'left' and not self.snake.segments[1] == [-1, 0]:
+            self.snake.facing = change_direction
+        if change_direction == 'up' and not self.snake.segments[1] == [0, -1]:
+            self.snake.facing = change_direction
+        if change_direction == 'down' and not self.snake.segments[1] == [0, 1]:
+            self.snake.facing = change_direction
         state, replace = self.snake.update()
 
         if state == -1:
