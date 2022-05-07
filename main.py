@@ -124,9 +124,9 @@ def initial_interface():
         screen.fill(white)
         message_display('Gluttonous', game.settings.width / 2 * 15, game.settings.height / 4 * 15)
 
-        restart = button('Go!', 80, 240, 80, 40, green, bright_green, level_select)
-        if not restart:
-            button('Quit', 270, 240, 80, 40, red, bright_red, quitgame)
+        button('Go!', 80, 240, 80, 40, green, bright_green, level_select)
+
+        button('Quit', 270, 240, 80, 40, red, bright_red, quitgame)
 
         pygame.display.update()
         pygame.time.Clock().tick(15)
@@ -145,6 +145,10 @@ def level_select():
                 pygame.quit()
         screen.fill(black)
         message_display('Select Level', game.settings.width / 2 * 15, game.settings.height / 4 * 15, color=white)
+
+        home = button('Home', 100, 200, 80, 40, red, bright_red, yes)
+        if home:
+            return 0
 
         temp = button('1-1', 20, 20, 80, 40, green, bright_green, game_loop, "1-1")
         if isinstance(temp, list):
