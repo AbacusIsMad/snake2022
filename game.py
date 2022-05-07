@@ -43,7 +43,7 @@ class Strawberry():
         #self.position[0] = random.randint(9, 19)
         #self.position[1] = random.randint(9, 19)
         #yo recursion?
-        if (self.position in self.parent.snake.segmentd[:-1]) or not self.parent.map.tiles[self.position[0]][self.position[1]].true_empty:
+        if (self.position in self.parent.snake.segmentd[:-1]) or not self.parent.map.tiles[self.position[1]][self.position[0]].true_empty:
             self.random_pos()
 
     def blit(self, screen, x0, y0):
@@ -147,8 +147,8 @@ class Game:
     def blit_map(self, rect_len, screen): 
         x0 = int(self.config.settings["xOffset"])
         y0 = int(self.config.settings["yOffset"])
-        for i in range(0, int(self.config.settings["mapY"])):
-            for k in range(0, int(self.config.settings["mapX"])):
+        for i in range(0, int(self.config.settings["mapX"])):
+            for k in range(0, int(self.config.settings["mapY"])):
                 tile = self.map.tiles[k][i]
                 if tile.type == "Other":
                     pass

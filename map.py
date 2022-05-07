@@ -27,6 +27,7 @@ class Tile():
                 self.parent.alt_goals.append([self.x, self.y])
             elif varient == 20:
                 self.pad_clone = 1
+                self.parent.clones.append([self.x, self.y])
 
     def __repr__(self):
         return("{}, {}".format(self.x, self.y))
@@ -35,16 +36,17 @@ class Tile():
 class Map():
     def __init__(self, parent=None, mapdir=None, custom=False):
         self.parent = parent
+        print(self.parent.config.settings)
         self.tiles = []
         #pressure plate goals
         self.goals = []
         self.alt_goals = []
+        self.clones = []
         #can create an empty instance to write to!
         if mapdir is not None:
             self.loadMap(mapdir, custom)
 
     def loadMap(self, mapdir, custom):
-        print(self.parent.config.settings["mapY"], self.parent.config.settings["mapX"])
         with open("levels/" + mapdir + "/map1.txt", "r") as f, open("levels/" + mapdir + "/map2.txt", "r") as g:
             for i in range(0, int(self.parent.config.settings["mapY"])): 
                 line = f.readline()

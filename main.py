@@ -46,6 +46,8 @@ pygame.display.set_caption('Gluttonous')
 #pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 crash_sound = pygame.mixer.Sound('./sound/crash.wav')
 
+def yes():
+    return True
 
 def text_objects(text, font, color=black):
     text_surface = font.render(text, True, color)
@@ -67,9 +69,9 @@ def button(msg, x, y, w, h, inactive_color, active_color, action=None, parameter
         pygame.draw.rect(screen, active_color, (x, y, w, h))
         if click[0] == 1 and action != None:
             if parameter != None:
-                action(parameter)
+                return action(parameter)
             else:
-                action()
+                return action()
     else:
         pygame.draw.rect(screen, inactive_color, (x, y, w, h))
 
@@ -94,8 +96,12 @@ def crash():
 
 def initial_interface():
     intro = True
+    restart = False
+    '''
     while intro:
-
+        if restart:
+            restart = game_loop("1-1")
+            continue
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -103,16 +109,58 @@ def initial_interface():
         screen.fill(white)
         message_display('Gluttonous', game.settings.width / 2 * 15, game.settings.height / 4 * 15)
 
-        button('Go!', 80, 240, 80, 40, green, bright_green, game_loop, 'human')
-        button('Quit', 270, 240, 80, 40, red, bright_red, quitgame)
+        restart = button('Go!', 80, 240, 80, 40, green, bright_green, game_loop, "1-1")
+        if not restart:
+            button('Quit', 270, 240, 80, 40, red, bright_red, quitgame)
 
+        pygame.display.update()
+        pygame.time.Clock().tick(15)
+    '''
+    while intro:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+
+        screen.fill(white)
+        message_display('Gluttonous', game.settings.width / 2 * 15, game.settings.height / 4 * 15)
+
+        restart = button('Go!', 80, 240, 80, 40, green, bright_green, level_select)
+        if not restart:
+            button('Quit', 270, 240, 80, 40, red, bright_red, quitgame)
+
+        pygame.display.update()
+        pygame.time.Clock().tick(15)
+
+def level_select():
+    intro = True
+    restart = [0, ""]
+    while intro:
+        if restart[0]:
+            break
+        if restart[1]:
+            restart = game_loop(restart[1])
+            continue
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+        screen.fill(black)
+        message_display('Select Level', game.settings.width / 2 * 15, game.settings.height / 4 * 15, color=white)
+
+        temp = button('1-1', 20, 20, 80, 40, green, bright_green, game_loop, "1-1")
+        if isinstance(temp, list):
+            restart = temp
+        temp = button('1-2', 120, 20, 80, 40, green, bright_green, game_loop, "1-2")
+        if isinstance(temp, list):
+            restart = temp
+        if restart[0]:
+            break
         pygame.display.update()
         pygame.time.Clock().tick(15)
 
 
 #def game_loop(player, fps=10):
-def game_loop(player, fps=10):
-    game.restart_game("1-1")
+def game_loop(level):
+    game.restart_game(level)
     screen.fill(black)
     game.blit_map(rect_len, screen)
     
@@ -140,14 +188,17 @@ def game_loop(player, fps=10):
         #control speed here!
         fps = 5
         # fps = 10
+        restart = [0, ""]
         if stop:
             #build restart screen
-            button('Quit', 270, 240, 80, 40, red, bright_red, quitgame)
-            button('Restart', 80, 240, 80, 40, green, bright_green, quitgame)
+            #xOffset, yOffset, width, height
+            restart[1] = button('Restart', 270, 20, 80, 40, yellow, bright_yellow, yes) * level
+            restart[0] += button('Home', 20, 20, 80, 40, green, bright_green, yes)
+            if restart[0] or restart[1]:
+                break
             pygame.display.update()
             fpsClock.tick(30)
         else:
-            #result = game.do_move(move, game.strawberry)
             result = game.do_move(move)
             if result == -1:
                 break
@@ -158,14 +209,18 @@ def game_loop(player, fps=10):
             game.snake.blit(rect_len, screen, result)
             #game.features.blit()
             game.strawberry.blit(screen, int(game.config.settings["xOffset"]), int(game.config.settings["yOffset"]))
+            #covers up the score and buttons.
+            pygame.draw.rect(screen, black, pygame.Rect(0, 0, 400, 80))
             game.blit_score(white, screen)
 
             pygame.display.update()
             
             pygame.time.delay(1000//fps)
             #fpsClock.tick(fps)
-
-    crash()
+    if not (restart[0] or restart[1]):
+        crash()
+        restart[1] = level
+    return restart
 
 def options():
     for event in pygame.event.get():
