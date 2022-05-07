@@ -52,8 +52,12 @@ class Strawberry():
    
     def initialize(self):
         self.position = [15, 10]
+    
+    def playSound(self):
+        eat_sound = pygame.mixer.Sound('./sound/eat.wav')
+        pygame.mixer.Sound.play(eat_sound)
+
       
-        
 class Game:
     def __init__(self):
         self.settings = Settings()
@@ -121,7 +125,7 @@ class Game:
         if change_direction == 'down' and not self.snake.segments[1] == [0, 1]:
             self.snake.facing = change_direction
         state, replace = self.snake.update()
-
+    
         if state == -1:
             return -1
         if replace and replace != [-1, -1]:
