@@ -9,6 +9,7 @@ import pygame
 import time
 from pygame.locals import KEYDOWN, K_RIGHT, K_LEFT, K_UP, K_DOWN, K_ESCAPE
 from pygame.locals import QUIT
+import threading
 
 from game import Game
 
@@ -42,7 +43,7 @@ screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height
 pygame.display.set_caption('Gluttonous')
 
 #osx problem?
-# pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+#pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 crash_sound = pygame.mixer.Sound('./sound/crash.wav')
 
 
@@ -72,11 +73,13 @@ def button(msg, x, y, w, h, inactive_color, active_color, action=None, parameter
     else:
         pygame.draw.rect(screen, inactive_color, (x, y, w, h))
 
+    #placeholder
+    pressed = 0
     smallText = pygame.font.SysFont('comicsansms', 20)
     TextSurf, TextRect = text_objects(msg, smallText)
     TextRect.center = (x + (w / 2), y + (h / 2))
     screen.blit(TextSurf, TextRect)
-
+    return pressed
 
 def quitgame():
     pygame.quit()
@@ -109,58 +112,76 @@ def initial_interface():
 
 #def game_loop(player, fps=10):
 def game_loop(player, fps=10):
-    game.restart_game()
-
-    while not game.game_end():
+    game.restart_game("1-1")
+    screen.fill(black)
+    game.blit_map(rect_len, screen)
+    
+    #whether the game is stopped
+    stop = False
+    #if the snake has crashed or lost
+    cont = 1
+    #I might not use this
+    convert = False
+    #always blit once before doing stuff, and sleep for a little bit! This allows for some time preparation.
+    game.snake.blit(rect_len, screen)
+    #game.features.blit
+    game.strawberry.blit(screen, int(game.config.settings["xOffset"]), int(game.config.settings["yOffset"]))
+    pygame.display.update()
+    pygame.time.delay(1000)
+    print("done")
+    while cont:
 
         pygame.event.pump()
-
-        move = human_move()
+        
+        
+        move, escape = human_move()
+        
+        stop = stop ^ escape
         #control speed here!
         fps = 5
         # fps = 10
-
-        game.do_move(move)
-        #give me a second, in game.py
         if stop:
             #build restart screen
             button('Quit', 270, 240, 80, 40, red, bright_red, quitgame)
             button('Restart', 80, 240, 80, 40, green, bright_green, quitgame)
-            pygame.display.flip()
+            pygame.display.update()
             fpsClock.tick(30)
         else:
-            if game.do_move(move, game.strawberry) == -1:
-                cont = 0
+            #result = game.do_move(move, game.strawberry)
+            result = game.do_move(move)
+            if result == -1:
+                break
 
-            screen.fill(white)
-            game.blit_map(screen, "map.txt")
-            game.snake.blit(rect_len, screen)
-            game.strawberry.blit(screen)
+
+            #game.blit_map(screen, "map.txt")
+            #the result carries the last  place thte 
+            game.snake.blit(rect_len, screen, result)
+            #game.features.blit()
+            game.strawberry.blit(screen, int(game.config.settings["xOffset"]), int(game.config.settings["yOffset"]))
             game.blit_score(white, screen)
-            # game.blit_border(screen)
 
-
-        screen.fill(black)
-
-        game.snake.blit(rect_len, screen)
-        game.strawberry.blit(screen)
-        game.blit_score(white, screen)
-        game.blit_border(screen)
-
-        pygame.display.flip()
-
-        fpsClock.tick(fps)
+            pygame.display.update()
+            
+            pygame.time.delay(1000//fps)
+            #fpsClock.tick(fps)
 
     crash()
+
+def options():
+    for event in pygame.event.get():
+        if event.type == KEYDOWN and event.key == K_ESCAPE:
+            return True
+    return False
+
 
 
 def human_move():
     direction = snake.facing
+    escape = False
 
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
-
         elif event.type == KEYDOWN:
             if event.key == K_RIGHT or event.key == ord('d'):
                 direction = 'right'
@@ -171,13 +192,14 @@ def human_move():
             if event.key == K_DOWN or event.key == ord('s'):
                 direction = 'down'
             if event.key == K_ESCAPE:
-                pygame.event.post(pygame.event.Event(QUIT))
+                #pygame.event.post(pygame.event.Event(QUIT))
+                escape = True
 
     move = game.direction_to_int(direction)
     #0 - 3 here
     #print("move: ", move)
     # print(game.snake.segments)
-    return move
+    return move, escape
 
 
 if __name__ == "__main__":
