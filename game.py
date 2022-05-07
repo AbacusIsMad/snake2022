@@ -76,7 +76,6 @@ class Snake:
             self.blit_body(position[0]*rect_len, position[1]*rect_len, screen)
         self.blit_tail(self.segments[-1][0]*rect_len, self.segments[-1][1]*rect_len, screen)                
             
-    
     def update(self):
         if self.facing == 'right':
             self.position[0] += 1
