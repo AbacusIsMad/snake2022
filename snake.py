@@ -4,21 +4,21 @@ import pygame
 class Snake:
     def __init__(self, parent):
         self.game = parent
-        self.image_up = pygame.image.load('images/head_up.bmp')
+        self.image_up = pygame.image.load('./images/head_up.bmp')
 
-        self.tail_up = pygame.image.load('images/tail_up.bmp')
+        self.tail_up = pygame.image.load('./images/tail_up.bmp')
         
-        self.image_body = pygame.image.load('images/body.bmp')
-        self.image_body_s = pygame.image.load('images/body_s.bmp')
-        self.image_body_c = pygame.image.load('images/body_c.bmp')
-        self.image_space = pygame.image.load('images/space.bmp')
+        self.image_body = pygame.image.load('./images/body.bmp')
+        self.image_body_s = pygame.image.load('./images/body_s.bmp')
+        self.image_body_c = pygame.image.load('./images/body_c.bmp')
+        self.image_space = pygame.image.load('./images/space.bmp')
         
         #self.facing = "right"
         self.initialize()
 
     def initialize(self, mapdir=None):
         if mapdir is not None:
-            with open("levels/" + mapdir + "/snake.txt", "r") as f:
+            with open("./levels/" + mapdir + "/snake.txt", "r") as f:
                 t = f.readlines()
             self.segments = []
             self.segmentd = []

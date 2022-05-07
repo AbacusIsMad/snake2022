@@ -30,12 +30,12 @@ class Strawberry():
         self.parent = parent
 
         self.style = str(random.randint(1, 8))
-        self.image = pygame.image.load('images/food' + str(self.style) + '.bmp')        
+        self.image = pygame.image.load('./images/food' + str(self.style) + '.bmp')        
         self.initialize()
         
     def random_pos(self):
         self.style = str(random.randint(1, 8))
-        self.image = pygame.image.load('images/food' + str(self.style) + '.bmp')                
+        self.image = pygame.image.load('./images/food' + str(self.style) + '.bmp')                
         print("called!")
         self.position[0] = random.randint(0, int(self.parent.config.settings["mapX"])-1)
         self.position[1] = random.randint(0, int(self.parent.config.settings["mapY"])-1)
@@ -63,10 +63,10 @@ class Game:
                           1 : 'down',
                           2 : 'left',
                           3 : 'right'}   
-        self.tile_img = pygame.image.load('images/tile.bmp')
-        self.space_img = pygame.image.load('images/space.bmp')
-        self.wrap_img = pygame.image.load('images/wrap.bmp')
-        self.pad_img = pygame.image.load('images/pad.bmp')
+        self.tile_img = pygame.image.load('./images/tile.bmp')
+        self.space_img = pygame.image.load('./images/space.bmp')
+        self.wrap_img = pygame.image.load('./images/wrap.bmp')
+        self.pad_img = pygame.image.load('./images/pad.bmp')
 
     def restart_game(self, mapdir): 
         #set config. This has a bunch of options that control stuff.

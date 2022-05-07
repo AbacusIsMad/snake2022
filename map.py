@@ -47,7 +47,7 @@ class Map():
             self.loadMap(mapdir, custom)
 
     def loadMap(self, mapdir, custom):
-        with open("levels/" + mapdir + "/map1.txt", "r") as f, open("levels/" + mapdir + "/map2.txt", "r") as g:
+        with open("./levels/" + mapdir + "/map1.txt", "r") as f, open("./levels/" + mapdir + "/map2.txt", "r") as g:
             for i in range(0, int(self.parent.config.settings["mapY"])): 
                 line = f.readline()
                 line2 = g.readline()

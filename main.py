@@ -4,13 +4,22 @@ Created on Wed May 16 15:22:20 2018 bruh are you serious
 
 @author: zou
 """
-
 import pygame
 import time
+import threading
+import sys
+import os
 from pygame.locals import KEYDOWN, K_RIGHT, K_LEFT, K_UP, K_DOWN, K_ESCAPE
 from pygame.locals import QUIT
-import threading
 
+def base_path(path):
+    try:
+        basedir = sys._MEIPASS
+    except Exception:
+        basedir = os.path.abspath(".")
+    return os.path.join(basedir, path)
+
+os.chdir(base_path(''))
 from game import Game
 
 black = pygame.Color(0, 0, 0)
@@ -85,7 +94,8 @@ def button(msg, x, y, w, h, inactive_color, active_color, action=None, parameter
 
 def quitgame():
     pygame.quit()
-    quit()
+    #quit()
+    sys.exit()
 
 
 def crash():
@@ -262,4 +272,6 @@ def human_move():
 
 
 if __name__ == "__main__":
+    print(base_path(''))
+    #os.chdir(base_path(''))
     initial_interface()
