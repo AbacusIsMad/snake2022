@@ -1,4 +1,4 @@
-from game import Snake
+from game import Snake, Strawberry, Settings
 import pygame, random, unittest 
 
 class TestSnakeMethods(unittest.TestCase): 
@@ -29,6 +29,24 @@ class TestSnakeMethods(unittest.TestCase):
         snake.facing = "up"
         snake.update()
         self.assertEqual(snake.position, [6, 6], "Snake did not move upwards a position, update test failed")
+
+class TestSettings(unittest.TestCase): 
+
+    def test_initialisation(self): 
+        settings = Settings()
+        self.assertEqual(settings.width, 28, "Width setting not initialised correctly")
+        self.assertEqual(settings.height, 28, "Height setting not initialised correctly")
+        self.assertEqual(settings.rect_len, 15, "Rectangle length setting not initialised correctly")
+
+class TestStrawberryMethods(unittest.TestCase):
+
+    def test_initialisation(self):
+        settings = Settings()
+        straw = Strawberry(settings)
+        self.assertEqual(straw.settings, settings, "Settings not initialised correctly")
+        self.assertEqual(straw.position, [15, 10], "Position was not set correctly for the food item")
+
+    
 
 if __name__ == "__main__":
     unittest.main()
