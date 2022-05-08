@@ -160,10 +160,16 @@ def level_select():
         if home:
             return 0
 
-        temp = button('1-1', 20, 20, 80, 40, green, bright_green, game_loop, "1-1")
+        temp = button('1-1', 20, 20, 40, 40, green, bright_green, game_loop, "1-1")
         if isinstance(temp, list):
             restart = temp
-        temp = button('1-2', 120, 20, 80, 40, green, bright_green, game_loop, "1-2")
+        temp = button('1-2', 80, 20, 40, 40, green, bright_green, game_loop, "1-2")
+        if isinstance(temp, list):
+            restart = temp
+        temp = button('1-3', 140, 20, 40, 40, green, bright_green, game_loop, "1-3")
+        if isinstance(temp, list):
+            restart = temp
+        temp = button('1-4', 200, 20, 40, 40, green, bright_green, game_loop, "1-4")
         if isinstance(temp, list):
             restart = temp
         if restart[0]:
@@ -178,6 +184,7 @@ def game_loop(level):
     screen.fill(black)
     game.blit_map(rect_len, screen)
     
+    space_img = pygame.image.load('./images/space.bmp')
     #whether the game is stopped
     stop = False
     #if the snake has crashed or lost
@@ -188,6 +195,8 @@ def game_loop(level):
     game.snake.blit(rect_len, screen)
     #game.features.blit
     game.strawberry.blit(screen, int(game.config.settings["xOffset"]), int(game.config.settings["yOffset"]))
+    game.blit_features(rect_len, screen)
+    game.blit_score(white, screen)
     pygame.display.update()
     pygame.time.delay(1000)
     print("done")
@@ -213,15 +222,29 @@ def game_loop(level):
             pygame.display.update()
             fpsClock.tick(30)
         else:
-            result = game.do_move(move)
-            if result == -1:
+            state, state1, result, result1 = game.do_move(move)
+            print(state, state1, result, result1)
+            if state < 0 or state1 < 0:
                 break
 
 
-            #game.blit_map(screen, "map.txt")
-            #the result carries the last  place thte 
-            game.snake.blit(rect_len, screen, result)
-            #game.features.blit()
+            #blit everything with spaces where the snake is so clones don't affect each other.
+            x0 = int(game.config.settings["xOffset"])
+            y0 = int(game.config.settings["yOffset"])
+            for coord in game.snake.segmentd:
+                screen.blit(space_img, ((coord[0] + x0)*rect_len, (coord[1] + y0)*rect_len))
+            if game.snake_clone.init:
+                for coord in game.snake_clone.segmentd:
+                    screen.blit(space_img, ((coord[0] + x0)*rect_len, (coord[1] + y0)*rect_len))
+            if result:
+                screen.blit(space_img, ((result[0] + x0)*rect_len, (result[1] + y0)*rect_len))
+            if result1:
+                screen.blit(space_img, ((result1[0] + x0)*rect_len, (result1[1] + y0)*rect_len))
+
+            game.snake.blit(rect_len, screen)
+            if game.snake_clone.init:
+                game.snake_clone.blit(rect_len, screen)
+            game.blit_features(rect_len, screen)
             game.strawberry.blit(screen, int(game.config.settings["xOffset"]), int(game.config.settings["yOffset"]))
             #covers up the score and buttons.
             pygame.draw.rect(screen, black, pygame.Rect(0, 0, 400, 80))

@@ -63,6 +63,7 @@ class Map():
                         tile = Tile(self, "Other", k, i)
                     tileLine.append(tile)
                 self.tiles.append(tileLine)
+        print(self.goals, self.alt_goals, self.clones)
 
     def readMap(self):
         for i in range(0, 28): 
