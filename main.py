@@ -70,14 +70,6 @@ def message_display(text, x, y, color=black):
     screen.blit(text_surf, text_rect)
     pygame.display.update()
 
-def smallmessage_display(text, x, y, color=black):
-    small_text = pygame.font.SysFont('comicsansms', 20)
-    text_surf, text_rect = text_objects(text, small_text, color)
-    text_rect.center = (x, y)
-    screen.blit(text_surf, text_rect)
-    pygame.display.update()
-
-
 def button(msg, x, y, w, h, inactive_color, active_color, action=None, parameter=None):
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
@@ -199,7 +191,7 @@ def display_instructions():
             if event.type == pygame.QUIT:
                 pygame.quit()
         screen.fill(black)
-        smallmessage_display("Welcome to Gluttonous!", game.settings.width/2 * 15, game.settings.height / 4 *15, color=white)
+        message_display("Gluttonous!", game.settings.width/2 * 15, game.settings.height / 4 *15, color=white)
         home = button('Home', 100, 200, 80, 40, red, bright_red, yes)
 
         if home: 
