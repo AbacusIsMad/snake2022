@@ -18,10 +18,11 @@ class Snake:
 
     def reset_img_source(self):
         clone = self.clone
-        self.image_up = pygame.transform.scale(pygame.image.load('./images/' + 'clone'*clone + 'head_up.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
-        self.tail_up = pygame.transform.scale(pygame.image.load('./images/' + 'clone'*clone + 'tail_up.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
-        self.image_body_s = pygame.transform.scale(pygame.image.load('./images/' + 'clone'*clone + 'body_s.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
-        self.image_body_c = pygame.transform.scale(pygame.image.load('./images/' + 'clone'*clone + 'body_c.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
+        path = "./styles/" + self.parent.style + "/images/"
+        self.image_up = pygame.transform.scale(pygame.image.load(path + 'clone'*clone + 'head_up.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
+        self.tail_up = pygame.transform.scale(pygame.image.load(path + 'clone'*clone + 'tail_up.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
+        self.image_body_s = pygame.transform.scale(pygame.image.load(path + 'clone'*clone + 'body_s.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
+        self.image_body_c = pygame.transform.scale(pygame.image.load(path + 'clone'*clone + 'body_c.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
 
         self.image_space = self.parent.space_img
 

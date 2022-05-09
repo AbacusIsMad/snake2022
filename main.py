@@ -81,7 +81,7 @@ when level quit, unload on both levels
 ALWAYS PICKLE IT!
 '''
 
-game = Game()
+game = Game(game_data)
 rect_len = game.settings.rect_len
 snake = game.snake
 pygame.init()
@@ -157,18 +157,45 @@ def initial_interface(invalid, directory):
         button('Go!', 80, 240, 80, 40, green, bright_green, level_select)
 
         if not invalid:
-            button('Settings', 175, 240, 80, 40, yellow, bright_yello, settings)
+            button('Settings', 175, 240, 80, 40, yellow, bright_yellow, settings, directory)
         else:
-            burron('Nope lol', 175, 240, 80, 40, yellow, bright_yello, yes)
+            button('Nope lol', 175, 240, 80, 40, yellow, bright_yellow, yes)
 
         button('Quit', 270, 240, 80, 40, red, bright_red, quitgame)
 
         pygame.display.update()
         pygame.time.Clock().tick(15)
 
-def settings():
+def settings(directory):
+    with open(directory + "/style.txt", 'r') as f:
+        style = f.read()
     while True:
-        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+
+        screen.fill(black)
+
+        if button('Home', 100, 200, 80, 40, red, bright_red, yes):
+            break
+
+        if style == '0':
+            button('retro', 20, 20, 40, 40, green, green, yes)
+        elif button('retro', 20, 20, 40, 40, yellow, bright_yellow, yes):
+            with open(directory + "/style.txt", 'w') as f:
+                f.write('0')
+                style = '0'
+
+        if style == 'cringe':
+            button('goofy', 80, 20, 40, 40, green, green, yes)
+        elif button('goofy', 80, 20, 40, 40, yellow, bright_yellow, yes):
+            with open(directory + "/style.txt", "w") as f:
+                f.write('cringe')
+                style = 'cringe'
+
+
+        pygame.display.update()
+        pygame.time.Clock().tick(15)
 
 
 def level_select():
@@ -210,6 +237,9 @@ def level_select():
 
 #def game_loop(player, fps=10):
 def game_loop(level):
+    with open(os.path.join(game.src, "style.txt"), 'r') as f:
+        game.style = f.read()
+
     game.restart_game(level)
     screen.fill(black)
     game.blit_map(rect_len, screen)

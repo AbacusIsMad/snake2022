@@ -30,12 +30,14 @@ class Strawberry():
         self.parent = parent
 
         self.style = str(random.randint(1, 8))
-        self.image = pygame.image.load('./images/food' + str(self.style) + '.bmp')        
+        path = "./styles/" + self.parent.style + "/images/"
+        self.image = pygame.image.load(path + 'food' + str(self.style) + '.bmp')        
         self.initialize()
         
     def random_pos(self):
         self.style = str(random.randint(1, 8))
-        self.image = pygame.image.load('./images/food' + str(self.style) + '.bmp')                
+        path = "./styles/" + self.parent.style + "/images/"
+        self.image = pygame.image.load(path + 'food' + str(self.style) + '.bmp')                
         print("called!")
         self.position[0] = random.randint(0, int(self.parent.config.settings["mapX"])-1)
         self.position[1] = random.randint(0, int(self.parent.config.settings["mapY"])-1)
@@ -55,7 +57,9 @@ class Strawberry():
       
         
 class Game:
-    def __init__(self):
+    def __init__(self, game_data):
+        self.src = game_data
+        self.style = '0'
         self.settings = Settings()
         self.reset_img_source()
         self.snake = Snake(self)
@@ -66,20 +70,23 @@ class Game:
                           2 : 'left',
                           3 : 'right'}
 
-    def reset_img_source(self):   
-        self.tile_img = pygame.transform.scale(pygame.image.load('./images/tile.bmp'), (self.settings.rect_len, self.settings.rect_len))
-        self.space_img = pygame.transform.scale(pygame.image.load('./images/space.bmp'), (self.settings.rect_len, self.settings.rect_len))
-        self.wrap_img = pygame.transform.scale(pygame.image.load('./images/wrap.bmp'), (self.settings.rect_len, self.settings.rect_len))
-        self.pad_img = pygame.transform.scale(pygame.image.load('./images/pad.bmp'), (self.settings.rect_len, self.settings.rect_len))
-        self.plate_img = pygame.transform.scale(pygame.image.load('./images/plate.bmp'), (self.settings.rect_len, self.settings.rect_len))
-        self.platea_img = pygame.transform.scale(pygame.image.load('./images/platea.bmp'), (self.settings.rect_len, self.settings.rect_len))
-        self.plate_alt_img = pygame.transform.scale(pygame.image.load('./images/plate_alt.bmp'), (self.settings.rect_len, self.settings.rect_len))
-        self.platea_alt_img = pygame.transform.scale(pygame.image.load('./images/platea_alt.bmp'), (self.settings.rect_len, self.settings.rect_len))
-        self.clone_img = pygame.transform.scale(pygame.image.load('./images/clone.bmp'), (self.settings.rect_len, self.settings.rect_len))
-        self.clonea_img = pygame.transform.scale(pygame.image.load('./images/clonea.bmp'), (self.settings.rect_len, self.settings.rect_len))
+    def reset_img_source(self): 
+        path = "./styles/" + self.style + "/images/"
+        self.tile_img = pygame.transform.scale(pygame.image.load(path + 'tile.bmp'), (self.settings.rect_len, self.settings.rect_len))
+        self.space_img = pygame.transform.scale(pygame.image.load(path + 'space.bmp'), (self.settings.rect_len, self.settings.rect_len))
+        self.wrap_img = pygame.transform.scale(pygame.image.load(path + 'wrap.bmp'), (self.settings.rect_len, self.settings.rect_len))
+        self.pad_img = pygame.transform.scale(pygame.image.load(path + 'pad.bmp'), (self.settings.rect_len, self.settings.rect_len))
+        self.plate_img = pygame.transform.scale(pygame.image.load(path + 'plate.bmp'), (self.settings.rect_len, self.settings.rect_len))
+        self.platea_img = pygame.transform.scale(pygame.image.load(path + 'platea.bmp'), (self.settings.rect_len, self.settings.rect_len))
+        self.plate_alt_img = pygame.transform.scale(pygame.image.load(path + 'plate_alt.bmp'), (self.settings.rect_len, self.settings.rect_len))
+        self.platea_alt_img = pygame.transform.scale(pygame.image.load(path + 'platea_alt.bmp'), (self.settings.rect_len, self.settings.rect_len))
+        self.clone_img = pygame.transform.scale(pygame.image.load(path + 'clone.bmp'), (self.settings.rect_len, self.settings.rect_len))
+        self.clonea_img = pygame.transform.scale(pygame.image.load(path + 'clonea.bmp'), (self.settings.rect_len, self.settings.rect_len))
 
     def restart_game(self, mapdir): 
         #set config. This has a bunch of options that control stuff.
+        self.reset_img_source()
+        self.snake.reset_img_source()
         self.config = Config(mapdir)
         #set map
         self.map = Map(parent=self, mapdir=mapdir)
