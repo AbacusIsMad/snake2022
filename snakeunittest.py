@@ -46,7 +46,7 @@ class TestStrawberryMethods(unittest.TestCase):
         self.assertEqual(straw.settings, settings, "Settings not initialised correctly")
         self.assertEqual(straw.position, [15, 10], "Position was not set correctly for the food item")
 
-    
-
 if __name__ == "__main__":
     unittest.main()
+    # coverage run -m unittest snakeunittest.py
+    # coverage report
