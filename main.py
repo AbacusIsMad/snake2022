@@ -70,6 +70,13 @@ def message_display(text, x, y, color=black):
     screen.blit(text_surf, text_rect)
     pygame.display.update()
 
+def smallmessage_display(text, x, y, color=black):
+    small_text = pygame.font.SysFont('comicsansms', 20)
+    text_surf, text_rect = text_objects(text, small_text, color)
+    text_rect.center = (x, y)
+    screen.blit(text_surf, text_rect)
+    pygame.display.update()
+
 
 def button(msg, x, y, w, h, inactive_color, active_color, action=None, parameter=None):
     mouse = pygame.mouse.get_pos()
@@ -138,6 +145,8 @@ def initial_interface():
 
         button('Quit', 270, 240, 80, 40, red, bright_red, quitgame)
 
+        button('Instructions', 155, 300, 120, 40, blue, bright_blue, display_instructions)
+
         pygame.display.update()
         pygame.time.Clock().tick(15)
 
@@ -176,6 +185,30 @@ def level_select():
             break
         pygame.display.update()
         pygame.time.Clock().tick(15)
+
+def display_instructions(): 
+    intro = True
+    restart = [0, ""]
+    while intro:
+        if restart[0]:
+            break
+        if restart[1]:
+            restart = game_loop(restart[1])
+            continue
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+        screen.fill(black)
+        smallmessage_display("Welcome to Gluttonous!", game.settings.width/2 * 15, game.settings.height / 4 *15, color=white)
+        home = button('Home', 100, 200, 80, 40, red, bright_red, yes)
+
+        if home: 
+            return 0
+        if restart[0]:
+            break
+        pygame.display.update()
+        pygame.time.Clock().tick(15)
+    
 
 
 #def game_loop(player, fps=10):
@@ -264,7 +297,6 @@ def options():
         if event.type == KEYDOWN and event.key == K_ESCAPE:
             return True
     return False
-
 
 
 def human_move():
