@@ -19,7 +19,45 @@ def base_path(path):
         basedir = os.path.abspath(".")
     return os.path.join(basedir, path)
 
-os.chdir(base_path(''))
+if __name__ == "__main__":
+    #get locally stored config file
+    invalid_loc = False
+    if getattr(sys, 'frozen', None):
+        game_data = os.path.join(os.path.dirname(sys.executable), 'snakeData')
+    else:
+        game_data = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'snakeData')
+
+    #check for permissions, or else resort to internal directory.
+    if not os.path.exists(game_data):
+        try:
+            os.makedirs(game_data)
+        except Exception:
+            print("failed to make directory or file! Returning to normal dir.")
+            game_data = './snakeData'
+            invalid_loc = True
+    elif not os.access(game_data, os.W_OK):
+        print("directory is not writable! Returning to normal dir.")
+        game_data = './snakeData'
+        invalid_loc = True
+    print('storage directory:', game_data)
+
+    #create the files if they don't exist.
+    if not os.path.exists(game_data + '/style.txt'):
+        with open(game_data + '/style.txt', 'w') as f:
+            f.write('0')
+            print("style written")
+    if not os.path.exists(game_data + '/playerData.txt'):
+        with open(game_data + '/playerData.txt', 'w') as f:
+            f.write('')
+            print("playerData written")
+
+    #change to _MEIxxxx if needed, to get src
+    os.chdir(base_path(''))
+    
+
+    
+
+
 from game import Game
 
 black = pygame.Color(0, 0, 0)
@@ -48,7 +86,7 @@ rect_len = game.settings.rect_len
 snake = game.snake
 pygame.init()
 fpsClock = pygame.time.Clock()
-screen = pygame.display.set_mode((game.settings.width * 15, game.settings.height * 15))
+screen = pygame.display.set_mode((game.settings.width * game.settings.rect_len, game.settings.height * game.settings.rect_len))
 pygame.display.set_caption('Gluttonous')
 
 #osx problem?
@@ -104,28 +142,10 @@ def crash():
     time.sleep(1)
 
 
-def initial_interface():
+def initial_interface(invalid, directory):
     intro = True
     restart = False
-    '''
-    while intro:
-        if restart:
-            restart = game_loop("1-1")
-            continue
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
 
-        screen.fill(white)
-        message_display('Gluttonous', game.settings.width / 2 * 15, game.settings.height / 4 * 15)
-
-        restart = button('Go!', 80, 240, 80, 40, green, bright_green, game_loop, "1-1")
-        if not restart:
-            button('Quit', 270, 240, 80, 40, red, bright_red, quitgame)
-
-        pygame.display.update()
-        pygame.time.Clock().tick(15)
-    '''
     while intro:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -136,10 +156,20 @@ def initial_interface():
 
         button('Go!', 80, 240, 80, 40, green, bright_green, level_select)
 
+        if not invalid:
+            button('Settings', 175, 240, 80, 40, yellow, bright_yello, settings)
+        else:
+            burron('Nope lol', 175, 240, 80, 40, yellow, bright_yello, yes)
+
         button('Quit', 270, 240, 80, 40, red, bright_red, quitgame)
 
         pygame.display.update()
         pygame.time.Clock().tick(15)
+
+def settings():
+    while True:
+        
+
 
 def level_select():
     intro = True
@@ -184,7 +214,7 @@ def game_loop(level):
     screen.fill(black)
     game.blit_map(rect_len, screen)
     
-    space_img = pygame.image.load('./images/space.bmp')
+    space_img = game.space_img
     #whether the game is stopped
     stop = False
     #if the snake has crashed or lost
@@ -199,7 +229,6 @@ def game_loop(level):
     game.blit_score(white, screen)
     pygame.display.update()
     pygame.time.delay(1000)
-    print("done")
     while cont:
 
         pygame.event.pump()
@@ -289,12 +318,9 @@ def human_move():
 
     move = game.direction_to_int(direction)
     #0 - 3 here
-    #print("move: ", move)
-    # print(game.snake.segments)
     return move, escape
 
 
 if __name__ == "__main__":
-    print(base_path(''))
     #os.chdir(base_path(''))
-    initial_interface()
+    initial_interface(invalid_loc, game_data)

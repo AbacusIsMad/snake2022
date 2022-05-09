@@ -7,14 +7,6 @@ class Snake:
         self.parent = parent
         self.clone = clone
         self.init = False
-
-        self.image_up = pygame.image.load('./images/' + 'clone'*clone + 'head_up.bmp')
-        self.tail_up = pygame.image.load('./images/' + 'clone'*clone + 'tail_up.bmp')
-        #self.image_body = pygame.image.load('./images/' + 'clone'*clone + 'body.bmp')
-        self.image_body_s = pygame.image.load('./images/' + 'clone'*clone + 'body_s.bmp')
-        self.image_body_c = pygame.image.load('./images/' + 'clone'*clone + 'body_c.bmp')
-
-        self.image_space = pygame.image.load('./images/space.bmp')
         
         #self.facing = "right"
         self.segments = []
@@ -22,6 +14,17 @@ class Snake:
         self.score = 0
         if self.clone == False:
             self.initialize()
+        self.reset_img_source()
+
+    def reset_img_source(self):
+        clone = self.clone
+        self.image_up = pygame.transform.scale(pygame.image.load('./images/' + 'clone'*clone + 'head_up.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
+        self.tail_up = pygame.transform.scale(pygame.image.load('./images/' + 'clone'*clone + 'tail_up.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
+        self.image_body_s = pygame.transform.scale(pygame.image.load('./images/' + 'clone'*clone + 'body_s.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
+        self.image_body_c = pygame.transform.scale(pygame.image.load('./images/' + 'clone'*clone + 'body_c.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
+
+        self.image_space = self.parent.space_img
+
 
     def initialize(self, mapdir=None):
         if mapdir is not None:
@@ -112,7 +115,6 @@ class Snake:
 
 
     def blit_tail(self, x, y, screen, size, x0, y0):
-        #tail_direction = [self.segments[-2][i] - self.segments[-1][i] for i in range(2)]
         tail_direction = self.segments[-1]
         x = (x + x0)*size
         y = (y + y0)*size

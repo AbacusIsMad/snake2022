@@ -18,7 +18,7 @@ class Settings:
     def __init__(self):
         self.width = 28
         self.height = 28
-        self.rect_len = 15
+        self.rect_len = 30
         #size of game, and then size of individual grids. 
         # self.width = 52
         # self.height = 52
@@ -57,23 +57,26 @@ class Strawberry():
 class Game:
     def __init__(self):
         self.settings = Settings()
+        self.reset_img_source()
         self.snake = Snake(self)
         self.snake_clone = Snake(self, clone=True)
         self.strawberry = Strawberry(self.settings, self)
         self.move_dict = {0 : 'up',
                           1 : 'down',
                           2 : 'left',
-                          3 : 'right'}   
-        self.tile_img = pygame.image.load('./images/tile.bmp')
-        self.space_img = pygame.image.load('./images/space.bmp')
-        self.wrap_img = pygame.image.load('./images/wrap.bmp')
-        self.pad_img = pygame.image.load('./images/pad.bmp')
-        self.plate_img = pygame.image.load('./images/plate.bmp')
-        self.platea_img = pygame.image.load('./images/platea.bmp')
-        self.plate_alt_img = pygame.image.load('./images/plate_alt.bmp')
-        self.platea_alt_img = pygame.image.load('./images/platea_alt.bmp')
-        self.clone_img = pygame.image.load('./images/clone.bmp')
-        self.clonea_img = pygame.image.load('./images/clonea.bmp')
+                          3 : 'right'}
+
+    def reset_img_source(self):   
+        self.tile_img = pygame.transform.scale(pygame.image.load('./images/tile.bmp'), (self.settings.rect_len, self.settings.rect_len))
+        self.space_img = pygame.transform.scale(pygame.image.load('./images/space.bmp'), (self.settings.rect_len, self.settings.rect_len))
+        self.wrap_img = pygame.transform.scale(pygame.image.load('./images/wrap.bmp'), (self.settings.rect_len, self.settings.rect_len))
+        self.pad_img = pygame.transform.scale(pygame.image.load('./images/pad.bmp'), (self.settings.rect_len, self.settings.rect_len))
+        self.plate_img = pygame.transform.scale(pygame.image.load('./images/plate.bmp'), (self.settings.rect_len, self.settings.rect_len))
+        self.platea_img = pygame.transform.scale(pygame.image.load('./images/platea.bmp'), (self.settings.rect_len, self.settings.rect_len))
+        self.plate_alt_img = pygame.transform.scale(pygame.image.load('./images/plate_alt.bmp'), (self.settings.rect_len, self.settings.rect_len))
+        self.platea_alt_img = pygame.transform.scale(pygame.image.load('./images/platea_alt.bmp'), (self.settings.rect_len, self.settings.rect_len))
+        self.clone_img = pygame.transform.scale(pygame.image.load('./images/clone.bmp'), (self.settings.rect_len, self.settings.rect_len))
+        self.clonea_img = pygame.transform.scale(pygame.image.load('./images/clonea.bmp'), (self.settings.rect_len, self.settings.rect_len))
 
     def restart_game(self, mapdir): 
         #set config. This has a bunch of options that control stuff.
@@ -86,8 +89,12 @@ class Game:
         self.snake_clone.segmentd = []
         self.snake_clone.score = 0
         #set stawberry if it exists.
-        #self.strawberry.initialize()
         self.strawberry.random_pos()
+        #update visuals for all
+        self.update_visuals
+
+    def update_visuals(self):
+        pass
 
     def current_state(self):         
         state = np.zeros((self.settings.width+2, self.settings.height+2, 2))
