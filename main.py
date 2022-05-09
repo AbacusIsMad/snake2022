@@ -62,9 +62,8 @@ def text_objects(text, font, color=black):
     text_surface = font.render(text, True, color)
     return text_surface, text_surface.get_rect()
 
-
-def message_display(text, x, y, color=black):
-    large_text = pygame.font.SysFont('comicsansms', 50)
+def message_display(text, x, y, color=black, size=50):
+    large_text = pygame.font.SysFont('comicsansms', size)
     text_surf, text_rect = text_objects(text, large_text, color)
     text_rect.center = (x, y)
     screen.blit(text_surf, text_rect)
