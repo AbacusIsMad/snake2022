@@ -190,7 +190,8 @@ def display_instructions():
             if event.type == pygame.QUIT:
                 pygame.quit()
         screen.fill(black)
-        message_display("Gluttonous!", game.settings.width/2 * 15, game.settings.height / 4 *15, color=white)
+        message_display("Gluttonous!", game.settings.width/2 * 15, game.settings.height / 4 *15, color=white, size=30)
+        
         home = button('Home', 100, 200, 80, 40, red, bright_red, yes)
 
         if home: 
