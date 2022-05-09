@@ -252,7 +252,7 @@ def game_loop(level):
     #I might not use this
     convert = False
     #always blit once before doing stuff, and sleep for a little bit! This allows for some time preparation.
-    game.snake.blit(rect_len, screen)
+    game.snake.blit(rect_len, screen, 1)
     #game.features.blit
     game.strawberry.blit(screen, int(game.config.settings["xOffset"]), int(game.config.settings["yOffset"]))
     game.blit_features(rect_len, screen)
@@ -300,9 +300,9 @@ def game_loop(level):
             if result1:
                 screen.blit(space_img, ((result1[0] + x0)*rect_len, (result1[1] + y0)*rect_len))
 
-            game.snake.blit(rect_len, screen)
+            game.snake.blit(rect_len, screen, state)
             if game.snake_clone.init:
-                game.snake_clone.blit(rect_len, screen)
+                game.snake_clone.blit(rect_len, screen, state1)
             game.blit_features(rect_len, screen)
             game.strawberry.blit(screen, int(game.config.settings["xOffset"]), int(game.config.settings["yOffset"]))
             #covers up the score and buttons.
