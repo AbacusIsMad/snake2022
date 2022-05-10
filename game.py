@@ -57,8 +57,9 @@ class Strawberry():
       
         
 class Game:
-    def __init__(self, game_data):
+    def __init__(self, game_data, real_location):
         self.src = game_data
+        self.srcreal = real_location
         self.style = '0'
         self.settings = Settings()
         self.reset_img_source()
@@ -84,9 +85,10 @@ class Game:
         self.clonea_img = pygame.transform.scale(pygame.image.load(path + 'clonea.bmp'), (self.settings.rect_len, self.settings.rect_len))
 
     def restart_game(self, mapdir): 
-        #set config. This has a bunch of options that control stuff.
+        #update visuals at the start of the game
         self.reset_img_source()
         self.snake.reset_img_source()
+        #set config. This has a bunch of options that control stuff.
         self.config = Config(parent=self, mapdir=mapdir)
         #set map
         self.map = Map(parent=self, mapdir=mapdir)
@@ -97,26 +99,6 @@ class Game:
         self.snake_clone.score = 0
         #set stawberry if it exists.
         self.strawberry.random_pos()
-        #update visuals for all
-        self.update_visuals
-
-    def update_visuals(self):
-        pass
-    '''
-    def current_state(self):         
-        state = np.zeros((self.settings.width+2, self.settings.height+2, 2))
-        expand = [[0, 1], [0, -1], [-1, 0], [1, 0], [0, 2], [0, -2], [-2, 0], [2, 0]]
-        
-        for position in self.snake.segments:
-            state[position[1], position[0], 0] = 1
-        
-        state[:, :, 1] = -0.5        
-
-        state[self.strawberry.position[1], self.strawberry.position[0], 1] = 0.5
-        for d in expand:
-            state[self.strawberry.position[1]+d[0], self.strawberry.position[0]+d[1], 1] = 0.5
-        return state
-    '''
     
     def direction_to_int(self, direction):
         direction_dict = {value : key for key,value in self.move_dict.items()}
@@ -154,13 +136,6 @@ class Game:
             state1, replace1 = 0, []
         state, replace = self.snake.update()
 
-        '''
-        if state < 0 or state1 < 0:
-            return -1
-        if replace and replace != [-1, -1]:
-            return replace
-        return 0
-        '''
         return state, state1, replace, replace1
     
     def game_end(self):

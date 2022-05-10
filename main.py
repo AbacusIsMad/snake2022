@@ -112,7 +112,7 @@ when level quit, unload on both levels
 ALWAYS PICKLE IT!
 '''
 
-game = Game(os.path.dirname(package_path))
+game = Game(os.path.dirname(package_path), os.path.dirname(real_path))
 rect_len = game.settings.rect_len
 snake = game.snake
 pygame.init()
@@ -246,8 +246,7 @@ def level_select():
         screen.fill(black)
         message_display('Select Level', game.settings.width / 2 * 15, game.settings.height / 4 * 15, color=white)
 
-        home = button('Home', 100, 200, 80, 40, red, bright_red, yes)
-        if home:
+        if button('Home', 100, 200, 80, 40, red, bright_red, yes):
             return 0
 
         temp = button('1-1', 20, 20, 40, 40, green, bright_green, game_loop, "1-1")
@@ -268,7 +267,7 @@ def level_select():
         pygame.time.Clock().tick(15)
 
 
-#def game_loop(player, fps=10):
+
 def game_loop(level):
     with open(os.path.join(game.src, "snakeData/style.txt"), 'r') as f:
         game.style = f.read()
@@ -282,11 +281,9 @@ def game_loop(level):
     stop = False
     #if the snake has crashed or lost
     cont = 1
-    #I might not use this
-    convert = False
+
     #always blit once before doing stuff, and sleep for a little bit! This allows for some time preparation.
     game.snake.blit(rect_len, screen, 1)
-    #game.features.blit
     game.strawberry.blit(screen, int(game.config.settings["xOffset"]), int(game.config.settings["yOffset"]))
     game.blit_features(rect_len, screen)
     game.blit_score(white, screen)
@@ -333,12 +330,14 @@ def game_loop(level):
             if result1:
                 screen.blit(space_img, ((result1[0] + x0)*rect_len, (result1[1] + y0)*rect_len))
 
+            #blit snake
             game.snake.blit(rect_len, screen, state)
             if game.snake_clone.init:
                 game.snake_clone.blit(rect_len, screen, state1)
+            #blit the features, which always appear on top of the snake
             game.blit_features(rect_len, screen)
             game.strawberry.blit(screen, int(game.config.settings["xOffset"]), int(game.config.settings["yOffset"]))
-            #covers up the score and buttons.
+            #covers up the score and home, restart buttons.
             pygame.draw.rect(screen, black, pygame.Rect(0, 0, 400, 80))
             game.blit_score(white, screen)
 
