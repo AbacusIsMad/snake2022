@@ -179,8 +179,9 @@ def level_select():
         pygame.time.Clock().tick(15)
 
 def display_instructions(): 
-    instructionsminigame = Game()
-    instructionssnake = instructionsminigame.snake
+    
+    # instructionsminigame = Game()
+    # instructionssnake = instructionsminigame.snake
     instructions_pageone(instructionssnake)
 
 def instructions_pageone(snake): 
@@ -209,10 +210,8 @@ def instructions_pageone(snake):
         screen.blit(pygame.image.load("images/body_s.bmp"), (300, 280))
         screen.blit(pygame.image.load("images/body_s.bmp"), (300, 295))
         screen.blit(pygame.image.load("images/tail_up.bmp"), (300, 310))
-        
-        
-        message_display("Use the arrow keys to move the snake", 200, 200, color=white, size=10)
     
+        message_display("Use the arrow keys to move the snake", 200, 200, color=white, size=10)    
         if home: 
             return 0
         if nextbutton: 
