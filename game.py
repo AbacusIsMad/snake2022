@@ -6,7 +6,7 @@ Created on Wed Apr 25 15:19:25 2018
 BingQi Ling
 """
 import pygame, random
-import numpy as np
+#import numpy as np
 import threading
 import time
 from map import Map
@@ -30,13 +30,13 @@ class Strawberry():
         self.parent = parent
 
         self.style = str(random.randint(1, 8))
-        path = "./styles/" + self.parent.style + "/images/"
+        path = self.parent.src + "/styles/" + self.parent.style + "/images/"
         self.image = pygame.image.load(path + 'food' + str(self.style) + '.bmp')        
         self.initialize()
         
     def random_pos(self):
         self.style = str(random.randint(1, 8))
-        path = "./styles/" + self.parent.style + "/images/"
+        path = self.parent.src + "/styles/" + self.parent.style + "/images/"
         self.image = pygame.image.load(path + 'food' + str(self.style) + '.bmp')                
         print("called!")
         self.position[0] = random.randint(0, int(self.parent.config.settings["mapX"])-1)
@@ -71,7 +71,7 @@ class Game:
                           3 : 'right'}
 
     def reset_img_source(self): 
-        path = "./styles/" + self.style + "/images/"
+        path = self.src + "/styles/" + self.style + "/images/"
         self.tile_img = pygame.transform.scale(pygame.image.load(path + 'tile.bmp'), (self.settings.rect_len, self.settings.rect_len))
         self.space_img = pygame.transform.scale(pygame.image.load(path + 'space.bmp'), (self.settings.rect_len, self.settings.rect_len))
         self.wrap_img = pygame.transform.scale(pygame.image.load(path + 'wrap.bmp'), (self.settings.rect_len, self.settings.rect_len))
@@ -87,7 +87,7 @@ class Game:
         #set config. This has a bunch of options that control stuff.
         self.reset_img_source()
         self.snake.reset_img_source()
-        self.config = Config(mapdir)
+        self.config = Config(parent=self, mapdir=mapdir)
         #set map
         self.map = Map(parent=self, mapdir=mapdir)
         #set snake
@@ -102,7 +102,7 @@ class Game:
 
     def update_visuals(self):
         pass
-
+    '''
     def current_state(self):         
         state = np.zeros((self.settings.width+2, self.settings.height+2, 2))
         expand = [[0, 1], [0, -1], [-1, 0], [1, 0], [0, 2], [0, -2], [-2, 0], [2, 0]]
@@ -116,6 +116,7 @@ class Game:
         for d in expand:
             state[self.strawberry.position[1]+d[0], self.strawberry.position[0]+d[1], 1] = 0.5
         return state
+    '''
     
     def direction_to_int(self, direction):
         direction_dict = {value : key for key,value in self.move_dict.items()}
@@ -174,7 +175,7 @@ class Game:
         return end
     
     def blit_score(self, color, screen):
-        font = pygame.font.SysFont(None, 25)
+        font = pygame.font.Font(self.src + '/arial.ttf', 25)
         text = font.render('Score: ' + str(self.snake.score + self.snake_clone.score), True, color)
         screen.blit(text, (0, 0))
 

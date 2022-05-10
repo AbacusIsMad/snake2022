@@ -12,47 +12,78 @@ import os
 from pygame.locals import KEYDOWN, K_RIGHT, K_LEFT, K_UP, K_DOWN, K_ESCAPE
 from pygame.locals import QUIT
 
+'''
 def base_path(path):
     try:
         basedir = sys._MEIPASS
     except Exception:
         basedir = os.path.abspath(".")
+    print(os.path.join(basedir, path))
     return os.path.join(basedir, path)
+'''
 
 if __name__ == "__main__":
     #get locally stored config file
     invalid_loc = False
+    real_path = os.path.join(os.path.abspath('.'), 'snakeData')
+    package_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'snakeData')
+    print("real path:", real_path)
+    print("unpackaged path:", package_path)
+    if real_path == package_path:
+        print("inside a python script. No need to do anything more.")
+    else:
+        print("we are inside the executable.")
+    if not os.path.exists(real_path):
+        try:
+            os.makedirs(real_path)
+        except Exception:
+            print("failed to make directory or file! Returning to normal dir.")
+            real_path = package_path
+            invalid_loc = True
+
+
+    '''
     if getattr(sys, 'frozen', None):
+        print("frozen executable!")
         game_data = os.path.join(os.path.dirname(sys.executable), 'snakeData')
     else:
+        print("normal")
         game_data = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'snakeData')
+    print("current directory:", game_data)
+    
 
     #check for permissions, or else resort to internal directory.
+    print("coming here now")
     if not os.path.exists(game_data):
         try:
             os.makedirs(game_data)
         except Exception:
             print("failed to make directory or file! Returning to normal dir.")
-            game_data = './snakeData'
-            invalid_loc = True
+            #game_data = './snakeData'
+            game_data = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'snakeData')
+            #invalid_loc = True
     elif not os.access(game_data, os.W_OK):
         print("directory is not writable! Returning to normal dir.")
-        game_data = './snakeData'
-        invalid_loc = True
+        #game_data = './snakeData'
+        game_data = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'snakeData')
+        #invalid_loc = True
     print('storage directory:', game_data)
 
+    #os.chdir(base_path(''))
+    '''
+
     #create the files if they don't exist.
-    if not os.path.exists(game_data + '/style.txt'):
-        with open(game_data + '/style.txt', 'w') as f:
+    if not os.path.exists(real_path + '/style.txt'):
+        with open(real_path + '/style.txt', 'w') as f:
             f.write('0')
             print("style written")
-    if not os.path.exists(game_data + '/playerData.txt'):
-        with open(game_data + '/playerData.txt', 'w') as f:
+    if not os.path.exists(real_path + '/playerData.txt'):
+        with open(real_path + '/playerData.txt', 'w') as f:
             f.write('')
             print("playerData written")
 
     #change to _MEIxxxx if needed, to get src
-    os.chdir(base_path(''))
+    #os.chdir(base_path(''))
     
 
     
@@ -81,7 +112,7 @@ when level quit, unload on both levels
 ALWAYS PICKLE IT!
 '''
 
-game = Game(game_data)
+game = Game(os.path.dirname(package_path))
 rect_len = game.settings.rect_len
 snake = game.snake
 pygame.init()
@@ -91,7 +122,7 @@ pygame.display.set_caption('Gluttonous')
 
 #osx problem?
 #pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-crash_sound = pygame.mixer.Sound('./sound/crash.wav')
+crash_sound = pygame.mixer.Sound(os.path.dirname(package_path) + '/sound/crash.wav')
 
 def yes():
     return True
@@ -102,7 +133,7 @@ def text_objects(text, font, color=black):
 
 
 def message_display(text, x, y, color=black):
-    large_text = pygame.font.SysFont('comicsansms', 50)
+    large_text = pygame.font.Font(os.path.dirname(package_path) + '/arial.ttf', 50)
     text_surf, text_rect = text_objects(text, large_text, color)
     text_rect.center = (x, y)
     screen.blit(text_surf, text_rect)
@@ -124,7 +155,7 @@ def button(msg, x, y, w, h, inactive_color, active_color, action=None, parameter
 
     #placeholder
     pressed = 0
-    smallText = pygame.font.SysFont('comicsansms', 20)
+    smallText = pygame.font.Font(os.path.dirname(package_path) + '/arial.ttf', 20)
     TextSurf, TextRect = text_objects(msg, smallText)
     TextRect.center = (x + (w / 2), y + (h / 2))
     screen.blit(TextSurf, TextRect)
@@ -153,6 +184,8 @@ def initial_interface(invalid, directory):
 
         screen.fill(white)
         message_display('Gluttonous', game.settings.width / 2 * 15, game.settings.height / 4 * 15)
+        if invalid_loc:
+            message_display('Error', game.settings.width / 4 * 15, game.settings.height / 2 * 15)
 
         button('Go!', 80, 240, 80, 40, green, bright_green, level_select)
 
@@ -237,7 +270,7 @@ def level_select():
 
 #def game_loop(player, fps=10):
 def game_loop(level):
-    with open(os.path.join(game.src, "style.txt"), 'r') as f:
+    with open(os.path.join(game.src, "snakeData/style.txt"), 'r') as f:
         game.style = f.read()
 
     game.restart_game(level)
@@ -353,4 +386,4 @@ def human_move():
 
 if __name__ == "__main__":
     #os.chdir(base_path(''))
-    initial_interface(invalid_loc, game_data)
+    initial_interface(invalid_loc, real_path)

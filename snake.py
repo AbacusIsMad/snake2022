@@ -21,7 +21,7 @@ class Snake:
 
     def reset_img_source(self):
         clone = self.clone
-        path = "./styles/" + self.parent.style + "/images/"
+        path = self.parent.src + "/styles/" + self.parent.style + "/images/"
         self.image_up = pygame.transform.scale(pygame.image.load(path + 'clone'*clone + 'head_up.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
         self.tail_up = pygame.transform.scale(pygame.image.load(path + 'clone'*clone + 'tail_up.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
         self.image_body_s = pygame.transform.scale(pygame.image.load(path + 'clone'*clone + 'body_s.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
@@ -34,7 +34,7 @@ class Snake:
 
     def initialize(self, mapdir=None):
         if mapdir is not None:
-            with open("./levels/" + mapdir + "/snake.txt", "r") as f:
+            with open(self.parent.src + "/levels/" + mapdir + "/snake.txt", "r") as f:
                 t = f.readlines()
             self.segments = []
             self.segmentd = []
@@ -192,11 +192,11 @@ class Snake:
             pygame.display.update(pygame.Rect(x, y, 30, 30))
             prev = datetime.datetime.now()
             #if it still doesnt work then reduce the time lol
-            if diff.microseconds > 48000:
+            if diff.microseconds > 47000:
                 #print("too long")
-                pygame.time.delay(48 - ((diff.microseconds - 48000)*2)//1000)
+                pygame.time.delay(47 - ((diff.microseconds - 46000)*2)//1000)
             else:
-                pygame.time.delay(48)
+                pygame.time.delay(47)
 
 
 
