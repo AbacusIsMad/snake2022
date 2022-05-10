@@ -182,9 +182,9 @@ def display_instructions():
     
     # instructionsminigame = Game()
     # instructionssnake = instructionsminigame.snake
-    instructions_pageone(instructionssnake)
+    instructions_pageone()
 
-def instructions_pageone(snake): 
+def instructions_pageone(): 
     intro = True
     restart = [0, ""]
     while intro:
@@ -198,12 +198,14 @@ def instructions_pageone(snake):
                 pygame.quit()
         screen.fill(black)
 
-        message_display("Gluttonous!", game.settings.width/2 * 15, game.settings.height / 4 *15, color=white, size=30)
+        message_display("How to Play Gluttonous!", 200, 50, color=white, size=30)
         
-        home = button('Home', 100, 350, 80, 40, red, bright_red, yes)
+        home = button('Home', 150, 350, 80, 40, red, bright_red, yes)
 
-        nextbutton = button('Next', 200, 350, 80, 40, red, bright_red, yes)
-        screen.blit(pygame.image.load("images/arrowkeys.bmp"), (100, 100))
+        nextbutton = button('Next', 250, 350, 80, 40, red, bright_red, yes)
+        arrows = pygame.image.load("images/arrowkeys.bmp")
+        arrows = pygame.transform.scale(arrows, (140, 140))
+        screen.blit(arrows, (100, 100))
 
         screen.blit(pygame.image.load("images/head_up1.bmp"), (300, 250))
         screen.blit(pygame.image.load("images/body_s.bmp"), (300,265))
@@ -211,7 +213,7 @@ def instructions_pageone(snake):
         screen.blit(pygame.image.load("images/body_s.bmp"), (300, 295))
         screen.blit(pygame.image.load("images/tail_up.bmp"), (300, 310))
     
-        message_display("Use the arrow keys to move the snake", 200, 200, color=white, size=10)    
+        message_display("Use the arrow keys to move the snake", 200, 100, color=white, size=20)    
         if home: 
             return 0
         if nextbutton: 
