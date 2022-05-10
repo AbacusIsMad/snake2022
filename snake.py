@@ -23,6 +23,7 @@ class Snake:
         if self.clone == False:
             self.initialize()
 
+
     def initialize(self, mapdir=None):
         if mapdir is not None:
             with open("./levels/" + mapdir + "/snake.txt", "r") as f:

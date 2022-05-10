@@ -11,6 +11,7 @@ import sys
 import os
 from pygame.locals import KEYDOWN, K_RIGHT, K_LEFT, K_UP, K_DOWN, K_ESCAPE
 from pygame.locals import QUIT
+from snake import Snake
 
 def base_path(path):
     try:
@@ -178,6 +179,11 @@ def level_select():
         pygame.time.Clock().tick(15)
 
 def display_instructions(): 
+    instructionsminigame = Game()
+    instructionssnake = instructionsminigame.snake
+    instructions_pageone(instructionssnake)
+
+def instructions_pageone(snake): 
     intro = True
     restart = [0, ""]
     while intro:
@@ -190,9 +196,48 @@ def display_instructions():
             if event.type == pygame.QUIT:
                 pygame.quit()
         screen.fill(black)
+
         message_display("Gluttonous!", game.settings.width/2 * 15, game.settings.height / 4 *15, color=white, size=30)
         
-        home = button('Home', 100, 200, 80, 40, red, bright_red, yes)
+        home = button('Home', 100, 350, 80, 40, red, bright_red, yes)
+
+        nextbutton = button('Next', 200, 350, 80, 40, red, bright_red, yes)
+        screen.blit(pygame.image.load("images/arrowkeys.bmp"), (100, 100))
+
+        screen.blit(pygame.image.load("images/head_up1.bmp"), (300, 250))
+        screen.blit(pygame.image.load("images/body_s.bmp"), (300,265))
+        screen.blit(pygame.image.load("images/body_s.bmp"), (300, 280))
+        screen.blit(pygame.image.load("images/body_s.bmp"), (300, 295))
+        screen.blit(pygame.image.load("images/tail_up.bmp"), (300, 310))
+        
+        
+        message_display("Use the arrow keys to move the snake", 200, 200, color=white, size=10)
+    
+        if home: 
+            return 0
+        if nextbutton: 
+            instructions_pagetwo()
+        if restart[0]:
+            break
+        pygame.display.update()
+        pygame.time.Clock().tick(15)
+
+def instructions_pagetwo(): 
+    intro = True
+    restart = [0, ""]
+    while intro:
+        if restart[0]:
+            break
+        if restart[1]:
+            restart = game_loop(restart[1])
+            continue
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+        screen.fill(black)
+        message_display("Page 2", game.settings.width/2 * 15, game.settings.height / 4 *15, color=white, size=30)
+        
+        home = button('Back', 100, 200, 80, 40, red, bright_red, yes)
 
         if home: 
             return 0
@@ -200,8 +245,6 @@ def display_instructions():
             break
         pygame.display.update()
         pygame.time.Clock().tick(15)
-    
-
 
 #def game_loop(player, fps=10):
 def game_loop(level):
