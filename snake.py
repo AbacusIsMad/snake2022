@@ -4,7 +4,6 @@ import threading
 import time
 import datetime
 
-
 class Snake:
     def __init__(self, parent, clone=False):
         self.parent = parent
@@ -26,7 +25,6 @@ class Snake:
         if self.clone == False:
             self.initialize()
 
-        #reget images
         self.reset_img_source()
 
 

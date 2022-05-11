@@ -12,6 +12,7 @@ import os
 import math
 from pygame.locals import KEYDOWN, K_RIGHT, K_LEFT, K_UP, K_DOWN, K_ESCAPE
 from pygame.locals import QUIT
+from snake import Snake
 
 '''
 def base_path(path):
@@ -140,7 +141,6 @@ def message_display(text, x, y, color=black):
     screen.blit(text_surf, text_rect)
     pygame.display.update()
 
-
 def button(msg, x, y, w, h, inactive_color, active_color, action=None, parameter=None):
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
@@ -228,6 +228,8 @@ def settings(directory):
                 style = 'cringe'
 
 
+        button('Instructions', 155, 300, 120, 40, blue, bright_blue, display_instructions)
+
         pygame.display.update()
         pygame.time.Clock().tick(15)
 
@@ -267,6 +269,147 @@ def level_select():
         pygame.display.update()
         pygame.time.Clock().tick(15)
 
+def display_instructions():
+    #  this instruction page explains how to move the snake
+    intro = True
+    restart = [0, ""]
+    while intro:
+        if restart[0]:
+            break
+        if restart[1]:
+            restart = game_loop(restart[1])
+            continue
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+        screen.fill(black)
+
+        message_display("How to Play Gluttonous!", 200, 50, color=white, size=30)
+        home = button('Home', 100, 350, 80, 40, red, bright_red, yes)
+        nextbutton = button('Next', 250, 350, 80, 40, red, bright_red, yes)
+        arrows = pygame.image.load("images/arrowkeys.bmp")
+        arrows = pygame.transform.scale(arrows, (140, 140))            
+        screen.blit(arrows, (110, 88))
+        screen.blit(pygame.image.load("images/head_up1.bmp"), (280, 125))
+        screen.blit(pygame.image.load("images/body_s.bmp"), (280, 140))
+        screen.blit(pygame.image.load("images/body_s.bmp"), (280, 155))            
+        screen.blit(pygame.image.load("images/body_s.bmp"), (280, 170))
+        screen.blit(pygame.image.load("images/tail_up.bmp"), (280, 185))
+        message_display("Use the arrow keys to move the snake", 200, 90, color=white, size=20)   
+
+        message_display("Eat the food to grow the snake", 200, 220, color=white, size=20)
+
+        # blit the food onto the screen to show users 
+        for i in range(1, 9):
+            food = pygame.image.load("images/food" + str(i) + ".bmp")
+            food = pygame.transform.scale(food, (30, 30))
+            if i in range(1, 5): 
+                screen.blit(food, (150+(i-1)*31, 250))
+            else: 
+                screen.blit(food, (150+(i-5)*31, 281))
+        
+        if home: 
+            return 0
+        if nextbutton: 
+            instructions_pagetwo()
+        if restart[0]:
+            break
+        pygame.display.update()
+        pygame.time.Clock().tick(15)
+
+def instructions_pagetwo(): 
+    #  this instructions page explains how the food items work with growing the snake
+    intro = True
+    restart = [0, ""]
+    while intro:
+        if restart[0]:
+            break
+        if restart[1]:
+            restart = game_loop(restart[1])
+            continue
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+        screen.fill(black)
+
+        message_display("Don't crash into the walls!", 200, 40, color=white, size=20)
+
+        screen.blit(pygame.image.load("images/tile.bmp"), (200, 60))
+        snakehead = pygame.transform.rotate(pygame.image.load("images/head_up1.bmp"), 270)
+        snakebody = pygame.transform.rotate(pygame.image.load('images/body_s.bmp'), 270)
+        snaketail = pygame.transform.rotate(pygame.image.load('images/tail_up.bmp'), 270)
+        screen.blit(snakehead,(185,60))
+        screen.blit(snakebody, (170, 60))
+        screen.blit(snakebody, (155, 60))
+        screen.blit(snaketail, (140, 60))
+
+        cross = pygame.transform.scale(pygame.image.load("images/cross.bmp"), (40, 40))
+        screen.blit(cross, (240, 40))
+
+        message_display("Don't crash into yourself!", 200, 100, color=white, size=20)
+
+        screen.blit(snaketail, (140, 120))
+        screen.blit(snakebody, (155, 120))
+        screen.blit(snakebody, (170, 120))
+        screen.blit(snakebody, (185, 120))
+        screen.blit(pygame.transform.rotate(snakebody, 90), (185, 133))
+        screen.blit(pygame.transform.rotate(snakebody, 90), (185, 148))
+        screen.blit(pygame.transform.rotate(snakebody, 180), (172, 148))
+        screen.blit(pygame.transform.rotate(snakebody, 180), (157, 148))
+        screen.blit(pygame.transform.rotate(snakehead, 90), (155, 135))
+
+        screen.blit(cross, (240, 120))
+        
+
+        message_display("You teleport through portal walls", 200, 170, color=white, size=20)
+
+        message_display("You can survive impact with padded walls", 200, 200, color=white, size=20)
+        screen.blit(pygame.image.load("images/tile.bmp"), (200, 240))
+        screen.blit(pygame.image.load("images/pad.bmp"), (200,240))
+
+        message_display("Once the snake is big enough, activate the pressure plates to win the level", 200, 300, color=white, size=10)
+
+        back = button('Back', 150, 350, 80, 40, red, bright_red, yes)
+       
+    
+        if back: 
+            return 0
+        # if nextbutton: 
+        #     i
+        if restart[0]:
+            break
+        pygame.display.update()
+        pygame.time.Clock().tick(15)
+
+# def instructions_pagethree(): 
+#     # This instructions page explains how the different type of walls work
+#     intro = True
+#     restart = [0, ""]
+#     while intro:
+#         if restart[0]:
+#             break
+#         if restart[1]:
+#             restart = game_loop(restart[1])
+#             continue
+#         for event in pygame.event.get():
+#             if event.type == pygame.QUIT:
+#                 pygame.quit()
+#         screen.fill(black)
+#         message_display("Page 3", 200, 50, color=white, size=30)
+        
+#         message_display("Don't crash into solid walls, and don't crash into yourself!", 200, 100, color=white, size=20) 
+#         message_display("There are different types of walls ", 200, 100, color=white, size= 20)
+#         back = button('Back', 150, 350, 80, 40, red, bright_red, yes)
+#         nextbutton = button('Next', 250, 350, 80, 40, red, bright_red, yes)
+
+#         if back: 
+#             return 0
+#         if nextbutton: 
+#             instructions_pagefour()
+#         if restart[0]:
+#             break
+#         pygame.display.update()
+#         pygame.time.Clock().tick(15)
 
 
 def game_loop(level):
@@ -381,7 +524,6 @@ def options():
         if event.type == KEYDOWN and event.key == K_ESCAPE:
             return True
     return False
-
 
 
 def human_move():

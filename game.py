@@ -54,8 +54,11 @@ class Strawberry():
    
     def initialize(self):
         self.position = [15, 10]
-      
-        
+    
+    def playSound(self):
+        eat_sound = pygame.mixer.Sound('./sound/eat.wav')
+        pygame.mixer.Sound.play(eat_sound)
+ 
 class Game:
     def __init__(self, game_data, real_location):
         self.src = game_data
