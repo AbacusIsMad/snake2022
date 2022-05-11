@@ -30,6 +30,8 @@ class TestSnakeMethods(unittest.TestCase):
         snake.update()
         self.assertEqual(snake.position, [6, 6], "Snake did not move upwards a position, update test failed")
 
+    # Unable to test the graphics (any blit functions) through unit testing, therefore these will be left for end-to-end testing
+    
 class TestSettings(unittest.TestCase): 
 
     def test_initialisation(self): 
@@ -46,6 +48,17 @@ class TestStrawberryMethods(unittest.TestCase):
         self.assertEqual(straw.settings, settings, "Settings not initialised correctly")
         self.assertEqual(straw.position, [15, 10], "Position was not set correctly for the food item")
 
+    def test_position(self): 
+        # hard to test because the function itself uses a random number generator- will simply instead check whether it is in the correct range
+        settings = Settings()
+        snake = Snake()
+        straw = Strawberry(settings)
+        straw.random_pos(snake)
+        self.assertTrue(straw.position[0] in range(9, 20), "Strawberry was not corrrectly allocated a random position")
+        self.assertTrue(straw.position[1] in range(9, 20), "strabwerry was not correctly allocated a random position")
+
+class TestGameMethods(unittest.TestCase): 
+    
 if __name__ == "__main__":
     unittest.main()
     # coverage run -m unittest snakeunittest.py
