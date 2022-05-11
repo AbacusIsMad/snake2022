@@ -88,8 +88,6 @@ if __name__ == "__main__":
     #os.chdir(base_path(''))
     
 
-    
-
 
 from game import Game
 
@@ -397,37 +395,6 @@ def instructions_pagetwo():
         pygame.display.update()
         pygame.time.Clock().tick(15)
 
-# def instructions_pagethree(): 
-#     # This instructions page explains how the different type of walls work
-#     intro = True
-#     restart = [0, ""]
-#     while intro:
-#         if restart[0]:
-#             break
-#         if restart[1]:
-#             restart = game_loop(restart[1])
-#             continue
-#         for event in pygame.event.get():
-#             if event.type == pygame.QUIT:
-#                 pygame.quit()
-#         screen.fill(black)
-#         message_display("Page 3", 200, 50, color=white, size=30)
-        
-#         message_display("Don't crash into solid walls, and don't crash into yourself!", 200, 100, color=white, size=20) 
-#         message_display("There are different types of walls ", 200, 100, color=white, size= 20)
-#         back = button('Back', 150, 350, 80, 40, red, bright_red, yes)
-#         nextbutton = button('Next', 250, 350, 80, 40, red, bright_red, yes)
-
-#         if back: 
-#             return 0
-#         if nextbutton: 
-#             instructions_pagefour()
-#         if restart[0]:
-#             break
-#         pygame.display.update()
-#         pygame.time.Clock().tick(15)
-
-
 def game_loop(level):
     with open(os.path.join(game.src, "snakeData/style.txt"), 'r') as f:
         game.style = f.read()
@@ -543,6 +510,7 @@ def options():
 
 
 def human_move():
+    # When the user presses 
     direction = 'none'
     escape = False
 
