@@ -52,8 +52,11 @@ class Strawberry():
    
     def initialize(self):
         self.position = [15, 10]
-      
-        
+    
+    def playSound(self):
+        eat_sound = pygame.mixer.Sound('./sound/eat.wav')
+        pygame.mixer.Sound.play(eat_sound)
+ 
 class Game:
     def __init__(self):
         self.settings = Settings()
@@ -141,6 +144,8 @@ class Game:
 
         '''
         if state < 0 or state1 < 0:
+        if state == -1:
+
             return -1
         if replace and replace != [-1, -1]:
             return replace
