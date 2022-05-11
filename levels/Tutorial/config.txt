@@ -1,0 +1,5 @@
+mapX:=6
+mapY:=6
+xOffset:=1
+yOffset:=1
+strawberry:=1

@@ -30,12 +30,12 @@ class Strawberry():
         self.parent = parent
 
         self.style = str(random.randint(1, 8))
-        self.image = pygame.image.load('images/food' + str(self.style) + '.bmp')        
+        self.image = pygame.image.load('./images/food' + str(self.style) + '.bmp')        
         self.initialize()
         
     def random_pos(self):
         self.style = str(random.randint(1, 8))
-        self.image = pygame.image.load('images/food' + str(self.style) + '.bmp')                
+        self.image = pygame.image.load('./images/food' + str(self.style) + '.bmp')                
         print("called!")
         self.position[0] = random.randint(0, int(self.parent.config.settings["mapX"])-1)
         self.position[1] = random.randint(0, int(self.parent.config.settings["mapY"])-1)
@@ -43,7 +43,7 @@ class Strawberry():
         #self.position[0] = random.randint(9, 19)
         #self.position[1] = random.randint(9, 19)
         #yo recursion?
-        if (self.position in self.parent.snake.segmentd[:-1]) or not self.parent.map.tiles[self.position[0]][self.position[1]].true_empty:
+        if (self.position in self.parent.snake.segmentd[:-1]) or not self.parent.map.tiles[self.position[1]][self.position[0]].true_empty:
             self.random_pos()
 
     def blit(self, screen, x0, y0):
@@ -61,15 +61,22 @@ class Game:
     def __init__(self):
         self.settings = Settings()
         self.snake = Snake(self)
+        self.snake_clone = Snake(self, clone=True)
         self.strawberry = Strawberry(self.settings, self)
         self.move_dict = {0 : 'up',
                           1 : 'down',
                           2 : 'left',
                           3 : 'right'}   
-        self.tile_img = pygame.image.load('images/tile.bmp')
-        self.space_img = pygame.image.load('images/space.bmp')
-        self.wrap_img = pygame.image.load('images/wrap.bmp')
-        self.pad_img = pygame.image.load('images/pad.bmp')
+        self.tile_img = pygame.image.load('./images/tile.bmp')
+        self.space_img = pygame.image.load('./images/space.bmp')
+        self.wrap_img = pygame.image.load('./images/wrap.bmp')
+        self.pad_img = pygame.image.load('./images/pad.bmp')
+        self.plate_img = pygame.image.load('./images/plate.bmp')
+        self.platea_img = pygame.image.load('./images/platea.bmp')
+        self.plate_alt_img = pygame.image.load('./images/plate_alt.bmp')
+        self.platea_alt_img = pygame.image.load('./images/platea_alt.bmp')
+        self.clone_img = pygame.image.load('./images/clone.bmp')
+        self.clonea_img = pygame.image.load('./images/clonea.bmp')
 
     def restart_game(self, mapdir): 
         #set config. This has a bunch of options that control stuff.
@@ -78,6 +85,9 @@ class Game:
         self.map = Map(parent=self, mapdir=mapdir)
         #set snake
         self.snake.initialize(mapdir)
+        self.snake_clone.init = False
+        self.snake_clone.segmentd = []
+        self.snake_clone.score = 0
         #set stawberry if it exists.
         #self.strawberry.initialize()
         self.strawberry.random_pos()
@@ -105,16 +115,7 @@ class Game:
 
         change_direction = move_dict[move]
         #this translates the number back to the string again. Kinda redundant tbh.
-        '''
-        if change_direction == 'right' and not self.snake.facing == 'left':
-            self.snake.facing = change_direction
-        if change_direction == 'left' and not self.snake.facing == 'right':
-            self.snake.facing = change_direction
-        if change_direction == 'up' and not self.snake.facing == 'down':
-            self.snake.facing = change_direction
-        if change_direction == 'down' and not self.snake.facing == 'up':
-            self.snake.facing = change_direction
-        '''
+
         if change_direction == 'right' and not self.snake.segments[1] == [1, 0]:
             self.snake.facing = change_direction
         if change_direction == 'left' and not self.snake.segments[1] == [-1, 0]:
@@ -123,13 +124,34 @@ class Game:
             self.snake.facing = change_direction
         if change_direction == 'down' and not self.snake.segments[1] == [0, 1]:
             self.snake.facing = change_direction
+
+        if self.snake_clone.init:
+            if change_direction == 'right' and not self.snake_clone.segments[1] == [1, 0]:
+                self.snake_clone.facing = change_direction
+            if change_direction == 'left' and not self.snake_clone.segments[1] == [-1, 0]:
+                self.snake_clone.facing = change_direction
+            if change_direction == 'up' and not self.snake_clone.segments[1] == [0, -1]:
+                self.snake_clone.facing = change_direction
+            if change_direction == 'down' and not self.snake_clone.segments[1] == [0, 1]:
+                self.snake_clone.facing = change_direction
+        
+        #state, replace = self.snake.update()
+        if self.snake_clone.init:
+            state1, replace1 = self.snake_clone.update()
+        else:
+            state1, replace1 = 0, []
         state, replace = self.snake.update()
-    
+
+        '''
+        if state < 0 or state1 < 0:
         if state == -1:
+
             return -1
         if replace and replace != [-1, -1]:
             return replace
         return 0
+        '''
+        return state, state1, replace, replace1
     
     def game_end(self):
         end = False
@@ -144,14 +166,14 @@ class Game:
     
     def blit_score(self, color, screen):
         font = pygame.font.SysFont(None, 25)
-        text = font.render('Score: ' + str(self.snake.score), True, color)
+        text = font.render('Score: ' + str(self.snake.score + self.snake_clone.score), True, color)
         screen.blit(text, (0, 0))
 
     def blit_map(self, rect_len, screen): 
         x0 = int(self.config.settings["xOffset"])
         y0 = int(self.config.settings["yOffset"])
-        for i in range(0, int(self.config.settings["mapY"])):
-            for k in range(0, int(self.config.settings["mapX"])):
+        for i in range(0, int(self.config.settings["mapX"])):
+            for k in range(0, int(self.config.settings["mapY"])):
                 tile = self.map.tiles[k][i]
                 if tile.type == "Other":
                     pass
@@ -167,4 +189,23 @@ class Game:
                     screen.blit(self.space_img, ((i + x0)*rect_len, (k + y0)*rect_len))
                 else:
                     pass
-        
+
+    def blit_features(self, rect_len, screen):
+        x0 = int(self.config.settings["xOffset"])
+        y0 = int(self.config.settings["yOffset"])
+        #pressure plates
+        for location in self.map.goals:
+            if (location in self.snake.segmentd) or (location in self.snake_clone.segmentd):
+                screen.blit(self.platea_img, ((location[0] + x0)*rect_len, (location[1] + y0)*rect_len))
+            else: 
+                screen.blit(self.plate_img, ((location[0] + x0)*rect_len, (location[1] + y0)*rect_len))
+        for location in self.map.alt_goals:
+            if (location in self.snake.segmentd) or (location in self.snake_clone.segmentd):
+                screen.blit(self.platea_alt_img, ((location[0] + x0)*rect_len, (location[1] + y0)*rect_len))
+            else: 
+                screen.blit(self.plate_alt_img, ((location[0] + x0)*rect_len, (location[1] + y0)*rect_len))
+        for location in self.map.clones:
+            if self.snake_clone.init:
+                screen.blit(self.clonea_img, ((location[0] + x0)*rect_len, (location[1] + y0)*rect_len))
+            else:
+                screen.blit(self.clone_img, ((location[0] + x0)*rect_len, (location[1] + y0)*rect_len))
