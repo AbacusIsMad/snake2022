@@ -6,5 +6,7 @@ You will need to modify this code to complete your Project 2 assignment.
 - Python 3
 - pygame
 
-## Compilation
-pyinstaller -F -n BingQi_Ling --add-data "images:images" --add-data "levels:levels" --add-data "sound:sound" main.py
+## Usage
+To start the game
+n
+	$ python main.py

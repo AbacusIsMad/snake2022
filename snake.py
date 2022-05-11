@@ -1,32 +1,24 @@
 import pygame
-import copy
 
 
 class Snake:
-    def __init__(self, parent, clone=False):
-        self.parent = parent
-        self.clone = clone
-        self.init = False
+    def __init__(self, parent):
+        self.game = parent
+        self.image_up = pygame.image.load('images/head_up.bmp')
 
-        self.image_up = pygame.image.load('./images/' + 'clone'*clone + 'head_up.bmp')
-        self.tail_up = pygame.image.load('./images/' + 'clone'*clone + 'tail_up.bmp')
-        #self.image_body = pygame.image.load('./images/' + 'clone'*clone + 'body.bmp')
-        self.image_body_s = pygame.image.load('./images/' + 'clone'*clone + 'body_s.bmp')
-        self.image_body_c = pygame.image.load('./images/' + 'clone'*clone + 'body_c.bmp')
-
-        self.image_space = pygame.image.load('./images/space.bmp')
+        self.tail_up = pygame.image.load('images/tail_up.bmp')
+        
+        self.image_body = pygame.image.load('images/body.bmp')
+        self.image_body_s = pygame.image.load('images/body_s.bmp')
+        self.image_body_c = pygame.image.load('images/body_c.bmp')
+        self.image_space = pygame.image.load('images/space.bmp')
         
         #self.facing = "right"
-        self.segments = []
-        self.segmentd = []
-        self.score = 0
-        if self.clone == False:
-            self.initialize()
-
+        self.initialize()
 
     def initialize(self, mapdir=None):
         if mapdir is not None:
-            with open("./levels/" + mapdir + "/snake.txt", "r") as f:
+            with open("levels/" + mapdir + "/snake.txt", "r") as f:
                 t = f.readlines()
             self.segments = []
             self.segmentd = []
@@ -48,38 +40,6 @@ class Snake:
             self.segmentd = [[6, 6], [5, 6], [4, 6], [3, 6]]
             self.facing = "right"
         self.score = 0
-        self.init = True
-
-    def dir_to_pos(self):
-        #lets start
-        buf = []
-        buf.append([self.segments[0][0], self.segments[0][1]])
-        bufpos = [self.segments[0][0], self.segments[0][1]]
-        
-        print("starting clone")
-        print(self.segments)
-        print(self.segments[1:])
-        #going thru the direction form one by one now, logic copied from below
-        for direction in self.segments[1:]:
-            print(direction)
-            bufpos[0] += direction[0]
-            bufpos[1] += direction[1]
-            if self.parent.map.tiles[bufpos[1]][bufpos[0]].type == 'Solid':
-                vector = ((not not direction[0])*25 + direction[0]*15 + (not not direction[1])*50 - direction[1]*30)//10
-                opposite = ((not not direction[0])*25 - direction[0]*15 + (not not direction[1])*50 + direction[1]*30)//10
-            
-                if self.parent.map.tiles[bufpos[1]][bufpos[0]].wrap_plate & vector:
-                    while not self.parent.map.tiles[bufpos[1]- direction[1]][bufpos[0] - direction[0]].wrap_plate & opposite:
-                        bufpos[0] -= direction[0]
-                        bufpos[1] -= direction[1]
-                else:
-                    #solid block somehow
-                    return False
-            buf.append([bufpos[0], bufpos[1]])
-        print(buf)
-        self.segmentd = copy.deepcopy(buf)
-        print("ending clone")
-        return True
 
     def blit_body(self, loc, cur, next, screen, size, x0, y0):
         x, y = (loc[0] + x0)*size, (loc[1] + y0)*size
@@ -117,7 +77,9 @@ class Snake:
         tail_direction = self.segments[-1]
         x = (x + x0)*size
         y = (y + y0)*size
-
+        print(tail_direction)
+        print(self.segments)
+        print(self.segmentd)
         #ls[big iterator][small iterator]
         
         if tail_direction == [0, 1]:
@@ -130,12 +92,12 @@ class Snake:
             screen.blit(pygame.transform.rotate(self.tail_up, 270), (x, y)) 
 
     def blit(self, rect_len, screen, last=None):
-        x0 = int(self.parent.config.settings["xOffset"])
-        y0 = int(self.parent.config.settings["yOffset"])
+        x0 = int(self.game.config.settings["xOffset"])
+        y0 = int(self.game.config.settings["yOffset"])
         for index, position in enumerate(self.segments[1:-1]):
             self.blit_body(self.segmentd[index + 1], position, self.segments[index + 2], screen, rect_len, x0, y0)
         self.blit_tail(self.segmentd[-1][0], self.segmentd[-1][1], screen, rect_len, x0, y0)
-        if isinstance(last, list) and last:
+        if isinstance(last, list):
             #this only outputs regular spaces, since the features in it get added later than the snake!
             screen.blit(self.image_space, ((last[0] + x0)*rect_len, (last[1] + y0)*rect_len))
         self.blit_head(self.segmentd[0], self.segments[1], screen, rect_len, x0, y0)
@@ -155,26 +117,24 @@ class Snake:
 
         
         dont_move = False
-        if self.parent.map.tiles[headpos[1]][headpos[0]].type == 'Solid':
+        if self.game.map.tiles[headpos[1]][headpos[0]].type == 'Solid':
             #transforms direction to a power of 2 to compare
             vector = ((not not pos[0])*25 + pos[0]*15 + (not not pos[1])*50 - pos[1]*30)//10
             opposite = ((not not pos[0])*25 - pos[0]*15 + (not not pos[1])*50 + pos[1]*30)//10
+            print(vector, opposite)
 
             #actual comparison, bit mask black magic
-            if self.parent.map.tiles[headpos[1]][headpos[0]].wrap_plate & vector:
+            if self.game.map.tiles[headpos[1]][headpos[0]].wrap_plate & vector:
+                print("yep")
                 #go on that specific direction
-                while not self.parent.map.tiles[headpos[1]- pos[1]][headpos[0] - pos[0]].wrap_plate & opposite:
+                while not self.game.map.tiles[headpos[1]- pos[1]][headpos[0] - pos[0]].wrap_plate & opposite:
                     headpos[0] -= pos[0]
                     headpos[1] -= pos[1]
                 #found it!
-            elif self.parent.map.tiles[headpos[1]][headpos[0]].pad_clone & vector:
+            elif self.game.map.tiles[headpos[1]][headpos[0]].pad_clone & vector:
                 dont_move = True
             else:   
                 return -1, []
-        
-        print(self.segments)
-        print(self.segmentd, "\n")
-
 
         #check for body collision, if yes the snake doesnt move forward.
         if headpos in self.segmentd[:-1]:
@@ -187,28 +147,15 @@ class Snake:
 
         last_tail = []
         #check for strawberry at head pos now.
-        if self.segments[0] == self.parent.strawberry.position:
-            self.parent.strawberry.random_pos()
+        if self.segments[0] == self.game.strawberry.position:
+            self.game.strawberry.random_pos()
             reward = 1
             self.score += 1
-
-        #padded mechanics
+            last_tail = [-1, -1]
         elif not dont_move:
             self.segments.pop()
             #unblit tail
             last_tail = self.segmentd.pop()
-            print(last_tail)
         if not dont_move:
             self.segments[1] = [-pos[0], -pos[1]]
-
-        #clone mechanics
-        if (not self.parent.snake_clone.init) and (headpos in self.parent.map.clones):
-            #setup clone
-            clone_pos = self.parent.map.clones[(self.parent.map.clones.index(headpos) + 1) % 2]
-            self.parent.snake_clone.facing = self.facing
-            self.parent.snake_clone.segments = copy.deepcopy(self.segments)
-            self.parent.snake_clone.segments[0] = [clone_pos[0], clone_pos[1]]
-            if not self.parent.snake_clone.dir_to_pos():
-                return -2, []
-            self.parent.snake_clone.init = True
         return 0, last_tail
