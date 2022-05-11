@@ -4,7 +4,7 @@ class Config():
             self.loadConfig(mapdir, custom)
 
     def loadConfig(self, mapdir, custom):
-        with open("levels/" + mapdir + "/config.txt", "r") as c:
+        with open("./levels/" + mapdir + "/config.txt", "r") as c:
             l = c.readlines()
             new = []
         for line in l:
