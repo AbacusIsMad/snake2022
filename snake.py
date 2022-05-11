@@ -1,31 +1,49 @@
 import pygame
 import copy
+import threading
+import time
+import datetime
 
 class Snake:
     def __init__(self, parent, clone=False):
         self.parent = parent
         self.clone = clone
         self.init = False
-
-        self.image_up = pygame.image.load('./images/' + 'clone'*clone + 'head_up.bmp')
-        self.tail_up = pygame.image.load('./images/' + 'clone'*clone + 'tail_up.bmp')
-        #self.image_body = pygame.image.load('./images/' + 'clone'*clone + 'body.bmp')
-        self.image_body_s = pygame.image.load('./images/' + 'clone'*clone + 'body_s.bmp')
-        self.image_body_c = pygame.image.load('./images/' + 'clone'*clone + 'body_c.bmp')
-
-        self.image_space = pygame.image.load('./images/space.bmp')
         
-        #self.facing = "right"
+        #the direction and coordinate form of the snake
         self.segments = []
         self.segmentd = []
+        #score
         self.score = 0
+        #flags to control the animations
+        self.animation = None
+        self.animation_offset = 0
+        self.tanimation = None
+        self.tanimation_offset = 0
+
+        #get data from map
         if self.clone == False:
             self.initialize()
+
+        self.reset_img_source()
+
+
+    def reset_img_source(self):
+        clone = self.clone
+        path = self.parent.src + "/styles/" + self.parent.style + "/images/"
+        self.image_up = pygame.transform.scale(pygame.image.load(path + 'clone'*clone + 'head_up.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
+        self.tail_up = pygame.transform.scale(pygame.image.load(path + 'clone'*clone + 'tail_up.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
+        self.image_body_s = pygame.transform.scale(pygame.image.load(path + 'clone'*clone + 'body_s.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
+        self.image_body_c = pygame.transform.scale(pygame.image.load(path + 'clone'*clone + 'body_c.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
+        self.image_ups = [pygame.transform.scale(pygame.image.load(path + 'clone'*clone + 'head_up' + str(i) + '.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len)) for i in range(5)]
+        self.tail_ups = [pygame.transform.scale(pygame.image.load(path + 'clone'*clone + 'tail_up' + str(i) + '.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len)) for i in range(5)]
+
+        self.image_space = self.parent.space_img
 
 
     def initialize(self, mapdir=None):
         if mapdir is not None:
-            with open("./levels/" + mapdir + "/snake.txt", "r") as f:
+            with open(self.parent.src + "/levels/" + mapdir + "/snake.txt", "r") as f:
                 t = f.readlines()
             self.segments = []
             self.segmentd = []
@@ -48,6 +66,7 @@ class Snake:
             self.facing = "right"
         self.score = 0
         self.init = True
+
 
     def dir_to_pos(self):
         #lets start
@@ -80,6 +99,7 @@ class Snake:
         print("ending clone")
         return True
 
+
     def blit_body(self, loc, cur, next, screen, size, x0, y0):
         x, y = (loc[0] + x0)*size, (loc[1] + y0)*size
         direction = [2*cur[0] + next[0], 2*cur[1] + next[1]]
@@ -96,49 +116,108 @@ class Snake:
         elif direction == [2, -1] or direction == [-1, 2]:
             screen.blit(pygame.transform.rotate(self.image_body_c, 270), (x, y))
         else:
-            screen.blit(self.image_right, (x, y))  
+            screen.blit(self.image_right, (x, y))
+        pygame.display.update(pygame.Rect(x, y, size, size))
 
-    def blit_head(self, loc, dire, screen, size, x0, y0):
+
+    def blit_head(self, loc, dire, screen, size, x0, y0, pad, phase):
         x, y = (loc[0] + x0)*size, (loc[1] + y0)*size
+        #plates only have one varient, due to them being stepped on.
+        overlap = None
+        tile = self.parent.map.tiles[loc[1]][loc[0]]
+        if tile.wrap_plate == 1:
+            overlap = self.parent.platea_img
+        elif tile.wrap_plate == 2:
+            overlap = self.parent.platea_alt_img
+        elif tile.pad_clone:
+            overlap = self.parent.clonea_img
 
         if dire == [0, 1]:
-            screen.blit(self.image_up, (x, y))
+            rotation = 0
         elif dire == [0, -1]:
-            screen.blit(pygame.transform.rotate(self.image_up, 180), (x, y))  
+            rotation = 180  
         elif dire == [1, 0]:
-            screen.blit(pygame.transform.rotate(self.image_up, 90), (x, y)) 
+            rotation = 90
         else:
-            screen.blit(pygame.transform.rotate(self.image_up, 270), (x, y))
+            rotation = 270
+        if pad == 1:
+            if phase == 0:
+                screen.blit(pygame.transform.rotate(self.image_ups[4], rotation), (x, y))
+        else:
+            screen.blit(self.image_space, (x, y))
+            screen.blit(pygame.transform.rotate(self.image_ups[phase], rotation), (x, y))
+            if overlap is not None:
+                screen.blit(overlap, (x, y))
+        pygame.display.update(pygame.Rect(x, y, 30, 30))
 
 
-    def blit_tail(self, x, y, screen, size, x0, y0):
-        #tail_direction = [self.segments[-2][i] - self.segments[-1][i] for i in range(2)]
+
+    def blit_tail(self, x, y, screen, size, x0, y0, pad, phase):
         tail_direction = self.segments[-1]
-        x = (x + x0)*size
-        y = (y + y0)*size
+        x1 = (x + x0)*size
+        y1 = (y + y0)*size
+        overlap = None
+        tile = self.parent.map.tiles[y][x]
+        if tile.wrap_plate == 1:
+            overlap = self.parent.platea_img
+        elif tile.wrap_plate == 2:
+            overlap = self.parent.platea_alt_img
+        elif tile.pad_clone:
+            overlap = self.parent.clonea_img
 
-        #ls[big iterator][small iterator]
-        
         if tail_direction == [0, 1]:
-            screen.blit(self.tail_up, (x, y))
+            rotation = 0
         elif tail_direction == [0, -1]:
-            screen.blit(pygame.transform.rotate(self.tail_up, 180), (x, y))    
+            rotation = 180    
         elif tail_direction == [1, 0]:
-            screen.blit(pygame.transform.rotate(self.tail_up, 90), (x, y))
+            rotation = 90
         else:
-            screen.blit(pygame.transform.rotate(self.tail_up, 270), (x, y)) 
+            rotation = 270
+        if pad:
+            if phase == 0:
+                screen.blit(pygame.transform.rotate(self.tail_ups[4], rotation), (x1, y1))
+        else:
+            screen.blit(self.image_space, (x1, y1))
+            screen.blit(pygame.transform.rotate(self.tail_ups[phase], rotation), (x1, y1))
+            if overlap is not None:
+                screen.blit(overlap, (x1, y1))
+        pygame.display.update(pygame.Rect(x1, y1, 30, 30))
 
-    def blit(self, rect_len, screen, last=None):
+
+    def blit(self, rect_len, screen, pad, phase):
         x0 = int(self.parent.config.settings["xOffset"])
         y0 = int(self.parent.config.settings["yOffset"])
-        for index, position in enumerate(self.segments[1:-1]):
-            self.blit_body(self.segmentd[index + 1], position, self.segments[index + 2], screen, rect_len, x0, y0)
-        self.blit_tail(self.segmentd[-1][0], self.segmentd[-1][1], screen, rect_len, x0, y0)
-        if isinstance(last, list) and last:
-            #this only outputs regular spaces, since the features in it get added later than the snake!
-            screen.blit(self.image_space, ((last[0] + x0)*rect_len, (last[1] + y0)*rect_len))
-        self.blit_head(self.segmentd[0], self.segments[1], screen, rect_len, x0, y0)
-        
+        if phase == 0:
+            for index, position in enumerate(self.segments[1:-1]):
+                self.blit_body(self.segmentd[index + 1], position, self.segments[index + 2], screen, rect_len, x0, y0)
+        self.blit_tail(self.segmentd[-1][0], self.segmentd[-1][1], screen, rect_len, x0, y0, pad, phase)
+
+        self.blit_head(self.segmentd[0], self.segments[1], screen, rect_len, x0, y0, pad, phase)
+    
+
+    def animate(self, screen, images, x, y, rotation, overlap):
+        #not connected with fps but i couldn't care less
+        prev = datetime.datetime.now()
+        attr = (images == self.tail_ups)*'t' + 'animation_offset'
+        #for i in range(5):
+        for i in range (getattr(self, attr), 5):
+            i = getattr(self, attr)
+            setattr(self, attr, i + 1)
+            curr = datetime.datetime.now()
+            diff = curr - prev
+            screen.blit(self.image_space, (x, y))
+            screen.blit(pygame.transform.rotate(images[i], rotation), (x, y))
+            if overlap:
+                screen.blit(overlap, (x, y))
+            pygame.display.update(pygame.Rect(x, y, 30, 30))
+            prev = datetime.datetime.now()
+            #if it still doesnt work then reduce the time lol
+            if diff.microseconds > 47000:
+                pygame.time.delay(47 - max((diff.microseconds - 46000)*2, 5000)//1000)
+            else:
+                pygame.time.delay(47)
+
+
     def update(self):
         pos = [0, 0]
         if self.facing == 'right':
@@ -186,9 +265,11 @@ class Snake:
 
         last_tail = []
         #check for strawberry at head pos now.
+        longer = False
         if self.segments[0] == self.parent.strawberry.position:
             self.parent.strawberry.random_pos()
             reward = 1
+            longer = True
             self.score += 1
 
         #padded mechanics
@@ -210,4 +291,4 @@ class Snake:
             if not self.parent.snake_clone.dir_to_pos():
                 return -2, []
             self.parent.snake_clone.init = True
-        return 0, last_tail
+        return 0 + int(dont_move) + 2*int(longer), last_tail

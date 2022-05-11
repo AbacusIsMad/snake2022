@@ -7,4 +7,7 @@ You will need to modify this code to complete your Project 2 assignment.
 - pygame
 
 ## Compilation
-pyinstaller -F -n BingQi_Ling --add-data "images:images" --add-data "levels:levels" --add-data "sound:sound" main.py
+pyinstaller -F -n BingQi_Ling --add-data "levels:levels" --add-data "sound:sound" --add-data "styles:styles" --add-data "snakeData:snakeData" main.py
+
+python3 -m nuitka --onefile --include-data-dir=.=. main.py
+
