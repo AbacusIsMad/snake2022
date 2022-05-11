@@ -14,15 +14,6 @@ from pygame.locals import KEYDOWN, K_RIGHT, K_LEFT, K_UP, K_DOWN, K_ESCAPE
 from pygame.locals import QUIT
 from snake import Snake
 
-'''
-def base_path(path):
-    try:
-        basedir = sys._MEIPASS
-    except Exception:
-        basedir = os.path.abspath(".")
-    print(os.path.join(basedir, path))
-    return os.path.join(basedir, path)
-'''
 
 if __name__ == "__main__":
     #get locally stored config file
