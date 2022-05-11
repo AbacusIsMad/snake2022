@@ -1,4 +1,4 @@
-from game import Snake, Strawberry, Settings
+from game import Snake, Strawberry, Settings, Game
 import pygame, random, unittest 
 
 class TestSnakeMethods(unittest.TestCase): 
@@ -55,10 +55,40 @@ class TestStrawberryMethods(unittest.TestCase):
         straw = Strawberry(settings)
         straw.random_pos(snake)
         self.assertTrue(straw.position[0] in range(9, 20), "Strawberry was not corrrectly allocated a random position")
-        self.assertTrue(straw.position[1] in range(9, 20), "strabwerry was not correctly allocated a random position")
+        self.assertTrue(straw.position[1] in range(9, 20), "strawberry was not correctly allocated a random position")
 
 class TestGameMethods(unittest.TestCase): 
+
+    def test_initialisation(self): 
+        game = Game()
+        self.assertEqual(game.move_dict, {0: 'up', 1: 'down', 2: 'left', 3: 'right'}, "Move dictionary not properly defined")
     
+    def test_restartinggame(self): 
+        game = Game()
+        # set the snake position to an arbitrary value and see if it resets properly
+        game.snake.position = [5, 7]
+        self.assertEqual(game.snake.position, [5, 7])
+
+        # same for strawberry 
+        game.strawberry.position = [10, 9]
+        self.assertEqual(game.strawberry.position, [10, 9])
+
+        game.restart_game()
+        self.assertEqual(game.snake.position, [6, 6], "Snake position did not reset when game was reset")
+        self.assertEqual(game.strawberry.position, [15, 10], "Strawbverry position did not reset when game was reset")
+
+    def test_direction_to_int(self): 
+        game = Game()
+        self.assertEqual(game.direction_to_int('up'), 0, "Did not give correct int for up direction")
+        self.assertEqual(game.direction_to_int('down'), 1, "Did not give correct int for down direction") 
+        self.assertEqual(game.direction_to_int("left"), 2, "Did not give correct int for left direction")
+        self.assertEqual(game.direction_to_int("right"), 3, "Did not give correct int for right direction")
+
+
+    #  unable to test blitting the map or the score, this will be left for end to end testing 
+
+
+
 if __name__ == "__main__":
     unittest.main()
     # coverage run -m unittest snakeunittest.py
