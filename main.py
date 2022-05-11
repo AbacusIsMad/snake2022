@@ -9,6 +9,7 @@ import time
 import threading
 import sys
 import os
+import math
 from pygame.locals import KEYDOWN, K_RIGHT, K_LEFT, K_UP, K_DOWN, K_ESCAPE
 from pygame.locals import QUIT
 
@@ -280,26 +281,30 @@ def game_loop(level):
     #whether the game is stopped
     stop = False
     #if the snake has crashed or lost
-    cont = 1
+    #cont = 1
 
     #always blit once before doing stuff, and sleep for a little bit! This allows for some time preparation.
-    game.snake.blit(rect_len, screen, 1)
+    game.snake.blit(rect_len, screen, 1, 0)
     game.strawberry.blit(screen, int(game.config.settings["xOffset"]), int(game.config.settings["yOffset"]))
     game.blit_features(rect_len, screen)
     game.blit_score(white, screen)
     pygame.display.update()
     pygame.time.delay(1000)
-    while cont:
+    score_cover = pygame.Rect(0, 0, 400, 80)
 
+    #the phase of the process, split into 5
+    phase = 0
+    move = game.direction_to_int(snake.facing)
+    while True:
         pygame.event.pump()
-        
-        
-        move, escape = human_move()
+        move_temp, escape = human_move()
         
         stop = stop ^ escape
-        #control speed here!
+        if move_temp >= 0 and not stop:
+            move = move_temp
+
         fps = 5
-        # fps = 10
+
         restart = [0, ""]
         if stop:
             #build restart screen
@@ -310,41 +315,62 @@ def game_loop(level):
                 break
             pygame.display.update()
             fpsClock.tick(30)
-        else:
+            continue
+        if phase == 0:
+            #the first section and basically decides the next 4 frames.
             state, state1, result, result1 = game.do_move(move)
             print(state, state1, result, result1)
             if state < 0 or state1 < 0:
                 break
 
-
             #blit everything with spaces where the snake is so clones don't affect each other.
             x0 = int(game.config.settings["xOffset"])
             y0 = int(game.config.settings["yOffset"])
             for coord in game.snake.segmentd:
-                screen.blit(space_img, ((coord[0] + x0)*rect_len, (coord[1] + y0)*rect_len))
+                x_f, y_f = (coord[0] + x0)*rect_len, (coord[1] + y0)*rect_len
+                screen.blit(space_img, (x_f, y_f))
+                #pygame.display.update(pygame.Rect(x_f, y_f, rect_len, rect_len))
             if game.snake_clone.init:
                 for coord in game.snake_clone.segmentd:
-                    screen.blit(space_img, ((coord[0] + x0)*rect_len, (coord[1] + y0)*rect_len))
+                    x_f, y_f = (coord[0] + x0)*rect_len, (coord[1] + y0)*rect_len
+                    screen.blit(space_img, (x_f, y_f))
+                    #pygame.display.update(pygame.Rect(x_f, y_f, rect_len, rect_len))
             if result:
-                screen.blit(space_img, ((result[0] + x0)*rect_len, (result[1] + y0)*rect_len))
+                x_f, y_f = (result[0] + x0)*rect_len, (result[1] + y0)*rect_len
+                screen.blit(space_img, (x_f, y_f))
+                #pygame.display.update(pygame.Rect(x_f, y_f, rect_len, rect_len))
             if result1:
-                screen.blit(space_img, ((result1[0] + x0)*rect_len, (result1[1] + y0)*rect_len))
+                x_f, y_f = (result1[0] + x0)*rect_len, (result1[1] + y0)*rect_len
+                screen.blit(space_img, (x_f, y_f))
+                #pygame.display.update(pygame.Rect(x_f, y_f, rect_len, rect_len))
 
             #blit snake
-            game.snake.blit(rect_len, screen, state)
+            game.snake.blit(rect_len, screen, state, phase)
             if game.snake_clone.init:
-                game.snake_clone.blit(rect_len, screen, state1)
+                game.snake_clone.blit(rect_len, screen, state1, phase)
             #blit the features, which always appear on top of the snake
             game.blit_features(rect_len, screen)
             game.strawberry.blit(screen, int(game.config.settings["xOffset"]), int(game.config.settings["yOffset"]))
             #covers up the score and home, restart buttons.
-            pygame.draw.rect(screen, black, pygame.Rect(0, 0, 400, 80))
+            pygame.draw.rect(screen, black, score_cover)
             game.blit_score(white, screen)
+            pygame.display.update(score_cover)
 
-            pygame.display.update()
-            
-            pygame.time.delay(1000//fps)
-            #fpsClock.tick(fps)
+            #update everything around the snake
+            for coord in game.snake.segmentd + game.snake_clone.segmentd + [result] + [result1]:
+                if coord:
+                    x_f, y_f = (coord[0] + x0)*rect_len, (coord[1] + y0)*rect_len
+                    pygame.display.update(pygame.Rect(x_f, y_f, rect_len, rect_len))
+
+            #pygame.display.update()
+        else:
+            game.snake.blit(rect_len, screen, state, phase)
+            if game.snake_clone.init:
+                game.snake_clone.blit(rect_len, screen, state1, phase)
+
+        phase = (phase + 1) % 5
+        pygame.time.delay(math.ceil(1000//(fps*5)))
+
     if not (restart[0] or restart[1]):
         crash()
         restart[1] = level
@@ -359,7 +385,7 @@ def options():
 
 
 def human_move():
-    direction = snake.facing
+    direction = 'none'
     escape = False
 
     for event in pygame.event.get():

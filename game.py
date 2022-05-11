@@ -42,15 +42,15 @@ class Strawberry():
         self.position[0] = random.randint(0, int(self.parent.config.settings["mapX"])-1)
         self.position[1] = random.randint(0, int(self.parent.config.settings["mapY"])-1)
 
-        #self.position[0] = random.randint(9, 19)
-        #self.position[1] = random.randint(9, 19)
-        #yo recursion?
+
         if (self.position in self.parent.snake.segmentd[:-1]) or not self.parent.map.tiles[self.position[1]][self.position[0]].true_empty:
             self.random_pos()
 
     def blit(self, screen, x0, y0):
-        #screen.blit(self.image, [p * self.settings.rect_len for p in self.position])
-        screen.blit(self.image, ((self.position[0] + x0)*self.settings.rect_len, (self.position[1] + y0)*self.settings.rect_len))
+        x_f = (self.position[0] + x0)*self.settings.rect_len
+        y_f = (self.position[1] + y0)*self.settings.rect_len
+        screen.blit(self.image, (x_f, y_f))
+        pygame.display.update(pygame.Rect(x_f, y_f, self.settings.rect_len, self.settings.rect_len))
    
     def initialize(self):
         self.position = [15, 10]
@@ -69,7 +69,8 @@ class Game:
         self.move_dict = {0 : 'up',
                           1 : 'down',
                           2 : 'left',
-                          3 : 'right'}
+                          3 : 'right',
+                          -1: 'none'}
 
     def reset_img_source(self): 
         path = self.src + "/styles/" + self.style + "/images/"
@@ -180,17 +181,23 @@ class Game:
         y0 = int(self.config.settings["yOffset"])
         #pressure plates
         for location in self.map.goals:
+            x_f, y_f = (location[0] + x0)*rect_len, (location[1] + y0)*rect_len
             if (location in self.snake.segmentd) or (location in self.snake_clone.segmentd):
-                screen.blit(self.platea_img, ((location[0] + x0)*rect_len, (location[1] + y0)*rect_len))
+                screen.blit(self.platea_img, (x_f, y_f))
             else: 
-                screen.blit(self.plate_img, ((location[0] + x0)*rect_len, (location[1] + y0)*rect_len))
+                screen.blit(self.plate_img, (x_f, y_f))
+            pygame.display.update(pygame.Rect(x_f, y_f, self.settings.rect_len, self.settings.rect_len))
         for location in self.map.alt_goals:
+            x_f, y_f = (location[0] + x0)*rect_len, (location[1] + y0)*rect_len
             if (location in self.snake.segmentd) or (location in self.snake_clone.segmentd):
-                screen.blit(self.platea_alt_img, ((location[0] + x0)*rect_len, (location[1] + y0)*rect_len))
+                screen.blit(self.platea_alt_img, (x_f, y_f))
             else: 
-                screen.blit(self.plate_alt_img, ((location[0] + x0)*rect_len, (location[1] + y0)*rect_len))
+                screen.blit(self.plate_alt_img, (x_f, y_f))
+            pygame.display.update(pygame.Rect(x_f, y_f, self.settings.rect_len, self.settings.rect_len))
         for location in self.map.clones:
+            x_f, y_f = (location[0] + x0)*rect_len, (location[1] + y0)*rect_len
             if self.snake_clone.init:
-                screen.blit(self.clonea_img, ((location[0] + x0)*rect_len, (location[1] + y0)*rect_len))
+                screen.blit(self.clonea_img, (x_f, y_f))
             else:
-                screen.blit(self.clone_img, ((location[0] + x0)*rect_len, (location[1] + y0)*rect_len))
+                screen.blit(self.clone_img, (x_f, y_f))
+            pygame.display.update(pygame.Rect(x_f, y_f, self.settings.rect_len, self.settings.rect_len))
