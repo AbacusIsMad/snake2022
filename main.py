@@ -241,6 +241,7 @@ def instructions_pagetwo():
                 pygame.quit()
         screen.fill(black)
 
+        #  instructions set telling players not to crash into the walls 
         message_display("Don't crash into the walls!", 200, 40, color=white, size=20)
 
         screen.blit(pygame.image.load("images/tile.bmp"), (200, 60))
@@ -255,6 +256,7 @@ def instructions_pagetwo():
         cross = pygame.transform.scale(pygame.image.load("images/cross.bmp"), (40, 40))
         screen.blit(cross, (240, 40))
 
+        #  Instructions set telling players not to crash into themselves
         message_display("Don't crash into yourself!", 200, 100, color=white, size=20)
 
         screen.blit(snaketail, (140, 120))
@@ -269,10 +271,24 @@ def instructions_pagetwo():
 
         screen.blit(cross, (240, 120))
         
-
+        # Instructions demonstrating the portal walls
         message_display("You teleport through portal walls", 200, 170, color=white, size=20)
 
-        message_display("You can survive impact with padded walls", 200, 200, color=white, size=20)
+        screen.blit(snaketail, (170, 190))
+        screen.blit(snakebody, (185, 190))
+        screen.blit(pygame.image.load("images/tile.bmp"), (200, 190))
+        screen.blit(pygame.transform.rotate(pygame.image.load("images/wrap.bmp"), 180), (200, 190))
+
+
+        screen.blit(pygame.image.load("images/tile.bmp"), (240, 190))
+        screen.blit(pygame.image.load("images/wrap.bmp"), (240, 190))
+        screen.blit(snakebody, (255, 190))
+        screen.blit(snakehead, (270, 190))
+
+
+
+        #  Instructions for padded walls
+        message_display("You can survive impact with padded walls", 200, 230, color=white, size=20)
         screen.blit(pygame.image.load("images/tile.bmp"), (200, 240))
         screen.blit(pygame.image.load("images/pad.bmp"), (200,240))
 
