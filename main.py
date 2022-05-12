@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed May 16 15:22:20 2018 bruh are you serious
+Created on Wed May 16 15:22:20 2018 
 
 @author: zou
 """
@@ -132,8 +132,8 @@ def text_objects(text, font, color=black):
     return text_surface, text_surface.get_rect()
 
 
-def message_display(text, x, y, color=black):
-    large_text = pygame.font.Font(os.path.dirname(package_path) + '/arial.ttf', 50)
+def message_display(text, x, y, color=black, size=50):
+    large_text = pygame.font.Font(os.path.dirname(package_path) + '/arial.ttf', size)
     text_surf, text_rect = text_objects(text, large_text, color)
     text_rect.center = (x, y)
     screen.blit(text_surf, text_rect)
@@ -271,6 +271,8 @@ def display_instructions():
     #  this instruction page explains how to move the snake
     intro = True
     restart = [0, ""]
+
+    # The page will display until the button is pressed or quit 
     while intro:
         if restart[0]:
             break
@@ -282,24 +284,29 @@ def display_instructions():
                 pygame.quit()
         screen.fill(black)
 
+        #  Text is displayed on the screen
         message_display("How to Play Gluttonous!", 200, 50, color=white, size=30)
+
+        # Buttons to go back to the home screen or to the next page
         home = button('Home', 100, 350, 80, 40, red, bright_red, yes)
         nextbutton = button('Next', 250, 350, 80, 40, red, bright_red, yes)
+
+        # A .bmp of arrow keys as well as a 'sample' snake is blitted to screen 
         arrows = pygame.image.load("images/arrowkeys.bmp")
         arrows = pygame.transform.scale(arrows, (140, 140))            
         screen.blit(arrows, (110, 88))
-        screen.blit(pygame.image.load("images/head_up1.bmp"), (280, 125))
-        screen.blit(pygame.image.load("images/body_s.bmp"), (280, 140))
-        screen.blit(pygame.image.load("images/body_s.bmp"), (280, 155))            
-        screen.blit(pygame.image.load("images/body_s.bmp"), (280, 170))
-        screen.blit(pygame.image.load("images/tail_up.bmp"), (280, 185))
+        screen.blit(pygame.image.load("styles/0/images/head_up1.bmp"), (280, 125))
+        screen.blit(pygame.image.load("styles/0/images/body_s.bmp"), (280, 140))
+        screen.blit(pygame.image.load("styles/0/images/body_s.bmp"), (280, 155))            
+        screen.blit(pygame.image.load("styles/0/images/body_s.bmp"), (280, 170))
+        screen.blit(pygame.image.load("styles/0/images/tail_up.bmp"), (280, 185))
         message_display("Use the arrow keys to move the snake", 200, 90, color=white, size=20)   
 
         message_display("Eat the food to grow the snake", 200, 220, color=white, size=20)
 
         # blit the food onto the screen to show users 
         for i in range(1, 9):
-            food = pygame.image.load("images/food" + str(i) + ".bmp")
+            food = pygame.image.load("styles/0/images/food" + str(i) + ".bmp")
             food = pygame.transform.scale(food, (30, 30))
             if i in range(1, 5): 
                 screen.blit(food, (150+(i-1)*31, 250))
@@ -330,13 +337,13 @@ def instructions_pagetwo():
                 pygame.quit()
         screen.fill(black)
 
-        #  instructions set telling players not to crash into the walls 
+        #  instructions set telling players not to crash into the walls, with a demonstration
         message_display("Don't crash into the walls!", 200, 40, color=white, size=20)
 
-        screen.blit(pygame.image.load("images/tile.bmp"), (200, 60))
-        snakehead = pygame.transform.rotate(pygame.image.load("images/head_up1.bmp"), 270)
-        snakebody = pygame.transform.rotate(pygame.image.load('images/body_s.bmp'), 270)
-        snaketail = pygame.transform.rotate(pygame.image.load('images/tail_up.bmp'), 270)
+        screen.blit(pygame.image.load("styles/0/images/tile.bmp"), (200, 60))
+        snakehead = pygame.transform.rotate(pygame.image.load("styles/0/images/head_up1.bmp"), 270)
+        snakebody = pygame.transform.rotate(pygame.image.load('styles/0/images/body_s.bmp'), 270)
+        snaketail = pygame.transform.rotate(pygame.image.load('styles/0/images/tail_up.bmp'), 270)
         screen.blit(snakehead,(185,60))
         screen.blit(snakebody, (170, 60))
         screen.blit(snakebody, (155, 60))
@@ -345,7 +352,7 @@ def instructions_pagetwo():
         cross = pygame.transform.scale(pygame.image.load("images/cross.bmp"), (40, 40))
         screen.blit(cross, (240, 40))
 
-        #  Instructions set telling players not to crash into themselves
+        #  Instructions set telling players not to crash into themselves, with a demonstration
         message_display("Don't crash into yourself!", 200, 100, color=white, size=20)
 
         screen.blit(snaketail, (140, 120))
@@ -360,26 +367,23 @@ def instructions_pagetwo():
 
         screen.blit(cross, (240, 120))
         
-        # Instructions demonstrating the portal walls
-        message_display("You teleport through portal walls", 200, 170, color=white, size=20)
+        # Instructions demonstrating the wrap walls
+        message_display("You teleport through wrap walls", 200, 170, color=white, size=20)
 
         screen.blit(snaketail, (170, 190))
         screen.blit(snakebody, (185, 190))
-        screen.blit(pygame.image.load("images/tile.bmp"), (200, 190))
-        screen.blit(pygame.transform.rotate(pygame.image.load("images/wrap.bmp"), 180), (200, 190))
+        screen.blit(pygame.image.load("styles/0/images/tile.bmp"), (200, 190))
+        screen.blit(pygame.transform.rotate(pygame.image.load("styles/0/images/wrap.bmp"), 180), (200, 190))
 
-
-        screen.blit(pygame.image.load("images/tile.bmp"), (240, 190))
-        screen.blit(pygame.image.load("images/wrap.bmp"), (240, 190))
+        screen.blit(pygame.image.load("styles/0/images/tile.bmp"), (240, 190))
+        screen.blit(pygame.image.load("styles/0/images/wrap.bmp"), (240, 190))
         screen.blit(snakebody, (255, 190))
         screen.blit(snakehead, (270, 190))
 
-
-
         #  Instructions for padded walls
         message_display("You can survive impact with padded walls", 200, 230, color=white, size=20)
-        screen.blit(pygame.image.load("images/tile.bmp"), (200, 240))
-        screen.blit(pygame.image.load("images/pad.bmp"), (200,240))
+        screen.blit(pygame.image.load("styles/0/images/tile.bmp"), (200, 240))
+        screen.blit(pygame.image.load("styles/0/images/pad.bmp"), (200,240))
 
         message_display("Once the snake is big enough, activate the pressure plates to win the level", 200, 300, color=white, size=10)
 
