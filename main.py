@@ -316,6 +316,8 @@ def game_loop(level, custom=False):
             restart[1] = button('Restart', 270, 20, 80, 40, yellow, bright_yellow, yes) * level
             restart[0] += button('Home', 20, 20, 80, 40, green, bright_green, yes)
             if restart[0] or restart[1]:
+                if restart[0]: 
+                    screen.fill(white)
                 break
             pygame.display.update()
             fpsClock.tick(30)
