@@ -95,6 +95,7 @@ def display_instructions(package_path=None, screen=None):
                 screen.blit(food, (150+(i-5)*31, 281))
         
         if home: 
+            screen.fill(white)
             return 0
         if nextbutton: 
             instructions_pagetwo(package_path, screen)
