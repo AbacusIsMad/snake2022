@@ -268,7 +268,12 @@ class Snake:
         #check for strawberry at head pos now.
         longer = False
         if self.segments[0] == self.parent.strawberry.position:
-            self.parent.strawberry.random_pos()
+            if (self.parent.strawberry.times_called < int(self.parent.config.settings['maxS']) - 1)\
+                or not int(self.parent.config.settings['maxS']):
+                self.parent.strawberry.times_called += 1
+                self.parent.strawberry.random_pos()
+            else:
+                self.parent.strawberry.position = [-100, -100]
             reward = 1
             longer = True
             self.score += 1

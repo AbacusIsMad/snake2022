@@ -1,4 +1,8 @@
 import pygame
+
+import pygame_textinput
+#https://github.com/Nearoo/pygame-text-input
+
 import os
 
 black = pygame.Color(0, 0, 0)
@@ -56,9 +60,6 @@ def button(msg, screen, x, y, w, h, inactive_color, active_color, action, **kwar
     return pressed
 
 
-
-
-
 def level_maker(game=None):
     screen = game.screen
     screen.fill(white)
@@ -68,18 +69,91 @@ def level_maker(game=None):
             if event.type == pygame.QUIT:
                 pygame.quit()
 
-        
-
-
-        button('New level', screen, 370, 150, 160, 40, red, bright_red, yes)
+        button('New level', screen, 370, 150, 160, 40, red, bright_red, new_level, game=game)
         button('Edit existing level', screen, 370, 300, 160, 40, red, bright_red, yes)
 
         if button('Back', screen, 410, 600, 80, 40, red, bright_red, yes):
             screen.fill(white)
             break
 
-
-
-
         pygame.display.update()
         pygame.time.Clock().tick(15)
+
+
+class InputBox:
+
+    def __init__(self, x, y, w, h, text=''):
+        self.rect = pygame.Rect(x, y, w, h)
+        self.text = text
+        self.txt_surface = pygame.font.Font(os.path.dirname(os.path.abspath(__file__)) + '/arial.ttf', 20)\
+                        .render(text, True, black)
+        self.font = pygame.font.Font(os.path.dirname(os.path.abspath(__file__)) + '/arial.ttf', 20)
+        self.color = red
+        self.active = False
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # If the user clicked on the input_box rect.
+            if self.rect.collidepoint(event.pos):
+                # Toggle the active variable.
+                self.active = True #not self.active
+            else:
+                self.active = False
+
+            # Change the current color of the input box.
+            self.color = green if self.active else red
+
+
+        if event.type == pygame.KEYDOWN:
+            if self.active:
+                if event.key == pygame.K_RETURN:
+                    self.active = False
+                    print(self.text)
+                    self.color = green if self.active else red
+                    #self.text = ''
+                elif event.key == pygame.K_BACKSPACE:
+                    self.text = self.text[:-1]
+                elif len(self.text) <= 15:
+                    self.text += event.unicode
+                # Re-render the text.
+                self.txt_surface = self.font.render(self.text, True, white)
+
+    def draw(self, screen):
+        screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
+        pygame.draw.rect(screen, self.color, self.rect, 2)
+
+
+
+def new_level(game=None):
+    screen = game.screen
+    
+
+    font = pygame.font.Font(os.path.dirname(os.path.abspath(__file__)) + '/arial.ttf', 30)
+    active = False
+
+    text_box = InputBox(350, 100, 200, 32)
+
+    while True:
+        screen.fill(black)
+
+        
+
+
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            text_box.handle_event(event)
+
+
+        text_box.draw(screen)
+
+        pygame.display.update()
+        pygame.time.delay(30)
+
+
+
+
+
+
+
