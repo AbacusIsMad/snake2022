@@ -31,6 +31,7 @@ class Snake:
     def reset_img_source(self):
         clone = self.clone
         path = self.parent.src + "/styles/" + self.parent.style + "/images/"
+
         self.image_up = pygame.transform.scale(pygame.image.load(path + 'clone'*clone + 'head_up.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
         self.tail_up = pygame.transform.scale(pygame.image.load(path + 'clone'*clone + 'tail_up.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
         self.image_body_s = pygame.transform.scale(pygame.image.load(path + 'clone'*clone + 'body_s.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))

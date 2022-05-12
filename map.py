@@ -34,7 +34,7 @@ class Tile():
 
             
 class Map():
-    def __init__(self, parent=None, mapdir=None, custom=False):
+    def __init__(self, parent=None, mapdir=None):
         self.parent = parent
         print(self.parent.config.settings)
         self.tiles = []
@@ -44,10 +44,15 @@ class Map():
         self.clones = []
         #can create an empty instance to write to!
         if mapdir is not None:
-            self.loadMap(mapdir, custom)
+            self.loadMap(mapdir)
 
-    def loadMap(self, mapdir, custom):
-        with open(self.parent.src + "/levels/" + mapdir + "/map1.txt", "r") as f, open(self.parent.src + "/levels/" + mapdir + "/map2.txt", "r") as g:
+    def loadMap(self, mapdir):
+        if self.parent.custom:
+            path = self.parent.srcreal + '/snakeData'
+        else:
+            path = self.parent.src
+
+        with open(path + "/levels/" + mapdir + "/map1.txt", "r") as f, open(path + "/levels/" + mapdir + "/map2.txt", "r") as g:
             for i in range(0, int(self.parent.config.settings["mapY"])): 
                 line = f.readline()
                 line2 = g.readline()

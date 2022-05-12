@@ -13,12 +13,25 @@ import math
 from pygame.locals import KEYDOWN, K_RIGHT, K_LEFT, K_UP, K_DOWN, K_ESCAPE
 from pygame.locals import QUIT
 from snake import Snake
+from instructions import display_instructions
+from level import level_maker
 
 
 if __name__ == "__main__":
     #get locally stored config file
     invalid_loc = False
-    real_path = os.path.join(os.path.abspath('.'), 'snakeData')
+    print(os.path.abspath(sys.executable))
+    if getattr(sys, 'frozen', False):
+        print("okay we are in executable probably")
+        real_path = os.path.join(os.path.abspath(sys.executable), 'snakeData')
+    else:
+        print("apparently we are not, but perhaps I'm just stupid")
+        real_path = os.path.join(os.path.abspath('.'), 'snakeData')
+
+    #temporary location to test like everything
+    #real_path = '/home/ruize/Desktop/snakeData'
+
+
     package_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'snakeData')
     print("real path:", real_path)
     print("unpackaged path:", package_path)
@@ -26,44 +39,19 @@ if __name__ == "__main__":
         print("inside a python script. No need to do anything more.")
     else:
         print("we are inside the executable.")
-    if not os.path.exists(real_path):
+
+
+
+
+    if not os.path.exists(real_path + '/levels'):
         try:
-            os.makedirs(real_path)
+            os.makedirs(real_path + '/levels')
         except Exception:
             print("failed to make directory or file! Returning to normal dir.")
             real_path = package_path
             invalid_loc = True
 
 
-    '''
-    if getattr(sys, 'frozen', None):
-        print("frozen executable!")
-        game_data = os.path.join(os.path.dirname(sys.executable), 'snakeData')
-    else:
-        print("normal")
-        game_data = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'snakeData')
-    print("current directory:", game_data)
-    
-
-    #check for permissions, or else resort to internal directory.
-    print("coming here now")
-    if not os.path.exists(game_data):
-        try:
-            os.makedirs(game_data)
-        except Exception:
-            print("failed to make directory or file! Returning to normal dir.")
-            #game_data = './snakeData'
-            game_data = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'snakeData')
-            #invalid_loc = True
-    elif not os.access(game_data, os.W_OK):
-        print("directory is not writable! Returning to normal dir.")
-        #game_data = './snakeData'
-        game_data = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'snakeData')
-        #invalid_loc = True
-    print('storage directory:', game_data)
-
-    #os.chdir(base_path(''))
-    '''
 
     #create the files if they don't exist.
     if not os.path.exists(real_path + '/style.txt'):
@@ -72,11 +60,9 @@ if __name__ == "__main__":
             print("style written")
     if not os.path.exists(real_path + '/playerData.txt'):
         with open(real_path + '/playerData.txt', 'w') as f:
-            f.write('')
+            f.write('0')
             print("playerData written")
 
-    #change to _MEIxxxx if needed, to get src
-    #os.chdir(base_path(''))
     
 
     
@@ -95,15 +81,11 @@ blue = pygame.Color(32, 178, 170)
 bright_blue = pygame.Color(32, 200, 200)
 yellow = pygame.Color(255, 205, 0)
 bright_yellow = pygame.Color(255, 255, 0)
+purple = pygame.Color(135, 7, 255)
+bright_purple = pygame.Color(189, 58, 255)
 
-'''The Strat:
-Load default from folder
-Load into temp location
-copy level to playing zone
-pass any pass-death features to intermediate
-when level quit, unload on both levels
-ALWAYS PICKLE IT!
-'''
+
+
 
 game = Game(os.path.dirname(package_path), os.path.dirname(real_path))
 rect_len = game.settings.rect_len
@@ -111,6 +93,7 @@ snake = game.snake
 pygame.init()
 fpsClock = pygame.time.Clock()
 screen = pygame.display.set_mode((game.settings.width * game.settings.rect_len, game.settings.height * game.settings.rect_len))
+game.screen = screen
 pygame.display.set_caption('Gluttonous')
 
 #osx problem?
@@ -125,21 +108,22 @@ def text_objects(text, font, color=black):
     return text_surface, text_surface.get_rect()
 
 
-def message_display(text, x, y, color=black):
-    large_text = pygame.font.Font(os.path.dirname(package_path) + '/arial.ttf', 50)
+def message_display(text, x, y, color=black, size=50):
+    large_text = pygame.font.Font(os.path.dirname(os.path.abspath(__file__)) + '/arial.ttf', size)
     text_surf, text_rect = text_objects(text, large_text, color)
     text_rect.center = (x, y)
     screen.blit(text_surf, text_rect)
     pygame.display.update()
 
-def button(msg, x, y, w, h, inactive_color, active_color, action=None, parameter=None):
+#def button(msg, x, y, w, h, inactive_color, active_color, action=None, parameter=None):
+def button(msg, x, y, w, h, inactive_color, active_color, action, **kwargs):
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
     if x + w > mouse[0] > x and y + h > mouse[1] > y:
         pygame.draw.rect(screen, active_color, (x, y, w, h))
         if click[0] == 1 and action != None:
-            if parameter != None:
-                return action(parameter)
+            if kwargs:
+                return action(**kwargs)
             else:
                 return action()
     else:
@@ -151,6 +135,7 @@ def button(msg, x, y, w, h, inactive_color, active_color, action=None, parameter
     TextSurf, TextRect = text_objects(msg, smallText)
     TextRect.center = (x + (w / 2), y + (h / 2))
     screen.blit(TextSurf, TextRect)
+    #pygame.display.update(pygame.Rect(x, y, w, h))
     return pressed
 
 def quitgame():
@@ -168,25 +153,33 @@ def crash():
 def initial_interface(invalid, directory):
     intro = True
     restart = False
+    screen.fill(white)
 
     while intro:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
 
-        screen.fill(white)
-        message_display('Gluttonous', game.settings.width / 2 * 15, game.settings.height / 4 * 15)
+        #screen.fill(white)
+        message_display('Gluttonous', game.settings.width / 2 * game.settings.rect_len, game.settings.height / 4 * game.settings.rect_len)
         if invalid_loc:
-            message_display('Error', game.settings.width / 4 * 15, game.settings.height / 2 * 15)
+            message_display('Error', game.settings.width / 4 * game.settings.rect_len, game.settings.height / 2 * game.settings.rect_len)
 
-        button('Go!', 80, 240, 80, 40, green, bright_green, level_select)
+        button('Go!', 410, 280, 80, 40, green, bright_green, level_select)
 
         if not invalid:
-            button('Settings', 175, 240, 80, 40, yellow, bright_yellow, settings, directory)
+            button('Settings', 410, 340, 80, 40, yellow, bright_yellow, settings, directory=directory)
         else:
-            button('Nope lol', 175, 240, 80, 40, yellow, bright_yellow, yes)
+            button('settings disabled', 390, 340, 120, 40, yellow, bright_yellow, yes)
 
-        button('Quit', 270, 240, 80, 40, red, bright_red, quitgame)
+        button('Quit', 410, 400, 80, 40, red, bright_red, quitgame)
+
+        if not invalid:
+            button('Level Maker', 390, 460, 120, 40, purple, bright_purple, level_maker, game=game)
+        else:
+            button('maker disabled', 390, 460, 120, 40, purple, bright_purple, yes)
+
+        button('Instructions', 390, 520, 120, 40, blue, bright_blue, display_instructions, package_path=package_path, screen=screen)
 
         pygame.display.update()
         pygame.time.Clock().tick(15)
@@ -194,12 +187,14 @@ def initial_interface(invalid, directory):
 def settings(directory):
     with open(directory + "/style.txt", 'r') as f:
         style = f.read()
+
+    screen.fill(black)
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
 
-        screen.fill(black)
+        
 
         if button('Home', 100, 200, 80, 40, red, bright_red, yes):
             break
@@ -219,7 +214,7 @@ def settings(directory):
                 style = 'cringe'
 
 
-        button('Instructions', 155, 300, 120, 40, blue, bright_blue, display_instructions)
+        #button('Instructions', 155, 300, 120, 40, blue, bright_blue, display_instructions)
 
         pygame.display.update()
         pygame.time.Clock().tick(15)
@@ -228,186 +223,59 @@ def settings(directory):
 def level_select():
     intro = True
     restart = [0, ""]
+    screen.fill(black)
     while intro:
         if restart[0]:
             break
         if restart[1]:
+            print("restarted!")
             restart = game_loop(restart[1])
             continue
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-        screen.fill(black)
-        message_display('Select Level', game.settings.width / 2 * 15, game.settings.height / 4 * 15, color=white)
+        #screen.fill(black)
+        message_display('Select Level', game.settings.width / 2 * game.settings.rect_len, game.settings.height / 8 * game.settings.rect_len, color=white)
+        message_display('Preset levels', game.settings.width / 4 * game.settings.rect_len, game.settings.height / 5 * game.settings.rect_len, color=white, size=30)
+        message_display('Custom levels', 3*game.settings.width / 4 * game.settings.rect_len, game.settings.height / 5 * game.settings.rect_len, color=white, size=30)
 
-        if button('Home', 100, 200, 80, 40, red, bright_red, yes):
+        if button('Home', 410, 150, 80, 40, red, bright_red, yes):
             return 0
 
-        temp = button('1-1', 20, 20, 40, 40, green, bright_green, game_loop, "1-1")
-        if isinstance(temp, list):
-            restart = temp
-        temp = button('1-2', 80, 20, 40, 40, green, bright_green, game_loop, "1-2")
-        if isinstance(temp, list):
-            restart = temp
-        temp = button('1-3', 140, 20, 40, 40, green, bright_green, game_loop, "1-3")
-        if isinstance(temp, list):
-            restart = temp
-        temp = button('1-4', 200, 20, 40, 40, green, bright_green, game_loop, "1-4")
-        if isinstance(temp, list):
-            restart = temp
-        if restart[0]:
-            break
-        pygame.display.update()
-        pygame.time.Clock().tick(15)
+        dontrender = False
+        #generate buttons for preset levels. Sorts them first
+        for idx, d in enumerate(sorted(os.listdir(os.path.dirname(package_path) + '/levels'), key=lambda name: int(name.split('-')[0])*11 + int(name.split('-')[1]))):
+            temp = button(d, 80 + 60*(idx%5), 220 + 50*(idx//5), 50, 40, green, bright_green, game_loop, level=d, custom=False)
+            if isinstance(temp, list):
+                restart = temp
+                if restart[1]:
+                    dontrender = True
+                    break
 
-def display_instructions():
-    #  this instruction page explains how to move the snake
-    intro = True
-    restart = [0, ""]
-    while intro:
-        if restart[0]:
-            break
-        if restart[1]:
-            restart = game_loop(restart[1])
+        if dontrender:
             continue
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-        screen.fill(black)
+        #generate buttons for customised levels.
+        if not os.listdir(real_path + '/levels'):
+            message_display('wow, such empty ~', 3*game.settings.width / 4 * game.settings.rect_len, game.settings.height / 4 * game.settings.rect_len, color=bright_blue, size=25)
+        for idx, d in enumerate(sorted(os.listdir(real_path + '/levels'))):
+            temp = button(d, 520 + 160*(idx%2), 220 + 50*(idx//2), 150, 40, yellow, bright_yellow, game_loop, level=d, custom=True)
+            if isinstance(temp, list):
+                restart = temp
+                if restart[1]:
+                    break
 
-        message_display("How to Play Gluttonous!", 200, 50, color=white, size=30)
-        home = button('Home', 100, 350, 80, 40, red, bright_red, yes)
-        nextbutton = button('Next', 250, 350, 80, 40, red, bright_red, yes)
-        arrows = pygame.image.load("images/arrowkeys.bmp")
-        arrows = pygame.transform.scale(arrows, (140, 140))            
-        screen.blit(arrows, (110, 88))
-        screen.blit(pygame.image.load("images/head_up1.bmp"), (280, 125))
-        screen.blit(pygame.image.load("images/body_s.bmp"), (280, 140))
-        screen.blit(pygame.image.load("images/body_s.bmp"), (280, 155))            
-        screen.blit(pygame.image.load("images/body_s.bmp"), (280, 170))
-        screen.blit(pygame.image.load("images/tail_up.bmp"), (280, 185))
-        message_display("Use the arrow keys to move the snake", 200, 90, color=white, size=20)   
 
-        message_display("Eat the food to grow the snake", 200, 220, color=white, size=20)
-
-        # blit the food onto the screen to show users 
-        for i in range(1, 9):
-            food = pygame.image.load("images/food" + str(i) + ".bmp")
-            food = pygame.transform.scale(food, (30, 30))
-            if i in range(1, 5): 
-                screen.blit(food, (150+(i-1)*31, 250))
-            else: 
-                screen.blit(food, (150+(i-5)*31, 281))
-        
-        if home: 
-            return 0
-        if nextbutton: 
-            instructions_pagetwo()
         if restart[0]:
             break
         pygame.display.update()
         pygame.time.Clock().tick(15)
 
-def instructions_pagetwo(): 
-    #  this instructions page explains how the food items work with growing the snake
-    intro = True
-    restart = [0, ""]
-    while intro:
-        if restart[0]:
-            break
-        if restart[1]:
-            restart = game_loop(restart[1])
-            continue
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-        screen.fill(black)
 
-        message_display("Don't crash into the walls!", 200, 40, color=white, size=20)
-
-        screen.blit(pygame.image.load("images/tile.bmp"), (200, 60))
-        snakehead = pygame.transform.rotate(pygame.image.load("images/head_up1.bmp"), 270)
-        snakebody = pygame.transform.rotate(pygame.image.load('images/body_s.bmp'), 270)
-        snaketail = pygame.transform.rotate(pygame.image.load('images/tail_up.bmp'), 270)
-        screen.blit(snakehead,(185,60))
-        screen.blit(snakebody, (170, 60))
-        screen.blit(snakebody, (155, 60))
-        screen.blit(snaketail, (140, 60))
-
-        cross = pygame.transform.scale(pygame.image.load("images/cross.bmp"), (40, 40))
-        screen.blit(cross, (240, 40))
-
-        message_display("Don't crash into yourself!", 200, 100, color=white, size=20)
-
-        screen.blit(snaketail, (140, 120))
-        screen.blit(snakebody, (155, 120))
-        screen.blit(snakebody, (170, 120))
-        screen.blit(snakebody, (185, 120))
-        screen.blit(pygame.transform.rotate(snakebody, 90), (185, 133))
-        screen.blit(pygame.transform.rotate(snakebody, 90), (185, 148))
-        screen.blit(pygame.transform.rotate(snakebody, 180), (172, 148))
-        screen.blit(pygame.transform.rotate(snakebody, 180), (157, 148))
-        screen.blit(pygame.transform.rotate(snakehead, 90), (155, 135))
-
-        screen.blit(cross, (240, 120))
-        
-
-        message_display("You teleport through portal walls", 200, 170, color=white, size=20)
-
-        message_display("You can survive impact with padded walls", 200, 200, color=white, size=20)
-        screen.blit(pygame.image.load("images/tile.bmp"), (200, 240))
-        screen.blit(pygame.image.load("images/pad.bmp"), (200,240))
-
-        message_display("Once the snake is big enough, activate the pressure plates to win the level", 200, 300, color=white, size=10)
-
-        back = button('Back', 150, 350, 80, 40, red, bright_red, yes)
-       
-    
-        if back: 
-            return 0
-        # if nextbutton: 
-        #     i
-        if restart[0]:
-            break
-        pygame.display.update()
-        pygame.time.Clock().tick(15)
-
-# def instructions_pagethree(): 
-#     # This instructions page explains how the different type of walls work
-#     intro = True
-#     restart = [0, ""]
-#     while intro:
-#         if restart[0]:
-#             break
-#         if restart[1]:
-#             restart = game_loop(restart[1])
-#             continue
-#         for event in pygame.event.get():
-#             if event.type == pygame.QUIT:
-#                 pygame.quit()
-#         screen.fill(black)
-#         message_display("Page 3", 200, 50, color=white, size=30)
-        
-#         message_display("Don't crash into solid walls, and don't crash into yourself!", 200, 100, color=white, size=20) 
-#         message_display("There are different types of walls ", 200, 100, color=white, size= 20)
-#         back = button('Back', 150, 350, 80, 40, red, bright_red, yes)
-#         nextbutton = button('Next', 250, 350, 80, 40, red, bright_red, yes)
-
-#         if back: 
-#             return 0
-#         if nextbutton: 
-#             instructions_pagefour()
-#         if restart[0]:
-#             break
-#         pygame.display.update()
-#         pygame.time.Clock().tick(15)
-
-
-def game_loop(level):
+def game_loop(level, custom=False):
     with open(os.path.join(game.src, "snakeData/style.txt"), 'r') as f:
         game.style = f.read()
 
-    game.restart_game(level)
+    game.restart_game(mapdir=level, custom=custom)
     screen.fill(black)
     game.blit_map(rect_len, screen)
     
@@ -439,7 +307,7 @@ def game_loop(level):
 
         fps = 5
 
-        restart = [0, ""]
+        restart = [0, "", custom]
         if stop:
             #build restart screen
             #xOffset, yOffset, width, height
@@ -543,5 +411,4 @@ def human_move():
 
 
 if __name__ == "__main__":
-    #os.chdir(base_path(''))
     initial_interface(invalid_loc, real_path)

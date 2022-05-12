@@ -16,8 +16,8 @@ from config import Config
 
 class Settings:
     def __init__(self):
-        self.width = 28
-        self.height = 28
+        self.width = 30
+        self.height = 30
         self.rect_len = 30
         #size of game, and then size of individual grids. 
         # self.width = 52
@@ -60,9 +60,11 @@ class Strawberry():
         pygame.mixer.Sound.play(eat_sound)
  
 class Game:
-    def __init__(self, game_data, real_location):
-        self.src = game_data
-        self.srcreal = real_location
+    def __init__(self, package_data, file_location):
+        self.src = package_data
+        self.srcreal = file_location
+        self.custom = False
+
         self.style = '0'
         self.settings = Settings()
         self.reset_img_source()
@@ -75,8 +77,11 @@ class Game:
                           3 : 'right',
                           -1: 'none'}
 
-    def reset_img_source(self): 
+    def reset_img_source(self):
+
         path = self.src + "/styles/" + self.style + "/images/"
+
+
         self.tile_img = pygame.transform.scale(pygame.image.load(path + 'tile.bmp'), (self.settings.rect_len, self.settings.rect_len))
         self.space_img = pygame.transform.scale(pygame.image.load(path + 'space.bmp'), (self.settings.rect_len, self.settings.rect_len))
         self.wrap_img = pygame.transform.scale(pygame.image.load(path + 'wrap.bmp'), (self.settings.rect_len, self.settings.rect_len))
@@ -88,8 +93,9 @@ class Game:
         self.clone_img = pygame.transform.scale(pygame.image.load(path + 'clone.bmp'), (self.settings.rect_len, self.settings.rect_len))
         self.clonea_img = pygame.transform.scale(pygame.image.load(path + 'clonea.bmp'), (self.settings.rect_len, self.settings.rect_len))
 
-    def restart_game(self, mapdir): 
+    def restart_game(self, mapdir, custom=False): 
         #update visuals at the start of the game
+        self.custom = custom
         self.reset_img_source()
         self.snake.reset_img_source()
         #set config. This has a bunch of options that control stuff.
