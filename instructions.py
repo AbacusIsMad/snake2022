@@ -152,7 +152,18 @@ def instructions_pagetwo(package_path=None, screen=None):
 
         message_display("You teleport through wrap walls", screen, 200, 170, color=white, size=20)
 
-        message_display("You can survive impact with padded walls", screen, 200, 200, color=white, size=20)
+
+        screen.blit(pygame.transform.rotate(snaketail, 180), (200, 190))
+        screen.blit(pygame.transform.rotate(snakebody, 180), (185, 190))
+        screen.blit(pygame.image.load("styles/0/images/tile.bmp"), (170, 190))
+        screen.blit(pygame.image.load("styles/0/images/wrap.bmp"), (170, 190))
+
+        screen.blit(pygame.image.load("styles/0/images/tile.bmp"), (270, 190))
+        screen.blit(pygame.transform.rotate(pygame.image.load("styles/0/images/wrap.bmp"), 180), (270, 190))
+        screen.blit(pygame.transform.rotate(snakebody, 180), (255, 190))
+        screen.blit(pygame.transform.rotate(snakehead, 180), (240, 190))
+
+        message_display("You can survive impact with padded walls", screen, 200, 230, color=white, size=20)
         screen.blit(pygame.image.load(path + "images/tile.bmp"), (200, 240))
         screen.blit(pygame.image.load(path + "images/pad.bmp"), (200,240))
 
@@ -169,36 +180,3 @@ def instructions_pagetwo(package_path=None, screen=None):
             break
         pygame.display.update()
         pygame.time.Clock().tick(15)
-
-
-# def instructions_pagethree(): 
-#     # This instructions page explains how the different type of walls work
-#     intro = True
-#     restart = [0, ""]
-#     while intro:
-#         if restart[0]:
-#             break
-#         if restart[1]:
-#             restart = game_loop(restart[1])
-#             continue
-#         for event in pygame.event.get():
-#             if event.type == pygame.QUIT:
-#                 pygame.quit()
-#         screen.fill(black)
-#         message_display("Page 3", 200, 50, color=white, size=30)
-        
-#         message_display("Don't crash into solid walls, and don't crash into yourself!", 200, 100, color=white, size=20) 
-#         message_display("There are different types of walls ", 200, 100, color=white, size= 20)
-#         back = button('Back', 150, 350, 80, 40, red, bright_red, yes)
-#         nextbutton = button('Next', 250, 350, 80, 40, red, bright_red, yes)
-
-#         if back: 
-#             return 0
-#         if nextbutton: 
-#             instructions_pagefour()
-#         if restart[0]:
-#             break
-#         pygame.display.update()
-#         pygame.time.Clock().tick(15)
-
-
