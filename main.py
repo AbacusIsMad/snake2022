@@ -197,7 +197,8 @@ def settings(directory):
         
 
         if button('Home', 100, 200, 80, 40, red, bright_red, yes):
-            break
+            screen.fill(white)
+            return 0
 
         if style == '0':
             button('retro', 20, 20, 40, 40, green, green, yes)
@@ -240,6 +241,7 @@ def level_select():
         message_display('Custom levels', 3*game.settings.width / 4 * game.settings.rect_len, game.settings.height / 5 * game.settings.rect_len, color=white, size=30)
 
         if button('Home', 410, 150, 80, 40, red, bright_red, yes):
+            screen.fill(white)
             return 0
 
         dontrender = False
