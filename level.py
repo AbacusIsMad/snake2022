@@ -60,19 +60,23 @@ def button(msg, screen, x, y, w, h, inactive_color, active_color, action, **kwar
 
 
 def level_maker(game=None):
+    screen = game.screen
+    screen.fill(white)
     while True:
-        screen = game.screen
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
 
-        game.screen.fill(white)
+        
 
 
-        button('New level', screen, 390, 150, 120, 40, red, bright_red, yes)
-        button('Edit existing level', screen, 390, 300, 120, 40, red, bright_red, yes)
+        button('New level', screen, 370, 150, 160, 40, red, bright_red, yes)
+        button('Edit existing level', screen, 370, 300, 160, 40, red, bright_red, yes)
 
-
+        if button('Back', screen, 410, 600, 80, 40, red, bright_red, yes):
+            screen.fill(white)
+            break
 
 
 

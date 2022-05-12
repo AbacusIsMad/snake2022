@@ -108,7 +108,10 @@ class Game:
         self.snake_clone.segmentd = []
         self.snake_clone.score = 0
         #set stawberry if it exists.
-        self.strawberry.random_pos()
+        if int(self.config.settings['strawberry']):
+            self.strawberry.random_pos()
+        else:
+            self.strawberry.position = [-100, -100]
     
     def direction_to_int(self, direction):
         direction_dict = {value : key for key,value in self.move_dict.items()}
