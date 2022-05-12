@@ -151,8 +151,6 @@ def instructions_pagetwo(package_path=None, screen=None):
         
 
         message_display("You teleport through wrap walls", screen, 200, 170, color=white, size=20)
-
-
         screen.blit(pygame.transform.rotate(snaketail, 180), (200, 190))
         screen.blit(pygame.transform.rotate(snakebody, 180), (185, 190))
         screen.blit(pygame.image.load("styles/0/images/tile.bmp"), (170, 190))
