@@ -148,25 +148,40 @@ def instructions_pagetwo(package_path=None, screen=None):
         screen.blit(pygame.transform.rotate(snakehead, 90), (155, 135))
 
         screen.blit(cross, (240, 120))
-        
+
+
+        #  Wrap walls instructions
 
         message_display("You teleport through wrap walls", screen, 200, 170, color=white, size=20)
-        screen.blit(pygame.transform.rotate(snaketail, 180), (200, 190))
+    
+        screen.blit(pygame.transform.rotate(snaketail, 180), (130, 190))
+        screen.blit(pygame.transform.rotate(snakebody, 180), (115, 190))
+        screen.blit(pygame.image.load("styles/0/images/tile.bmp"), (100, 190))
+        screen.blit(pygame.image.load("styles/0/images/wrap.bmp"), (100, 190))
+
+        screen.blit(pygame.image.load("styles/0/images/tile.bmp"), (200, 190))
+        screen.blit(pygame.transform.rotate(pygame.image.load("styles/0/images/wrap.bmp"), 180), (200, 190))
         screen.blit(pygame.transform.rotate(snakebody, 180), (185, 190))
-        screen.blit(pygame.image.load("styles/0/images/tile.bmp"), (170, 190))
-        screen.blit(pygame.image.load("styles/0/images/wrap.bmp"), (170, 190))
+        screen.blit(pygame.transform.rotate(snakehead, 180), (170, 190))
+        screen.blit(pygame.transform.scale(pygame.image.load("images/tick.bmp"), (30, 30)), (240, 190))
 
-        screen.blit(pygame.image.load("styles/0/images/tile.bmp"), (270, 190))
-        screen.blit(pygame.transform.rotate(pygame.image.load("styles/0/images/wrap.bmp"), 180), (270, 190))
-        screen.blit(pygame.transform.rotate(snakebody, 180), (255, 190))
-        screen.blit(pygame.transform.rotate(snakehead, 180), (240, 190))
-
+        # padded walls instructions
         message_display("You can survive impact with padded walls", screen, 200, 230, color=white, size=20)
-        screen.blit(pygame.image.load(path + "images/tile.bmp"), (200, 240))
-        screen.blit(pygame.image.load(path + "images/pad.bmp"), (200,240))
+        screen.blit(pygame.image.load(path + "images/tile.bmp"), (140,255))
+        screen.blit(pygame.image.load(path + "images/pad.bmp"), (140,255))
 
-        message_display("Once the snake is big enough, activate the pressure plates to win the level", screen, 200, 300, color=white, size=10)
+        screen.blit(pygame.transform.rotate(snakehead, 180), (155, 255))
+        screen.blit(pygame.transform.rotate(snakebody,180), (170, 255))
+        screen.blit(pygame.transform.rotate(snakebody, 180), (185, 255))
+        screen.blit(pygame.transform.rotate(snaketail, 180), (200, 255))
 
+        screen.blit(pygame.transform.scale(pygame.image.load("images/tick.bmp"), (30, 30)), (240, 245))
+
+        # pressure plates
+        message_display("Activate the pressure plates to win the level", screen, 200, 300, color=white, size=20)
+
+        screen.blit(pygame.image.load(path + "images/plate.bmp"), (180, 320))
+        screen.blit(pygame.image.load(path + "images/platea.bmp"), (220, 320))
         back = button('Back', screen, 150, 350, 80, 40, red, bright_red, yes)
        
     
