@@ -53,7 +53,7 @@ def button(msg, screen, x, y, w, h, inactive_color, active_color, action, **kwar
     #pygame.display.update(pygame.Rect(x, y, w, h))
     return pressed
 
-def display_instructions(package_path=None, screen=None):
+def display_instructions(package_path=None, screen=None, game=None):
     #  this instruction page explains how to move the snake
     intro = True
     restart = [0, ""]
@@ -69,8 +69,12 @@ def display_instructions(package_path=None, screen=None):
         screen.fill(black)
 
         path = os.path.dirname(package_path) + '/styles/0/'
-
+        x = game.settings.width * game.settings.rect_len
+        print(x)
+        y = game.settings.height * game.settings.rect_len
+        print(y)
         message_display("How to Play Gluttonous!", screen, 200, 50, color=white, size=30)
+        # message_display("How to Play Gluttonous!", screen, 50, color=white, size=30)
         home = button('Home', screen, 100, 350, 80, 40, red, bright_red, yes)
         nextbutton = button('Next', screen, 250, 350, 80, 40, red, bright_red, yes)
         arrows = pygame.image.load(path + "images/arrowkeys.bmp")

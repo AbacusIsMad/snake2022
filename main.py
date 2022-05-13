@@ -179,7 +179,7 @@ def initial_interface(invalid, directory):
         else:
             button('maker disabled', 390, 460, 120, 40, purple, bright_purple, yes)
 
-        button('Instructions', 390, 520, 120, 40, blue, bright_blue, display_instructions, package_path=package_path, screen=screen)
+        button('Instructions', 390, 520, 120, 40, blue, bright_blue, display_instructions, package_path=package_path, screen=screen, game=game)
 
         pygame.display.update()
         pygame.time.Clock().tick(15)
