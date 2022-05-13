@@ -31,7 +31,8 @@ class Strawberry():
 
         self.style = str(random.randint(1, 8))
         path = self.parent.src + "/styles/" + self.parent.style + "/images/"
-        self.image = pygame.image.load(path + 'food' + str(self.style) + '.bmp')        
+        self.image = pygame.image.load(path + 'food' + str(self.style) + '.bmp')
+        self.times_called = 0     
         self.initialize()
         
     def random_pos(self):
@@ -82,16 +83,26 @@ class Game:
         path = self.src + "/styles/" + self.style + "/images/"
 
 
-        self.tile_img = pygame.transform.scale(pygame.image.load(path + 'tile.bmp'), (self.settings.rect_len, self.settings.rect_len))
-        self.space_img = pygame.transform.scale(pygame.image.load(path + 'space.bmp'), (self.settings.rect_len, self.settings.rect_len))
-        self.wrap_img = pygame.transform.scale(pygame.image.load(path + 'wrap.bmp'), (self.settings.rect_len, self.settings.rect_len))
-        self.pad_img = pygame.transform.scale(pygame.image.load(path + 'pad.bmp'), (self.settings.rect_len, self.settings.rect_len))
-        self.plate_img = pygame.transform.scale(pygame.image.load(path + 'plate.bmp'), (self.settings.rect_len, self.settings.rect_len))
-        self.platea_img = pygame.transform.scale(pygame.image.load(path + 'platea.bmp'), (self.settings.rect_len, self.settings.rect_len))
-        self.plate_alt_img = pygame.transform.scale(pygame.image.load(path + 'plate_alt.bmp'), (self.settings.rect_len, self.settings.rect_len))
-        self.platea_alt_img = pygame.transform.scale(pygame.image.load(path + 'platea_alt.bmp'), (self.settings.rect_len, self.settings.rect_len))
-        self.clone_img = pygame.transform.scale(pygame.image.load(path + 'clone.bmp'), (self.settings.rect_len, self.settings.rect_len))
-        self.clonea_img = pygame.transform.scale(pygame.image.load(path + 'clonea.bmp'), (self.settings.rect_len, self.settings.rect_len))
+        self.tile_img = pygame.transform.scale(pygame.image.load(path + 'tile.bmp'),\
+                        (self.settings.rect_len, self.settings.rect_len))
+        self.space_img = pygame.transform.scale(pygame.image.load(path + 'space.bmp'),\
+                        (self.settings.rect_len, self.settings.rect_len))
+        self.wrap_img = pygame.transform.scale(pygame.image.load(path + 'wrap.bmp'),\
+                        (self.settings.rect_len, self.settings.rect_len))
+        self.pad_img = pygame.transform.scale(pygame.image.load(path + 'pad.bmp'),\
+                        (self.settings.rect_len, self.settings.rect_len))
+        self.plate_img = pygame.transform.scale(pygame.image.load(path + 'plate.bmp'),\
+                        (self.settings.rect_len, self.settings.rect_len))
+        self.platea_img = pygame.transform.scale(pygame.image.load(path + 'platea.bmp'),\
+                        (self.settings.rect_len, self.settings.rect_len))
+        self.plate_alt_img = pygame.transform.scale(pygame.image.load(path + 'plate_alt.bmp'),\
+                        (self.settings.rect_len, self.settings.rect_len))
+        self.platea_alt_img = pygame.transform.scale(pygame.image.load(path + 'platea_alt.bmp'),\
+                        (self.settings.rect_len, self.settings.rect_len))
+        self.clone_img = pygame.transform.scale(pygame.image.load(path + 'clone.bmp'),\
+                        (self.settings.rect_len, self.settings.rect_len))
+        self.clonea_img = pygame.transform.scale(pygame.image.load(path + 'clonea.bmp'),\
+                        (self.settings.rect_len, self.settings.rect_len))
 
     def restart_game(self, mapdir, custom=False): 
         #update visuals at the start of the game
@@ -108,7 +119,11 @@ class Game:
         self.snake_clone.segmentd = []
         self.snake_clone.score = 0
         #set stawberry if it exists.
-        self.strawberry.random_pos()
+        self.strawberry.times_called = 0
+        if int(self.config.settings['strawberry']):
+            self.strawberry.random_pos()
+        else:
+            self.strawberry.position = [-100, -100]
     
     def direction_to_int(self, direction):
         direction_dict = {value : key for key,value in self.move_dict.items()}

@@ -10,6 +10,7 @@ import threading
 import sys
 import os
 import math
+import datetime
 from pygame.locals import KEYDOWN, K_RIGHT, K_LEFT, K_UP, K_DOWN, K_ESCAPE
 from pygame.locals import QUIT
 from snake import Snake
@@ -151,11 +152,10 @@ def crash():
 
 
 def initial_interface(invalid, directory):
-    intro = True
     restart = False
     screen.fill(white)
 
-    while intro:
+    while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -250,7 +250,7 @@ def level_select():
             temp = button(d, 80 + 60*(idx%5), 220 + 50*(idx//5), 50, 40, green, bright_green, game_loop, level=d, custom=False)
             if isinstance(temp, list):
                 restart = temp
-                if restart[1]:
+                if restart[0] or restart[1]:
                     dontrender = True
                     break
 
@@ -263,7 +263,7 @@ def level_select():
             temp = button(d, 520 + 160*(idx%2), 220 + 50*(idx//2), 150, 40, yellow, bright_yellow, game_loop, level=d, custom=True)
             if isinstance(temp, list):
                 restart = temp
-                if restart[1]:
+                if restart[0] or restart[1]:
                     break
 
 
@@ -299,15 +299,21 @@ def game_loop(level, custom=False):
     #the phase of the process, split into 5
     phase = 0
     move = game.direction_to_int(snake.facing)
+
+    fps = 5
+    delay = 1000/(fps*5)
+
     while True:
         pygame.event.pump()
         move_temp, escape = human_move()
+
+        #measures time between the two to make sure the speed stays the same
+        before = datetime.datetime.now()
         
         stop = stop ^ escape
         if move_temp >= 0 and not stop:
             move = move_temp
 
-        fps = 5
 
         restart = [0, "", custom]
         if stop:
@@ -375,7 +381,12 @@ def game_loop(level, custom=False):
                 game.snake_clone.blit(rect_len, screen, state1, phase)
 
         phase = (phase + 1) % 5
-        pygame.time.delay(math.ceil(1000//(fps*5)))
+
+        #at the end we measure it:
+        diff = (datetime.datetime.now() - before).microseconds
+
+
+        pygame.time.delay(math.ceil(delay - diff/1000))
 
     if not (restart[0] or restart[1]):
         crash()
