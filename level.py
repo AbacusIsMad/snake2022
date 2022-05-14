@@ -67,16 +67,24 @@ def button(msg, screen, x, y, w, h, inactive_color, active_color, action, **kwar
 
 
 
+warning_dict = {'name' : 'name must be printable',
+                'mapX': 'must be integer between 0-30',
+                'mapY': 'must be integer between 0-30',
+                'xOffset': 'must be integer between 0-10',
+                'yOffset': 'must be integer between 0-10'}
 
-
-warning_dict = {'name' : 'name must be less than 16 characters!',
-                'x_size': 'must be valid integer between 0-30'}
+comparison_dict = {'name' : lambda line: line.isprintable() and len(line) > 0,
+                    'mapX' : lambda value: int(value) <= 30 and int(value) >= 0,
+                    'mapY' : lambda value: int(value) <= 30 and int(value) >= 0,
+                    'xOffset' : lambda value: int(value) <= 10 and int(value) >= 0,
+                    'yOffset' : lambda value: int(value) <= 10 and int(value) >= 0}
 
 
 class InputBox:
 
     def __init__(self, x, y, w, h, datatype=None):
         self.rect = pygame.Rect(x, y, w, h)
+        self.datatype = datatype
 
         self.text = ''
         self.font = pygame.font.Font(os.path.dirname(os.path.abspath(__file__)) + '/arial.ttf', 20)
@@ -100,30 +108,31 @@ class InputBox:
             else:
                 #display warning if necessary. I need to search up this part.
                 try:
-                    if int(self.text) > 30:
+                    if not comparison_dict[self.datatype](self.text):
                         raise ValueError
                 except Exception:
-                    self.text_warning = warning_dict['x_size']
+                    self.text_warning = warning_dict[self.datatype]
                     self.active_warning = True
                 
                 self.active = False
 
             # Change the current color of the input box.
-            self.color = green if self.active else red
+            self.color = green if (self.active or not self.active_warning) else red
 
 
         if event.type == pygame.KEYDOWN:
             if self.active:
                 if event.key == pygame.K_RETURN:
                     self.active = False
-                    print(self.text)
-                    self.color = red
+                    
                     try:
-                        if int(self.text) > 30:
+                        if not comparison_dict[self.datatype](self.text):
                             raise ValueError
                     except Exception:
-                        self.text_warning = warning_dict['x_size']
+                        self.text_warning = warning_dict[self.datatype]
                         self.active_warning = True
+
+                    self.color = red if self.active_warning else green
 
                 elif event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
@@ -170,18 +179,15 @@ def new_level(game=None):
     font = pygame.font.Font(os.path.dirname(os.path.abspath(__file__)) + '/arial.ttf', 30)
     active = False
 
-    name_box = InputBox(350, 100, 200, 32)
-    x_size_box = InputBox(250, 300, 140, 32)
-    y_size_box = InputBox(450, 300, 140, 32)
-    x_offset_box = InputBox(250, 400, 140, 32)
-    y_offset_box = InputBox(450, 400, 140, 32)
+    name_box = InputBox(350, 100, 200, 32, 'name')
+    x_size_box = InputBox(250, 300, 140, 32, 'mapX')
+    y_size_box = InputBox(450, 300, 140, 32, 'mapY')
+    x_offset_box = InputBox(250, 400, 140, 32, 'xOffset')
+    y_offset_box = InputBox(450, 400, 140, 32, 'yOffset')
     boxes = [name_box, x_size_box, y_size_box, x_offset_box, y_offset_box]
 
     while True:
         screen.fill(black)
-
-        
-
 
 
         for event in pygame.event.get():
@@ -193,6 +199,15 @@ def new_level(game=None):
         for box in boxes:
             box.draw(screen)
 
+        #progress onto next stage, but before that let's put stuff into an object
+        if button('Continue', screen, 410, 450, 80, 40, blue, bright_blue, yes):
+            
+
+            dict((key.datatype, key.text) for key in boxes[1:])
+
+        if button('Back', screen, 410, 700, 80, 40, red, bright_red, yes):
+            screen.fill(white)
+            break        
         
 
         pygame.display.update()
