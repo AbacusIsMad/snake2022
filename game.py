@@ -19,6 +19,7 @@ class Settings:
         self.width = 30
         self.height = 30
         self.rect_len = 30
+
         #size of game, and then size of individual grids. 
         # self.width = 52
         # self.height = 52

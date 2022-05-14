@@ -1,7 +1,7 @@
 import pygame
 
-import pygame_textinput
-#https://github.com/Nearoo/pygame-text-input
+# import pygame_textinput
+# https://github.com/Nearoo/pygame-text-input
 
 import os
 import operator
@@ -24,7 +24,6 @@ yellow = pygame.Color(255, 205, 0)
 bright_yellow = pygame.Color(255, 255, 0)
 purple = pygame.Color(135, 7, 255)
 bright_purple = pygame.Color(189, 58, 255)
-
 
 
 
