@@ -180,9 +180,14 @@ class Game:
         text = font.render('Score: ' + str(self.snake.score + self.snake_clone.score), True, color)
         screen.blit(text, (0, 0))
 
-    def blit_map(self, rect_len, screen): 
+    def blit_map(self, rect_len, screen, developer=False):
         x0 = int(self.config.settings["xOffset"])
         y0 = int(self.config.settings["yOffset"])
+
+        if developer:
+            true_empty_img = pygame.transform.scale(pygame.image.load(self.src + '/styles/0/images/true_empty.bmp'),\
+                        (self.settings.rect_len, self.settings.rect_len))
+
         for i in range(0, int(self.config.settings["mapX"])):
             for k in range(0, int(self.config.settings["mapY"])):
                 tile = self.map.tiles[k][i]
@@ -197,7 +202,10 @@ class Game:
                         if tile.pad_clone & (1 << j):
                             screen.blit(pygame.transform.rotate(self.pad_img, j*90), ((i + x0)*rect_len, (k + y0)*rect_len))
                 elif tile.type == "Empty": 
-                    screen.blit(self.space_img, ((i + x0)*rect_len, (k + y0)*rect_len))
+                    if developer and tile.true_empty:
+                        screen.blit(true_empty_img, ((i + x0)*rect_len, (k + y0)*rect_len))
+                    else:
+                        screen.blit(self.space_img, ((i + x0)*rect_len, (k + y0)*rect_len))
                 else:
                     pass
 

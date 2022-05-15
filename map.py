@@ -36,7 +36,6 @@ class Tile():
 class Map():
     def __init__(self, parent=None, mapdir=None):
         self.parent = parent
-        print(self.parent.config.settings)
         self.tiles = []
         #pressure plate goals
         self.goals = []
@@ -71,9 +70,9 @@ class Map():
         print(self.goals, self.alt_goals, self.clones)
 
     def readMap(self):
-        for i in range(0, 28): 
-            tiles = "Tiles on line " + str(i) + " "
-            for k in range(0, 28): 
+        for i in range(len(self.tiles)): 
+            tiles = "Line " + str(i) + ":"
+            for k in range(len(self.tiles[0])): 
                 tiles = tiles + self.tiles[i][k].type + " "
             print(tiles)
 
