@@ -442,8 +442,8 @@ def create_level(config=None, game=None):
                             tile.true_empty = False
                         elif tile.type == "Solid":
                             tile.type = "Other"
-                            tile.wrap_plate = (not not tile.wrap_plate)*2
-                            tile.pad_clone = (not not tile.pad_clone)*1
+                            tile.wrap_plate = 0
+                            tile.pad_clone = 0
 
                     something_changed = 1
 
