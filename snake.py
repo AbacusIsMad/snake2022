@@ -188,13 +188,15 @@ class Snake:
     def blit(self, rect_len, screen, pad, phase):
         x0 = int(self.parent.config.settings["xOffset"])
         y0 = int(self.parent.config.settings["yOffset"])
-        if phase == 0:
+        if phase == 0 and len(self.segments) > 2:
             for index, position in enumerate(self.segments[1:-1]):
                 self.blit_body(self.segmentd[index + 1], position, self.segments[index + 2], screen, rect_len, x0, y0)
-        self.blit_tail(self.segmentd[-1][0], self.segmentd[-1][1], screen, rect_len, x0, y0, pad, phase)
 
-        self.blit_head(self.segmentd[0], self.segments[1], screen, rect_len, x0, y0, pad, phase)
-    
+        if len(self.segments) > 1:
+            self.blit_tail(self.segmentd[-1][0], self.segmentd[-1][1], screen, rect_len, x0, y0, pad, phase)
+            self.blit_head(self.segmentd[0], self.segments[1], screen, rect_len, x0, y0, pad, phase)
+        else:
+            self.blit_head(self.segmentd[0], [1, 0], screen, rect_len, x0, y0, pad, phase)
 
     def animate(self, screen, images, x, y, rotation, overlap):
         #not connected with fps but i couldn't care less
