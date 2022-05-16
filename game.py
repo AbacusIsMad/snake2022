@@ -32,14 +32,16 @@ class Strawberry():
 
         self.style = str(random.randint(1, 8))
         path = self.parent.src + "/styles/" + self.parent.style + "/images/"
-        self.image = pygame.image.load(path + 'food' + str(self.style) + '.bmp')
+        self.image = pygame.transform.scale(pygame.image.load(path + 'food' + str(self.style) + '.bmp'),\
+                        (self.settings.rect_len, self.settings.rect_len))
         self.times_called = 0     
         self.initialize()
         
     def random_pos(self):
         self.style = str(random.randint(1, 8))
         path = self.parent.src + "/styles/" + self.parent.style + "/images/"
-        self.image = pygame.image.load(path + 'food' + str(self.style) + '.bmp')                
+        self.image = pygame.transform.scale(pygame.image.load(path + 'food' + str(self.style) +\
+            '.bmp'), (self.settings.rect_len, self.settings.rect_len))                
         print("called!")
         self.position[0] = random.randint(0, int(self.parent.config.settings["mapX"])-1)
         self.position[1] = random.randint(0, int(self.parent.config.settings["mapY"])-1)

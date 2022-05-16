@@ -117,14 +117,21 @@ class InputBox:
                     if not comparison_dict[self.datatype](self.text):
                         raise ValueError
                 except Exception:
-                    self.text_warning = warning_dict[self.datatype]
-                    self.active_warning = True
-                    print("warning!")
+                    if self.text:
+                        self.text_warning = warning_dict[self.datatype]
+                        self.active_warning = True
                 
                 self.active = False
 
             # Change the current color of the input box.
-            self.color = green if (self.active or not self.active_warning) else red
+            if self.active:
+                self.color = green
+            elif self.active_warning:
+                self.color = red
+            elif self.text:
+                self.color = green
+            else:
+                self.color = red
 
 
         if event.type == pygame.KEYDOWN:
@@ -135,10 +142,17 @@ class InputBox:
                         if not comparison_dict[self.datatype](self.text):
                             raise ValueError
                     except Exception:
-                        self.text_warning = warning_dict[self.datatype]
-                        self.active_warning = True
+                        if self.text:
+                            self.text_warning = warning_dict[self.datatype]
+                            self.active_warning = True
 
-                    self.color = red if self.active_warning else green
+                    if self.active_warning:
+                        self.color = red
+                    elif self.text:
+                        self.color = green
+                    else:
+                        self.color = red
+
 
                 elif event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
@@ -256,6 +270,49 @@ def blit_cursor(image, pointer, game):
     screen.blit(image, (x_f, y_f))
 
 
+def magic(game, start_pos, direction):
+    vector = ((not not direction[0])*25 + direction[0]*15 + (not not direction[1])*50 - direction[1]*30)//10
+    opposite = ((not not direction[0])*25 - direction[0]*15 + (not not direction[1])*50 + direction[1]*30)//10
+    x_max = int(game.config.settings['mapX'])
+    y_max = int(game.config.settings['mapX'])
+
+    analysis = start_pos.copy()
+    analysis = [analysis[0] + direction[0], analysis[1] + direction[1]]
+
+    #illegal movement
+    if analysis[0] < 0 or analysis[0] > x_max - 1\
+        or analysis[1] < 0 or analysis[1] > y_max - 1:
+        return None
+
+    if game.map.tiles[analysis[1]][analysis[0]].type == "Solid":
+        while not (game.map.tiles[analysis[1] - direction[1]][analysis[0] - direction[0]].wrap_plate & opposite):
+            #needs to be a small buffer or illegal index happens
+            if analysis[0] - direction[0] < 1 or analysis[0] - direction[0] > x_max - 2\
+            or analysis[1] - direction[1] < 1 or analysis[1] - direction[1] > y_max - 2:
+                return None
+
+            analysis[0] -= direction[0]
+            analysis[1] -= direction[1]
+
+    #still a solid block somehow
+    if game.map.tiles[analysis[1]][analysis[0]].type == "Solid"\
+    or game.map.tiles[analysis[1]][analysis[0]].type == "Other":
+        return None
+
+    #cannot crash onto itself
+    if analysis in game.snake.segmentd:
+        return None
+
+    #cannot be on clone plate
+    if game.map.tiles[analysis[1]][analysis[0]].pad_clone:
+        return None
+
+    return analysis
+
+
+
+
+
 def create_level(config=None, game=None):
     #setup blank map (of course this will remove past progress)
     game.map = Map(parent=game)
@@ -274,20 +331,30 @@ def create_level(config=None, game=None):
     pointer = [0, 0]
     x_max = int(config['mapX'])
     y_max = int(config['mapY'])
+    x_offset = int(config['xOffset'])
+    y_offset = int(config['yOffset'])
 
     #visualising the borsers of the map
     rect_len = game.settings.rect_len
-    working_rect = pygame.Rect(int(config['xOffset'])*rect_len, int(config['yOffset'])*rect_len,\
-                                int(config['mapX'])*rect_len, int(config['mapY'])*rect_len)
+    working_rect = pygame.Rect(x_offset*rect_len, y_offset*rect_len,\
+                                x_max*rect_len, y_max*rect_len)
 
-
+    #extra images
     pointer_img = pygame.transform.scale(pygame.image.load(game.src + '/styles/0/images/pointer.bmp'),\
                         (game.settings.rect_len, game.settings.rect_len))
     pointer_img2 = pygame.transform.scale(pygame.image.load(game.src + '/styles/0/images/pointer2.bmp'),\
                         (game.settings.rect_len, game.settings.rect_len))
+    potential_img = pygame.transform.scale(pygame.image.load(game.src + '/styles/0/images/potential.bmp'),\
+                        (game.settings.rect_len, game.settings.rect_len))
     
     #theres an option to switch between drawing map and drawing snake
-    snake_mode = 0
+    snake_mode = False
+    #indicators to show where the snake can be placed: 0 means not potential
+    potential_pos = [0, 0, 0, 0]
+
+    #empty snake
+    game.snake.segments, game.snake.segmentd = [], []
+
 
     #blit initial state
     screen.fill(black)
@@ -328,32 +395,131 @@ def create_level(config=None, game=None):
                     if pointer[1] > y_max - 1: 
                         pointer[1] = y_max - 1
                     something_changed = 1
+
                 #F: toggle between map and snake mode
                 if event.key == ord('f'):
                     snake_mode = not snake_mode
                     something_changed = 1
+
                 #Z: change tile type OR add/remove snake segment
                 if event.key == ord('z'):
+                    tile = game.map.tiles[pointer[1]][pointer[0]]
                     if snake_mode:
-                        pass
-                    else:
+                        #first segment, anywhere except clone plate
+                        if len(game.snake.segmentd) == 0 and tile.type == "Empty" and not tile.pad_clone:
+                            game.snake.segments.append([pointer[0], pointer[1]])
+                            game.snake.segmentd.append([pointer[0], pointer[1]])
+                        elif len(game.snake.segmentd):
+                            #look at potentials
+                            if pointer in game.snake.segmentd: #truncates snake
+                                index = game.snake.segmentd.index(pointer)
+                                game.snake.segments = game.snake.segments[:index]
+                                game.snake.segmentd = game.snake.segmentd[:index]
+                            elif pointer in potential_pos: #add snake
+                                game.snake.segmentd.append([pointer[0], pointer[1]])
+                                index = potential_pos.index(pointer)
+                                print("index:", index)
+                                if index == 0:
+                                    add = [1, 0]
+                                elif index == 1:
+                                    add = [0, -1]
+                                elif index == 2:
+                                    add = [-1, 0]
+                                else:
+                                    add = [0, 1]
+                                game.snake.segments.append([add[0], add[1]])
+
+                        print(game.snake.segments)
+                        print(game.snake.segmentd)
+
+                    #extra protection. You can only change tile type if no snake on top
+                    elif pointer not in game.snake.segmentd:
+                        if tile.type == "Other":
+                            tile.type = "Empty"
+                            tile.true_empty = False
+                        elif tile.type == "Empty":
+                            tile.type = "Solid"
+                            tile.true_empty = False
+                        elif tile.type == "Solid":
+                            tile.type = "Other"
+                            tile.wrap_plate = 0
+                            tile.pad_clone = 0
+
+                    something_changed = 1
+
+                #X: change tile subtype, behaviour maintained in snake mode, make sure to remove snake if bad
+                #Solid: None, wrap, pad
+                #empty: None, true_empty, plate, alt_plate, clone (limit number)
+                if event.key == ord('x'):
+                    tile = game.map.tiles[pointer[1]][pointer[0]]
+                    if tile.type == "Solid":
+                        if tile.wrap_plate % 2:
+                            tile.wrap_plate -= tile.wrap_plate & 1
+                            tile.pad_clone = tile.pad_clone | 1
+                        elif tile.pad_clone % 2:
+                            tile.wrap_plate -= tile.wrap_plate & 1
+                            tile.pad_clone -= tile.pad_clone & 1
+                        else: #nothing
+                            tile.pad_clone -= tile.pad_clone & 1
+                            tile.wrap_plate = tile.wrap_plate | 1
+                    elif tile.type == "Empty":
                         pass
                     something_changed = 1
-                #X: change tile subtype, behaviour maintained in snake mode, make sure to remove snake if bad
-                if event.key == ord('x'):
-                    pass
                 #C: rotate, behaviour maintained in snake mode
                 if event.key == ord('c'):
-                    pass
+                    tile = game.map.tiles[pointer[1]][pointer[0]]
+                    if tile.type == "Solid":
+                        tile.wrap_plate <<= 1
+                        tile.wrap_plate = tile.wrap_plate % 16 + tile.wrap_plate // 16
+                        tile.pad_clone <<= 1
+                        tile.pad_clone = tile.pad_clone % 16 + tile.pad_clone // 16
+                    something_changed = 1
 
         if something_changed:
+            
+            if game.snake.segmentd: #recalculate snake
+                length = len(game.snake.segmentd) - 1
+                game.snake.segmentd = game.snake.segmentd[:1]
+                for i in range(length):
+                    sus = magic(game, game.snake.segmentd[i], game.snake.segments[i + 1])
+                    if sus is None:
+                        game.snake.segments = game.snake.segments[:i+1]
+                        game.snake.segmentd = game.snake.segmentd[:i+1]
+                        break
+                    #rearrange snake if necessary
+                    game.snake.segmentd.append([sus[0], sus[1]])
+
+
+                propagate = game.snake.segmentd[-1]
+                start = [0, 1]
+                for i in range(4): #to the right, anticlockwise
+                    start = [start[1], -start[0]] #90 deg rotation like a matrix
+                    new = magic(game, propagate, start)
+                    if new:
+                        potential_pos[i] = new.copy()
+                    else:
+                        potential_pos[i] = 0
+
+                print(potential_pos)
+
             screen.fill(black)
             pygame.draw.rect(screen, dark_gray, working_rect)
-            game.blit_map(game.settings.rect_len, screen, developer=True)
+            game.blit_map(rect_len, screen, developer=True)
+            #snake blitting has more restrictions now. be careful!
+            if len(game.snake.segments):
+                game.snake.blit(rect_len, screen, 1, 0)
+
             if snake_mode:
                 blit_cursor(pointer_img2, pointer, game)
             else:
                 blit_cursor(pointer_img, pointer, game)
+            #blit features
+            if snake_mode:
+                for i in range(4):
+                    if potential_pos[i]:
+                        screen.blit(potential_img, ((potential_pos[i][0] + x_offset)*rect_len,\
+                            (potential_pos[i][1] + y_offset)*rect_len))
+
             pygame.display.update()
             pygame.time.delay(30)
 

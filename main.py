@@ -214,6 +214,13 @@ def settings(directory):
                 f.write('cringe')
                 style = 'cringe'
 
+        if style == 'pop':
+            button('pop', 140, 20, 40, 40, green, green, yes)
+        elif button('pop', 140, 20, 40, 40, yellow, bright_yellow, yes):
+            with open(directory + "/style.txt", "w") as f:
+                f.write('pop')
+                style = 'pop'
+
 
         #button('Instructions', 155, 300, 120, 40, blue, bright_blue, display_instructions)
 
