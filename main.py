@@ -336,6 +336,7 @@ def game_loop(level, custom=False):
         if phase == 0:
             #the first section and basically decides the next 4 frames.
             state, state1, result, result1 = game.do_move(move)
+            
             print(state, state1, result, result1)
             if state < 0 or state1 < 0:
                 break
@@ -362,8 +363,7 @@ def game_loop(level, custom=False):
                 #pygame.display.update(pygame.Rect(x_f, y_f, rect_len, rect_len))
 
             #update strawberry
-            if int(game.config.settings['strawberry']) and\
-                (game.snake.score + game.snake_clone.score < int(game.config.settings['maxS']))\
+            if (game.snake.score + game.snake_clone.score < int(game.config.settings['maxS']))\
                 and game.strawberry.position == [-100, -100]:
                 game.strawberry.random_pos()
 
@@ -384,12 +384,18 @@ def game_loop(level, custom=False):
                 if coord:
                     x_f, y_f = (coord[0] + x0)*rect_len, (coord[1] + y0)*rect_len
                     pygame.display.update(pygame.Rect(x_f, y_f, rect_len, rect_len))
-
+            if game.snake.won:
+                message_display('You Won!', 450, 800, green, 60)
+                pygame.time.delay(2000)
+                screen.fill(black)
+                pygame.display.update()
+                return restart
 
         else:
             game.snake.blit(rect_len, screen, state, phase)
             if game.snake_clone.init:
                 game.snake_clone.blit(rect_len, screen, state1, phase)
+            
 
         phase = (phase + 1) % 5
 

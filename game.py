@@ -143,6 +143,7 @@ class Game:
             self.strawberry.random_pos()
         else:
             self.strawberry.position = [-100, -100]
+        self.snake.won = False
     
     def direction_to_int(self, direction):
         direction_dict = {value : key for key,value in self.move_dict.items()}

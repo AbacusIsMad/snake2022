@@ -42,8 +42,11 @@ class Map():
         self.tiles = []
         #pressure plate goals
         self.goals = []
+        self.goalsMet = False
         self.alt_goals = []
+        self.alt_goalsMet = False
         self.clones = []
+        self.mainGoal = ''
         self.strawberry_valid = []
         #can create an empty instance to write to!
         if mapdir is not None:

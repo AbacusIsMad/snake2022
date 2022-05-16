@@ -15,6 +15,7 @@ class Snake:
         self.segmentd = []
         #score
         self.score = 0
+        self.won = False
         #flags to control the animations
         self.animation = None
         self.animation_offset = 0
@@ -251,6 +252,19 @@ class Snake:
         x_max = int(self.parent.config.settings['mapX'])
         y_max = int(self.parent.config.settings['mapY'])
 
+        #Pressure plates
+        platesPressed = 0
+        for location in self.parent.map.goals:
+            if location in self.segmentd or location == headpos:
+                platesPressed += 1
+        if platesPressed == len(self.parent.map.goals) and len(self.parent.map.goals) != 0:
+            self.parent.map.goalsMet = True
+        altPlatesPressed = 0
+        for location in self.parent.map.alt_goals:
+            if location in self.segmentd or location == headpos:
+                altPlatesPressed += 1
+        if altPlatesPressed == len(self.parent.map.alt_goals) and len(self.parent.map.alt_goals) != 0:
+            self.parent.map.alt_goalsMet = True
         
         dont_move = False
         if self.parent.map.tiles[headpos[1]][headpos[0]].type == 'Solid':
@@ -283,7 +297,8 @@ class Snake:
         if headpos in self.segmentd[:-1]:
             return -1, []
 
-
+        
+        #  If the snake is able to move, the headposition is re-inserted
         if not dont_move:
             self.segments.insert(0, headpos)
             self.segmentd.insert(0, headpos)
@@ -322,6 +337,16 @@ class Snake:
             if not self.parent.snake_clone.dir_to_pos():
                 return -2, []
             self.parent.snake_clone.init = True
+        
+        #Winning mechanics
+        if (int(self.parent.config.settings['strawberry']) == 1) and (self.parent.snake_clone.score + self.parent.snake.score == 3):
+            self.won = True
+        if (int(self.parent.config.settings['strawberry']) == 0) and (self.parent.map.goalsMet):
+            self.won = True
+        if (int(self.parent.config.settings['strawberry']) == 2) and (self.parent.snake_clone.score + self.parent.snake.score == 10) and (self.parent.map.goalsMet):
+            self.won = True
+        
+        
         return 0 + int(dont_move) + 2*int(longer), last_tail
 
     def eatSound(self):
