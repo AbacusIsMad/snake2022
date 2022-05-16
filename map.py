@@ -1,3 +1,5 @@
+import os
+
 class Tile(): 
     def __init__(self, parent, Type, x, y, varient=0, varient2=0):
         self.type = Type
@@ -76,5 +78,51 @@ class Map():
                 tiles = tiles + self.tiles[i][k].type + " "
             print(tiles)
 
+    #destination directory:
     def writeMap(self, dest):
-        pass
+        if not os.path.exists(dest):
+            os.makedirs(dest)
+
+        #write config:
+        with open(dest + "/config.txt", "w") as f:
+            for key in self.parent.config.settings:
+                f.write("{}:={}\n".format(key, self.parent.config.settings[key]))
+
+        #write snake:
+        with open(dest + "/snake.txt", "w") as f:
+            snake = self.parent.snake
+            for i in range(len(snake.segments)):
+                f.write("{},{},{},{}\n".format(snake.segments[i][0], snake.segments[i][1],\
+                                            snake.segmentd[i][0], snake.segmentd[i][1]))
+
+        with open(dest + "/map1.txt", "w") as f, open(dest + "/map2.txt", "w") as g:
+            for index, line in enumerate(self.tiles):
+                for tile in line:
+                    if tile.type == "Other":
+                        f.write(' ')
+                        g.write(' ')
+                    elif tile.type == "Empty":
+                        g.write('R')
+                        if tile.true_empty == True:
+                            f.write('Q')
+                        else:
+                            f.write(chr(ord('R') + tile.wrap_plate + 3*tile.pad_clone))
+                    elif tile.type == "Solid":
+                        f.write(chr(ord('A') + tile.wrap_plate))
+                        g.write(chr(ord('A') + tile.pad_clone))
+
+                if index < len(self.tiles) - 1:
+                    f.write("\n")
+                    g.write("\n")
+
+
+
+
+
+
+
+
+
+
+
+

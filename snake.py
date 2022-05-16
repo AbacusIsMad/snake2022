@@ -44,7 +44,7 @@ class Snake:
 
     def initialize(self, mapdir=None):
         if mapdir is not None:
-            with open(self.parent.src + "/levels/" + mapdir + "/snake.txt", "r") as f:
+            with open(self.parent.src + "/" + mapdir + "/snake.txt", "r") as f:
                 t = f.readlines()
             self.segments = []
             self.segmentd = []
@@ -78,17 +78,25 @@ class Snake:
         print("starting clone")
         print(self.segments)
         print(self.segments[1:])
+        x_max = int(self.parent.config.settings['mapX'])
+        y_max = int(self.parent.config.settings['mapY'])
         #going thru the direction form one by one now, logic copied from below
         for direction in self.segments[1:]:
             print(direction)
             bufpos[0] += direction[0]
             bufpos[1] += direction[1]
             if self.parent.map.tiles[bufpos[1]][bufpos[0]].type == 'Solid':
-                vector = ((not not direction[0])*25 + direction[0]*15 + (not not direction[1])*50 - direction[1]*30)//10
-                opposite = ((not not direction[0])*25 - direction[0]*15 + (not not direction[1])*50 + direction[1]*30)//10
+                vector = ((not not direction[0])*25 + direction[0]*15 + (not not direction[1])*50\
+                         - direction[1]*30)//10
+                opposite = ((not not direction[0])*25 - direction[0]*15 + (not not direction[1])*50\
+                         + direction[1]*30)//10
             
                 if self.parent.map.tiles[bufpos[1]][bufpos[0]].wrap_plate & vector:
-                    while not self.parent.map.tiles[bufpos[1]- direction[1]][bufpos[0] - direction[0]].wrap_plate & opposite:
+                    while not self.parent.map.tiles[bufpos[1]- direction[1]][bufpos[0] - direction[0]].wrap_plate\
+                    & opposite:
+                        if bufpos[0] - direction[0] < 1 or bufpos[0] - direction[0] > x_max - 2\
+                        or bufpos[1] - direction[1] < 1 or bufpos[1] - direction[1] > y_max - 2:
+                            return False
                         bufpos[0] -= direction[0]
                         bufpos[1] -= direction[1]
                 else:
@@ -234,6 +242,9 @@ class Snake:
         headpos = [self.segments[0][0] + pos[0], self.segments[0][1] + pos[1]]
         #convert headpos for wrap or solid tile collision
 
+        x_max = int(self.parent.config.settings['mapX'])
+        y_max = int(self.parent.config.settings['mapY'])
+
         
         dont_move = False
         if self.parent.map.tiles[headpos[1]][headpos[0]].type == 'Solid':
@@ -245,6 +256,10 @@ class Snake:
             if self.parent.map.tiles[headpos[1]][headpos[0]].wrap_plate & vector:
                 #go on that specific direction
                 while not self.parent.map.tiles[headpos[1]- pos[1]][headpos[0] - pos[0]].wrap_plate & opposite:
+                    if headpos[0] - pos[0] < 1 or headpos[0] - pos[0] > x_max - 2\
+                    or headpos[1]- pos[1] < 1 or headpos[1]- pos[1] > y_max - 2:
+                        return False
+
                     headpos[0] -= pos[0]
                     headpos[1] -= pos[1]
                 #found it!
