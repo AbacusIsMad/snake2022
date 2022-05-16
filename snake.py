@@ -284,6 +284,19 @@ class Snake:
         #check for body collision, if there is then the snake doesnt move forward.
         if headpos in self.segmentd[:-1]:
             return -1, []
+        #Pressure plates
+        platesPressed = 0
+        for location in self.parent.map.goals:
+            if location in self.segmentd:
+                platesPressed += 1
+        if platesPressed == len(self.parent.map.goals):
+            self.parent.map.goalsMet = True
+        altPlatesPressed = 0
+        for location in self.parent.map.alt_goals:
+            if location in self.segmentd:
+                altPlatesPressed += 1
+        if altPlatesPressed == len(self.parent.map.alt_goals):
+            self.parent.map.alt_goalsMet = True
         #  If the snake is able to move, the headposition is re-inserted
         if not dont_move:
             self.segments.insert(0, headpos)
@@ -317,4 +330,13 @@ class Snake:
             if not self.parent.snake_clone.dir_to_pos():
                 return -2, []
             self.parent.snake_clone.init = True
+        
+        #Winning mechanics
+        if (self.parent.map.mainGoal == 'score') and (self.score == 10):
+            print("u win")
+        if (self.parent.map.mainGoal == 'plates') and (self.parent.map.goalsMet):
+            print("u win")
+        if (self.parent.map.mainGoal == 'hybrid') and (self.score == 10) and (self.parent.map.goalsMet):
+            print("u win")
+        print(self.parent.map.mainGoal)
         return 0 + int(dont_move) + 2*int(longer), last_tail
