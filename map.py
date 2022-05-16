@@ -1,5 +1,6 @@
 import os
 
+
 class Tile(): 
     def __init__(self, parent, Type, x, y, varient=0, varient2=0):
         self.type = Type
@@ -43,6 +44,7 @@ class Map():
         self.goals = []
         self.alt_goals = []
         self.clones = []
+        self.strawberry_valid = []
         #can create an empty instance to write to!
         if mapdir is not None:
             self.loadMap(mapdir)
@@ -70,6 +72,15 @@ class Map():
                     tileLine.append(tile)
                 self.tiles.append(tileLine)
         print(self.goals, self.alt_goals, self.clones)
+
+    #only used in game, not level maker!
+    def generate_spaces(self):
+        for line in self.tiles:
+            for tile in line:
+                if tile.true_empty:
+                    self.strawberry_valid.append([tile.x, tile.y])
+
+
 
     def readMap(self):
         for i in range(len(self.tiles)): 

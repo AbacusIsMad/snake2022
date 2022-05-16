@@ -30,7 +30,7 @@ if __name__ == "__main__":
         real_path = os.path.join(os.path.abspath('.'), 'snakeData')
 
     #temporary location to test like everything
-    real_path = '/home/ruize/Desktop/snakeData'
+    #real_path = '/home/ruize/Desktop/snakeData'
 
 
     package_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'snakeData')
@@ -363,6 +363,12 @@ def game_loop(level, custom=False):
                 screen.blit(space_img, (x_f, y_f))
                 #pygame.display.update(pygame.Rect(x_f, y_f, rect_len, rect_len))
 
+            #update strawberry
+            if int(game.config.settings['strawberry']) and\
+                (game.snake.score + game.snake_clone.score < int(game.config.settings['maxS']))\
+                and game.strawberry.position == [-100, -100]:
+                game.strawberry.random_pos()
+
             #blit snake
             game.snake.blit(rect_len, screen, state, phase)
             if game.snake_clone.init:
@@ -381,7 +387,7 @@ def game_loop(level, custom=False):
                     x_f, y_f = (coord[0] + x0)*rect_len, (coord[1] + y0)*rect_len
                     pygame.display.update(pygame.Rect(x_f, y_f, rect_len, rect_len))
 
-            #pygame.display.update()
+
         else:
             game.snake.blit(rect_len, screen, state, phase)
             if game.snake_clone.init:

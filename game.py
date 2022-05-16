@@ -14,6 +14,8 @@ from snake import Snake
 from config import Config
 
 
+
+
 class Settings:
     def __init__(self):
         self.width = 30
@@ -32,28 +34,40 @@ class Strawberry():
 
         self.style = str(random.randint(1, 8))
         path = self.parent.src + "/styles/" + self.parent.style + "/images/"
-        self.image = pygame.transform.scale(pygame.image.load(path + 'food' + str(self.style) + '.bmp'),\
-                        (self.settings.rect_len, self.settings.rect_len))
+
+        self.images = [pygame.transform.scale(pygame.image.load(path + 'food' + str(i + 1) + '.bmp'),\
+                        (self.settings.rect_len, self.settings.rect_len)) for i in range(8)]
+
         self.times_called = 0     
         self.initialize()
         
     def random_pos(self):
-        self.style = str(random.randint(1, 8))
-        path = self.parent.src + "/styles/" + self.parent.style + "/images/"
-        self.image = pygame.transform.scale(pygame.image.load(path + 'food' + str(self.style) +\
-            '.bmp'), (self.settings.rect_len, self.settings.rect_len))                
+        self.style = str(random.randint(1, 8))             
         print("called!")
-        self.position[0] = random.randint(0, int(self.parent.config.settings["mapX"])-1)
-        self.position[1] = random.randint(0, int(self.parent.config.settings["mapY"])-1)
+
+        random.shuffle(self.parent.map.strawberry_valid)
+        valid_pos = (loc for loc in self.parent.map.strawberry_valid if not \
+                    ((loc in self.parent.snake.segmentd) or (loc in self.parent.snake_clone.segmentd)))
+
+        try:
+            pos = next(valid_pos)
+        except StopIteration:
+            pos = [-100, -100]
+
+        self.position = [pos[0], pos[1]]
 
 
-        if (self.position in self.parent.snake.segmentd[:-1]) or not self.parent.map.tiles[self.position[1]][self.position[0]].true_empty:
-            self.random_pos()
+    def reset_img_source(self):
+        path = self.parent.src + "/styles/" + self.parent.style + "/images/"
+
+        self.images = [pygame.transform.scale(pygame.image.load(path + 'food' + str(i + 1) + '.bmp'),\
+                        (self.settings.rect_len, self.settings.rect_len)) for i in range(8)]
+
 
     def blit(self, screen, x0, y0):
         x_f = (self.position[0] + x0)*self.settings.rect_len
         y_f = (self.position[1] + y0)*self.settings.rect_len
-        screen.blit(self.image, (x_f, y_f))
+        screen.blit(self.images[int(self.style) - 1], (x_f, y_f))
         pygame.display.update(pygame.Rect(x_f, y_f, self.settings.rect_len, self.settings.rect_len))
    
     def initialize(self):
@@ -112,10 +126,13 @@ class Game:
         self.custom = custom
         self.reset_img_source()
         self.snake.reset_img_source()
+        self.strawberry.reset_img_source()
+
         #set config. This has a bunch of options that control stuff.
         self.config = Config(parent=self, mapdir=mapdir)
         #set map
         self.map = Map(parent=self, mapdir=mapdir)
+        self.map.generate_spaces()
         #set snake
         self.snake.initialize('snakeData/'*custom + 'levels/' + mapdir)
         self.snake_clone.init = False
