@@ -299,6 +299,7 @@ class Snake:
             reward = 1
             longer = True
             self.score += 1
+            self.eatSound()
 
         #padded mechanics
         elif not dont_move:
@@ -320,3 +321,7 @@ class Snake:
                 return -2, []
             self.parent.snake_clone.init = True
         return 0 + int(dont_move) + 2*int(longer), last_tail
+
+    def eatSound(self):
+            eat_sound = pygame.mixer.Sound('./sound/eat.wav')
+            pygame.mixer.Sound.play(eat_sound)
