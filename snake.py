@@ -263,7 +263,7 @@ class Snake:
                 while not self.parent.map.tiles[headpos[1]- pos[1]][headpos[0] - pos[0]].wrap_plate & opposite:
                     if headpos[0] - pos[0] < 1 or headpos[0] - pos[0] > x_max - 2\
                     or headpos[1]- pos[1] < 1 or headpos[1]- pos[1] > y_max - 2:
-                        return False
+                        return -1, []
 
                     headpos[0] -= pos[0]
                     headpos[1] -= pos[1]

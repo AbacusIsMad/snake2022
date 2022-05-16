@@ -73,14 +73,16 @@ class Strawberry():
     def initialize(self):
         self.position = [15, 10]
 
- 
+
 class Game:
     def __init__(self, package_data, file_location):
         self.src = package_data
         self.srcreal = file_location
         self.custom = False
 
-        self.style = '0'
+        with open(self.srcreal + '/snakeData/style.txt') as f:
+            self.style = f.read()
+        #self.style = '0'
         self.settings = Settings()
         self.reset_img_source()
         self.snake = Snake(self)
@@ -201,8 +203,9 @@ class Game:
         y0 = int(self.config.settings["yOffset"])
 
         if developer:
-            true_empty_img = pygame.transform.scale(pygame.image.load(self.src + '/styles/0/images/true_empty.bmp'),\
-                        (self.settings.rect_len, self.settings.rect_len))
+            true_empty_img = pygame.transform.scale(pygame.image.load(self.src + '/styles/'\
+                             + self.style + '/images/true_empty.bmp'),\
+                            (self.settings.rect_len, self.settings.rect_len))
 
         for i in range(0, int(self.config.settings["mapX"])):
             for k in range(0, int(self.config.settings["mapY"])):

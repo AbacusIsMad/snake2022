@@ -321,6 +321,8 @@ def magic(game, start_pos, direction):
         return None
 
     if game.map.tiles[analysis[1]][analysis[0]].type == "Solid":
+        if not game.map.tiles[analysis[1]][analysis[0]].wrap_plate & vector:
+            return None
         while not (game.map.tiles[analysis[1] - direction[1]][analysis[0] - direction[0]].wrap_plate & opposite):
             #needs to be a small buffer or illegal index happens
             if analysis[0] - direction[0] < 1 or analysis[0] - direction[0] > x_max - 2\
@@ -384,12 +386,12 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
                                 x_max*rect_len, y_max*rect_len)
 
     #extra images
-    pointer_img = pygame.transform.scale(pygame.image.load(game.src + '/styles/0/images/pointer.bmp'),\
-                        (game.settings.rect_len, game.settings.rect_len))
-    pointer_img2 = pygame.transform.scale(pygame.image.load(game.src + '/styles/0/images/pointer2.bmp'),\
-                        (game.settings.rect_len, game.settings.rect_len))
-    potential_img = pygame.transform.scale(pygame.image.load(game.src + '/styles/0/images/potential.bmp'),\
-                        (game.settings.rect_len, game.settings.rect_len))
+    pointer_img = pygame.transform.scale(pygame.image.load(game.src + '/styles/' + game.style \
+                        + '/images/pointer.bmp'), (game.settings.rect_len, game.settings.rect_len))
+    pointer_img2 = pygame.transform.scale(pygame.image.load(game.src + '/styles/' + game.style \
+                        + '/images/pointer2.bmp'), (game.settings.rect_len, game.settings.rect_len))
+    potential_img = pygame.transform.scale(pygame.image.load(game.src + '/styles/' + game.style \
+                        + '/images/potential.bmp'), (game.settings.rect_len, game.settings.rect_len))
     
     #theres an option to switch between drawing map and drawing snake
     snake_mode = False
