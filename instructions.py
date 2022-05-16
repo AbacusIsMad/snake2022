@@ -148,17 +148,6 @@ def instructions_pagetwo(package_path=None, screen=None):
         screen.blit(cross, (200, 85))
 
         message_display("Don't crash into yourself!", screen, 430, 215, color=white, size=40)
-
-        # screen.blit(snaketail, (140, 120))
-        # screen.blit(snakebody, (155, 120))
-        # screen.blit(snakebody, (170, 120))
-        # screen.blit(snakebody, (185, 120))
-        # screen.blit(pygame.transform.rotate(snakebody, 90), (185, 133))
-        # screen.blit(pygame.transform.rotate(snakebody, 90), (185, 148))
-        # screen.blit(pygame.transform.rotate(snakebody, 180), (172, 148))
-        # screen.blit(pygame.transform.rotate(snakebody, 180), (157, 148))
-        # screen.blit(pygame.transform.rotate(snakehead, 90), (155, 135))
-
         screen.blit(pygame.transform.rotate(snaketail, 180), (300, 255))
         screen.blit(snakebody, (345, 255))
         screen.blit(snakebody, (390, 255))
@@ -199,11 +188,11 @@ def instructions_pagetwo(package_path=None, screen=None):
 
         screen.blit(tick, (560, 565))
 
-        # pressure plates
-        message_display("Activate the pressure plates to win the level", screen, 430, 620, color=white, size=40)
-
-        screen.blit(pygame.transform.scale(pygame.image.load(path + "images/plate.bmp"), (45, 45)), (395, 640))
-        screen.blit(pygame.transform.scale(pygame.image.load(path + "images/platea.bmp"), (45, 45)), (440, 640))
+        # describing the win mechanisms and features 
+        message_display("There are a few different ways to win levels", screen, 430, 620, color=white, size=30)
+        message_display("Look for pressure plates or clones to help", screen, 350, 660, color=white, size=30)
+        screen.blit(pygame.transform.scale(pygame.image.load(path + "images/plate.bmp"), (45, 45)), (650, 640))
+        screen.blit(pygame.transform.scale(pygame.image.load(path + "images/clone.bmp"), (45, 45)), (700, 640))
         back = button('Back', screen, 410, 700, 80, 40, red, bright_red, yes)
     
         if back: 

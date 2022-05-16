@@ -42,8 +42,6 @@ if __name__ == "__main__":
         print("we are inside the executable.")
 
 
-
-
     if not os.path.exists(real_path + '/levels'):
         try:
             os.makedirs(real_path + '/levels')
