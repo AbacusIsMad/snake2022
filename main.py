@@ -30,8 +30,7 @@ if __name__ == "__main__":
         real_path = os.path.join(os.path.abspath('.'), 'snakeData')
 
     #temporary location to test like everything
-    real_path = '/home/ruize/Desktop/snakeData'
-
+    # real_path = '/home/ruize/Desktop/snakeData'
 
     package_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'snakeData')
     print("real path:", real_path)
@@ -40,8 +39,6 @@ if __name__ == "__main__":
         print("inside a python script. No need to do anything more.")
     else:
         print("we are inside the executable.")
-
-
 
 
     if not os.path.exists(real_path + '/levels'):
