@@ -47,8 +47,11 @@ class Map():
 
         #pressure plate goals
         self.goals = []
+        self.goalsMet = False
         self.alt_goals = []
+        self.alt_goalsMet = False
         self.clones = []
+        self.mainGoal = ''
         
         if mapdir is not None:
             self.loadMap(mapdir, custom)
@@ -79,6 +82,15 @@ class Map():
                     # If the letter is blank, this is an 'other' space
                     elif (letter == ' '): 
                         tile = Tile(self, "Other", k, i)
+                    elif (letter == '!'): 
+                        tile = Tile(self, "Empty", k, i)
+                        self.mainGoal = 'score'
+                    elif (letter == '@'): 
+                        tile = Tile(self, "Empty", k, i)
+                        self.mainGoal = 'plates'
+                    elif (letter == '#'): 
+                        tile = Tile(self, "Empty", k, i)
+                        self.mainGoal = 'hybrid'
                     tileLine.append(tile)
                 # Added to the big list of tiles stored in the map object 
                 self.tiles.append(tileLine)
