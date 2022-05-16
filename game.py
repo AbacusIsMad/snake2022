@@ -117,7 +117,7 @@ class Game:
         #set map
         self.map = Map(parent=self, mapdir=mapdir)
         #set snake
-        self.snake.initialize(mapdir)
+        self.snake.initialize('snakeData/'*custom + 'levels/' + mapdir)
         self.snake_clone.init = False
         self.snake_clone.segmentd = []
         self.snake_clone.score = 0

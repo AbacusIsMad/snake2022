@@ -237,7 +237,7 @@ def level_select():
             break
         if restart[1]:
             print("restarted!")
-            restart = game_loop(restart[1])
+            restart = game_loop(restart[1], game.custom)
             continue
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

@@ -67,20 +67,20 @@ def button(msg, screen, x, y, w, h, inactive_color, active_color, action, **kwar
 
 
 warning_dict = {'name' : 'name must not already exist',
-                'mapX': 'must be integer between 0-30',
-                'mapY': 'must be integer between 0-30',
+                'mapX': 'must be integer between 1-30',
+                'mapY': 'must be integer between 1-30',
                 'xOffset': 'must be integer between 0-10',
-                'yOffset': 'must be integer between 0-10',
+                'yOffset': 'must be integer between 4-10',
                 'maxS': 'must be integer between 0-60'}
 
 
 
 comparison_dict = {'name' : lambda line: line.strip() not in os.listdir(os.path.abspath('.') + '/snakeData/levels')\
                         and len(line) > 0,
-                    'mapX' : lambda value: int(value) <= 30 and int(value) >= 0,
-                    'mapY' : lambda value: int(value) <= 30 and int(value) >= 0,
+                    'mapX' : lambda value: int(value) <= 30 and int(value) >= 1,
+                    'mapY' : lambda value: int(value) <= 30 and int(value) >= 1,
                     'xOffset' : lambda value: int(value) <= 10 and int(value) >= 0,
-                    'yOffset' : lambda value: int(value) <= 10 and int(value) >= 0,
+                    'yOffset' : lambda value: int(value) <= 10 and int(value) >= 4,
                     'maxS' : lambda value: int(value) <= 60 and int(value) >= 0,
                     'strawberry': lambda empty : True}
 
@@ -180,7 +180,10 @@ def level_maker(game=None):
             if event.type == pygame.QUIT:
                 pygame.quit()
 
-        button('New level', screen, 370, 150, 160, 40, red, bright_red, new_level, game=game)
+        if button('New level', screen, 370, 150, 160, 40, red, bright_red, new_level, game=game):
+            screen.fill(white)
+            break
+
         button('Edit existing level', screen, 370, 300, 160, 40, red, bright_red, yes)
 
         if button('Back', screen, 410, 600, 80, 40, red, bright_red, yes):
@@ -207,8 +210,8 @@ def new_level(game=None):
     max_straw_box = InputBox(game, 350, 500, 140, 32, 'maxS')
     boxes = [name_box, x_size_box, y_size_box, x_offset_box, y_offset_box, max_straw_box]
 
-    mode = 0
-    mode_txt = ['Strawberry', 'Plates', 'Hybrid']
+    mode = 1
+    mode_txt = ['Plates', 'Strawberry', 'Hybrid']
     mode_c = [green, yellow, blue]
     mode_ca = [bright_green, bright_yellow, bright_blue]
 
@@ -237,7 +240,7 @@ def new_level(game=None):
 
         #progress onto next stage, but before that let's put stuff into an object
         if button('Continue', screen, 410, 600, 80, 40, blue, bright_blue, yes):
-            compare = dict((key.datatype, key.text) for key in boxes[1:])
+            compare = dict((key.datatype, key.text) for key in boxes)
             compare['strawberry'] = mode
             for ty in compare:
                 try:
@@ -361,6 +364,9 @@ def create_level(config=None, game=None):
     pygame.draw.rect(screen, dark_gray, working_rect)
     game.blit_map(game.settings.rect_len, screen, developer=True)
     blit_cursor(pointer_img, pointer, game)
+
+    message_display("Position (0, 0), tile type Other", screen, 200, 30, white, 20)
+
     pygame.display.update()
 
     something_changed = 0
@@ -373,6 +379,7 @@ def create_level(config=None, game=None):
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
+
             elif event.type == KEYDOWN:
                 #moving the cursor around
                 if event.key == K_RIGHT or event.key == ord('d'):
@@ -438,7 +445,15 @@ def create_level(config=None, game=None):
                             tile.type = "Empty"
                             tile.true_empty = False
                         elif tile.type == "Empty":
+                            if pointer in game.map.clones:
+                                game.map.clones.remove(pointer)
+                            if pointer in game.map.goals:
+                                game.map.goals.remove(pointer)
+                            if pointer in game.map.alt_goals:
+                                game.map.alt_goals.remove(pointer)
                             tile.type = "Solid"
+                            tile.wrap_plate = 0
+                            tile.pad_clone = 0
                             tile.true_empty = False
                         elif tile.type == "Solid":
                             tile.type = "Other"
@@ -462,8 +477,38 @@ def create_level(config=None, game=None):
                         else: #nothing
                             tile.pad_clone -= tile.pad_clone & 1
                             tile.wrap_plate = tile.wrap_plate | 1
+
                     elif tile.type == "Empty":
-                        pass
+                        if tile.wrap_plate == 1:
+                            print("alt_plate!")
+                            game.map.goals.remove(pointer)
+                            game.map.alt_goals.append([pointer[0], pointer[1]])
+                            tile.wrap_plate = 2
+                        elif tile.wrap_plate == 2:
+                            print("clone/space!")
+                            game.map.alt_goals.remove(pointer)
+                            if pointer not in game.snake.segmentd\
+                            and len(game.map.clones) < 2:
+                                tile.wrap_plate = 0
+                                tile.pad_clone = 1
+                                game.map.clones.append([pointer[0], pointer[1]])
+                            else:
+                                tile.wrap_plate = 0
+                                tile.pad_clone = 0
+                        elif tile.pad_clone:
+                            print("empty!")
+                            tile.wrap_plate = 0
+                            tile.pad_clone = 0
+                            game.map.clones.remove(pointer)
+                        elif not (tile.wrap_plate or tile.pad_clone or tile.true_empty):
+                            print("true empty!")
+                            tile.true_empty = True
+                        elif tile.true_empty:
+                            print("plate!")
+                            tile.true_empty = False
+                            game.map.goals.append([pointer[0], pointer[1]])
+                            tile.wrap_plate = 1                 
+
                     something_changed = 1
                 #C: rotate, behaviour maintained in snake mode
                 if event.key == ord('c'):
@@ -474,6 +519,10 @@ def create_level(config=None, game=None):
                         tile.pad_clone <<= 1
                         tile.pad_clone = tile.pad_clone % 16 + tile.pad_clone // 16
                     something_changed = 1
+
+        
+
+
 
         if something_changed:
             
@@ -502,7 +551,23 @@ def create_level(config=None, game=None):
 
                 print(potential_pos)
 
-            screen.fill(black)
+            #screen.fill(black)
+            #draw descriptive text
+            pygame.draw.rect(screen, black, pygame.Rect(0, 0, 400, 100))
+            tile = game.map.tiles[pointer[1]][pointer[0]]
+
+            msg = "Position ({}, {}), tile type {}".format(tile.x, tile.y, tile.type)
+            if tile.type == "Solid":
+                extra_information = "wrap value: {}, pad value: {}".format(tile.wrap_plate, tile.pad_clone)
+            if tile.type == "Empty":
+                extra_information = "plate value: {}, true empty: {}".format(tile.wrap_plate + tile.pad_clone*3,\
+                                                                        tile.true_empty)
+            else:
+                extra_information = ""
+            message_display(msg, screen, 200, 30, white, 20)
+            message_display(extra_information, screen, 200, 60, white, 20)
+
+
             pygame.draw.rect(screen, dark_gray, working_rect)
             game.blit_map(rect_len, screen, developer=True)
             #snake blitting has more restrictions now. be careful!
@@ -513,8 +578,13 @@ def create_level(config=None, game=None):
                 blit_cursor(pointer_img2, pointer, game)
             else:
                 blit_cursor(pointer_img, pointer, game)
-            #blit features
+
+            game.blit_features(rect_len, screen)
+
+            #blit potential spots
             if snake_mode:
+                if not game.snake.segmentd:
+                    potential_pos = [0, 0, 0, 0]
                 for i in range(4):
                     if potential_pos[i]:
                         screen.blit(potential_img, ((potential_pos[i][0] + x_offset)*rect_len,\
@@ -523,7 +593,52 @@ def create_level(config=None, game=None):
             pygame.display.update()
             pygame.time.delay(30)
 
+        #yeets progress and just doesn't do anything
+        if button('Back', screen, 400, 20, 80, 40, red, bright_red, yes):
+            return 0
 
+
+
+        if button('Save', screen, 500, 20, 80, 40, blue, bright_blue, yes):
+            pygame.draw.rect(screen, black, pygame.Rect(500, 0, 400, 100))
+            invalid = False
+            #scan for snake
+            if len(game.snake.segments) < 3:
+                message_display('Snake too short!', screen, 650, 20, white, 15)
+                invalid = True
+            #scan for true empty space
+            breaker = False
+
+            mode = int(game.config.settings['strawberry'])
+
+            if mode:
+                for line in game.map.tiles:
+                    for tile in line:
+                        if tile.true_empty:
+                            breaker = True
+                            break
+                    if breaker:
+                        break
+                else:
+                    message_display('No true empty space for strawberry!', screen, 750, 35, white, 15)
+                    invalid = True
+
+            if mode == 0 or mode == 2:
+                if not (game.map.goals or game.map.alt_goals):
+                    message_display('No plates!', screen, 620, 50, white, 15)
+                    invalid = True
+
+            if len(game.map.clones) == 1:
+                message_display('Invalid clone configuration!', screen, 680, 65, white, 15)
+                invalid = True
+
+            #save map gaming
+            if not invalid:
+                game.map.writeMap(game.srcreal + '/snakeData/levels/' + game.config.settings['name'])
+                    
+
+
+        pygame.display.update(pygame.Rect(0, 0, 900, 100))
         pygame.time.delay(30)
         
 
