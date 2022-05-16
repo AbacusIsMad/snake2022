@@ -174,6 +174,8 @@ class InputBox:
 def level_maker(game=None):
     screen = game.screen
     screen.fill(white)
+
+    game.custom = True
     while True:
         
         for event in pygame.event.get():
@@ -184,7 +186,9 @@ def level_maker(game=None):
             screen.fill(white)
             break
 
-        button('Edit existing level', screen, 370, 300, 160, 40, red, bright_red, yes)
+        if button('Edit existing level', screen, 370, 300, 160, 40, red, bright_red, edit_level, game=game):
+            screen.fill(white)
+            break
 
         if button('Back', screen, 410, 600, 80, 40, red, bright_red, yes):
             screen.fill(white)
@@ -251,7 +255,7 @@ def new_level(game=None):
             else:
                 if create_level(config=compare, game=game):
                     #finalise a bunch of stuff
-                    pass
+                    return 1
                 else:
                     pass
 
@@ -263,6 +267,35 @@ def new_level(game=None):
 
         pygame.display.update()
         pygame.time.delay(30)
+
+
+def edit_level(game=None):
+    screen = game.screen
+    screen.fill(black)
+
+
+    while True:
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+
+
+        for idx, d in enumerate(sorted(os.listdir(game.srcreal + '/snakeData/levels'))):
+            if button(d, screen, 520 + 160*(idx%2), 220 + 50*(idx//2), 150, 40, yellow, bright_yellow, \
+                    create_level, game=game, edit=True, mapdir=d):
+                screen.fill(white)
+                return 1
+
+        if button('Back', screen, 410, 800, 80, 40, red, bright_red, yes):
+            screen.fill(white)
+            break
+
+        pygame.display.update()
+        pygame.time.delay(30)
+
+
+
 
 
 def blit_cursor(image, pointer, game):
@@ -316,26 +349,34 @@ def magic(game, start_pos, direction):
 
 
 
-def create_level(config=None, game=None):
-    #setup blank map (of course this will remove past progress)
-    game.map = Map(parent=game)
-    game.map.tiles = [[Tile(game.map, "Other", i, j, 0, 0) for i in range(int(config['mapX']))]\
-                     for j in range(int(config['mapY']))]
-    #game.map.tiles[0][0].type = "Solid"
-    game.map.readMap()
+def create_level(config=None, game=None, edit=False, mapdir=None):
 
     #setup config:
-    game.config = Config(parent=game)
-    game.config.settings = config
+    if edit:
+        game.config = Config(parent=game, mapdir=mapdir)
+    else:
+        game.config = Config(parent=game)
+        game.config.settings = config
     print(game.config.settings)
-    
+   
+    #setup blank map (of course this will remove past progress)
+    if edit:
+        game.map = Map(parent=game, mapdir=mapdir)
+
+    else:
+        game.map = Map(parent=game)
+        game.map.tiles = [[Tile(game.map, "Other", i, j, 0, 0) for i in range(int(config['mapX']))]\
+                     for j in range(int(config['mapY']))]
+
+
+ 
     screen = game.screen
     #where to move stuff
     pointer = [0, 0]
-    x_max = int(config['mapX'])
-    y_max = int(config['mapY'])
-    x_offset = int(config['xOffset'])
-    y_offset = int(config['yOffset'])
+    x_max = int(game.config.settings['mapX'])
+    y_max = int(game.config.settings['mapY'])
+    x_offset = int(game.config.settings['xOffset'])
+    y_offset = int(game.config.settings['yOffset'])
 
     #visualising the borsers of the map
     rect_len = game.settings.rect_len
@@ -355,14 +396,21 @@ def create_level(config=None, game=None):
     #indicators to show where the snake can be placed: 0 means not potential
     potential_pos = [0, 0, 0, 0]
 
-    #empty snake
-    game.snake.segments, game.snake.segmentd = [], []
+    #setup snake
+    if edit:
+        game.snake.initialize(mapdir=("snakeData/levels/" + mapdir))
+    else:
+        game.snake.segments, game.snake.segmentd = [], []
 
 
     #blit initial state
     screen.fill(black)
     pygame.draw.rect(screen, dark_gray, working_rect)
     game.blit_map(game.settings.rect_len, screen, developer=True)
+    if len(game.snake.segments):
+        game.snake.blit(rect_len, screen, 1, 0)
+    game.blit_features(rect_len, screen)
+
     blit_cursor(pointer_img, pointer, game)
 
     message_display("Position (0, 0), tile type Other", screen, 200, 30, white, 20)
@@ -595,6 +643,8 @@ def create_level(config=None, game=None):
 
         #yeets progress and just doesn't do anything
         if button('Back', screen, 400, 20, 80, 40, red, bright_red, yes):
+            screen.fill(black)
+            pygame.display.update()
             return 0
 
 
@@ -635,6 +685,13 @@ def create_level(config=None, game=None):
             #save map gaming
             if not invalid:
                 game.map.writeMap(game.srcreal + '/snakeData/levels/' + game.config.settings['name'])
+                if edit: 
+                    message_display('Level Saved!', screen, 450, 800, green, 60)
+                else: 
+                    message_display('Level Created!', screen, 450, 800, green, 60)
+                pygame.display.update()
+                pygame.time.delay(2000)
+                return 1
                     
 
 

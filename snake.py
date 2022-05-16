@@ -44,8 +44,12 @@ class Snake:
 
     def initialize(self, mapdir=None):
         if mapdir is not None:
-            with open(self.parent.src + "/" + mapdir + "/snake.txt", "r") as f:
-                t = f.readlines()
+            if not self.parent.custom:
+                with open(self.parent.src + "/" + mapdir + "/snake.txt", "r") as f:
+                    t = f.readlines()
+            else:
+                with open(self.parent.srcreal + "/" + mapdir + "/snake.txt", "r") as f:
+                    t = f.readlines()
             self.segments = []
             self.segmentd = []
             for pair in t:
@@ -70,6 +74,7 @@ class Snake:
 
 
     def dir_to_pos(self):
+        self.reset_img_source()
         #lets start
         buf = []
         buf.append([self.segments[0][0], self.segments[0][1]])

@@ -30,7 +30,7 @@ if __name__ == "__main__":
         real_path = os.path.join(os.path.abspath('.'), 'snakeData')
 
     #temporary location to test like everything
-    #real_path = '/home/ruize/Desktop/snakeData'
+    real_path = '/home/ruize/Desktop/snakeData'
 
 
     package_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'snakeData')
@@ -281,7 +281,7 @@ def level_select():
 
 
 def game_loop(level, custom=False):
-    with open(os.path.join(game.src, "snakeData/style.txt"), 'r') as f:
+    with open(os.path.join(game.srcreal, "snakeData/style.txt"), 'r') as f:
         game.style = f.read()
 
     game.restart_game(mapdir=level, custom=custom)
