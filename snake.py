@@ -97,8 +97,9 @@ class Snake:
                          + direction[1]*30)//10
             
                 if self.parent.map.tiles[bufpos[1]][bufpos[0]].wrap_plate & vector:
-                    while not self.parent.map.tiles[bufpos[1]- direction[1]][bufpos[0] - direction[0]].wrap_plate\
-                    & opposite:
+                    while not ((self.parent.map.tiles[bufpos[1]- direction[1]][bufpos[0] - direction[0]].wrap_plate\
+                    & opposite) and \
+                    self.parent.map.tiles[bufpos[1]- direction[1]][bufpos[0] - direction[0]].type == "Solid"):
                         if bufpos[0] - direction[0] < 1 or bufpos[0] - direction[0] > x_max - 2\
                         or bufpos[1] - direction[1] < 1 or bufpos[1] - direction[1] > y_max - 2:
                             return False
@@ -260,7 +261,8 @@ class Snake:
             #actual comparison, bit mask black magic
             if self.parent.map.tiles[headpos[1]][headpos[0]].wrap_plate & vector:
                 #go on that specific direction
-                while not self.parent.map.tiles[headpos[1]- pos[1]][headpos[0] - pos[0]].wrap_plate & opposite:
+                while not ((self.parent.map.tiles[headpos[1]- pos[1]][headpos[0] - pos[0]].wrap_plate & opposite)\
+                and self.parent.map.tiles[headpos[1]- pos[1]][headpos[0] - pos[0]].type == "Solid"):
                     if headpos[0] - pos[0] < 1 or headpos[0] - pos[0] > x_max - 2\
                     or headpos[1]- pos[1] < 1 or headpos[1]- pos[1] > y_max - 2:
                         return -1, []

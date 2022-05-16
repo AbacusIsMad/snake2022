@@ -323,7 +323,8 @@ def magic(game, start_pos, direction):
     if game.map.tiles[analysis[1]][analysis[0]].type == "Solid":
         if not game.map.tiles[analysis[1]][analysis[0]].wrap_plate & vector:
             return None
-        while not (game.map.tiles[analysis[1] - direction[1]][analysis[0] - direction[0]].wrap_plate & opposite):
+        while not ((game.map.tiles[analysis[1] - direction[1]][analysis[0] - direction[0]].wrap_plate & opposite)\
+        and game.map.tiles[analysis[1] - direction[1]][analysis[0] - direction[0]].type == "Solid"):
             #needs to be a small buffer or illegal index happens
             if analysis[0] - direction[0] < 1 or analysis[0] - direction[0] > x_max - 2\
             or analysis[1] - direction[1] < 1 or analysis[1] - direction[1] > y_max - 2:
