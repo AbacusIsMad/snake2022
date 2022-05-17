@@ -253,6 +253,12 @@ def level_select():
         with open(real_path + '/playerData.txt', "r") as f:
             playerData = json.load(f)
 
+        if button('Reset finished levels', 130, 800, 200, 40, red, bright_red, yes):
+            with open(real_path + '/playerData.txt', "w") as f:
+                playerData = [0 for i in range(50)]
+                json.dump(playerData, f)
+
+
         message_display('Select Level', game.settings.width / 2 * game.settings.rect_len, \
                         game.settings.height / 8 * game.settings.rect_len, color=white)
         message_display('Preset levels', game.settings.width / 4 * game.settings.rect_len, \

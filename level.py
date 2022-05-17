@@ -385,6 +385,8 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
     y_max = int(game.config.settings['mapY'])
     x_offset = int(game.config.settings['xOffset'])
     y_offset = int(game.config.settings['yOffset'])
+    game.config.settings['cOffset'] = 0
+
 
     #visualising the borsers of the map
     rect_len = game.settings.rect_len
@@ -574,6 +576,11 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
                         tile.wrap_plate = tile.wrap_plate % 16 + tile.wrap_plate // 16
                         tile.pad_clone <<= 1
                         tile.pad_clone = tile.pad_clone % 16 + tile.pad_clone // 16
+
+                    elif tile.type == "Empty" and tile.pad_clone:
+                        game.config.settings['cOffset'] += 1
+                        game.config.settings['cOffset'] %= 4
+
                     something_changed = 1
 
         

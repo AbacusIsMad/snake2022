@@ -13,14 +13,14 @@ from map import Map
 from snake import Snake
 from config import Config
 
-
-
+#change this to 1 to make it big
+correction_factor = 2
 
 class Settings:
     def __init__(self):
-        self.width = 30
-        self.height = 30
-        self.rect_len = 30
+        self.width = 30 * correction_factor
+        self.height = 30 * correction_factor
+        self.rect_len = 30 // correction_factor
 
         #size of game, and then size of individual grids. 
         # self.width = 52
@@ -89,10 +89,10 @@ class Game:
         self.snake = Snake(self)
         self.snake_clone = Snake(self, clone=True)
         self.strawberry = Strawberry(self.settings, self)
-        self.move_dict = {0 : 'up',
-                          1 : 'down',
+        self.move_dict = {0 : 'right',
+                          1 : 'up',
                           2 : 'left',
-                          3 : 'right',
+                          3 : 'down',
                           -1: 'none'}
 
     def reset_img_source(self):
@@ -116,10 +116,10 @@ class Game:
                         (self.settings.rect_len, self.settings.rect_len))
         self.platea_alt_img = pygame.transform.scale(pygame.image.load(path + 'platea_alt.bmp'),\
                         (self.settings.rect_len, self.settings.rect_len))
-        self.clone_img = pygame.transform.scale(pygame.image.load(path + 'clone.bmp'),\
-                        (self.settings.rect_len, self.settings.rect_len))
-        self.clonea_img = pygame.transform.scale(pygame.image.load(path + 'clonea.bmp'),\
-                        (self.settings.rect_len, self.settings.rect_len))
+        self.clone_img = [pygame.transform.scale(pygame.image.load(path + 'clone' + str(i) + '.bmp'),\
+                        (self.settings.rect_len, self.settings.rect_len)) for i in range(4)]
+        self.clonea_img = [pygame.transform.scale(pygame.image.load(path + 'clonea' + str(i) + '.bmp'),\
+                        (self.settings.rect_len, self.settings.rect_len)) for i in range(4)]
 
     def restart_game(self, mapdir, custom=False): 
         #update visuals at the start of the game
@@ -155,6 +155,7 @@ class Game:
         move_dict = self.move_dict
 
         change_direction = move_dict[move]
+
         #this translates the number back to the string again. Kinda redundant tbh.
 
         if change_direction == 'right' and not self.snake.segments[1] == [1, 0]:
@@ -167,14 +168,19 @@ class Game:
             self.snake.facing = change_direction
 
         if self.snake_clone.init:
-            if change_direction == 'right' and not self.snake_clone.segments[1] == [1, 0]:
-                self.snake_clone.facing = change_direction
-            if change_direction == 'left' and not self.snake_clone.segments[1] == [-1, 0]:
-                self.snake_clone.facing = change_direction
-            if change_direction == 'up' and not self.snake_clone.segments[1] == [0, -1]:
-                self.snake_clone.facing = change_direction
-            if change_direction == 'down' and not self.snake_clone.segments[1] == [0, 1]:
-                self.snake_clone.facing = change_direction
+
+            offset = int(self.config.settings['cOffset'])
+
+            clone_change_direction = move_dict[(move + offset) % 4]
+
+            if clone_change_direction == 'right' and not self.snake_clone.segments[1] == [1, 0]:
+                self.snake_clone.facing = clone_change_direction
+            if clone_change_direction == 'left' and not self.snake_clone.segments[1] == [-1, 0]:
+                self.snake_clone.facing = clone_change_direction
+            if clone_change_direction == 'up' and not self.snake_clone.segments[1] == [0, -1]:
+                self.snake_clone.facing = clone_change_direction
+            if clone_change_direction == 'down' and not self.snake_clone.segments[1] == [0, 1]:
+                self.snake_clone.facing = clone_change_direction
         
         #state, replace = self.snake.update()
         if self.snake_clone.init:
@@ -249,10 +255,11 @@ class Game:
             else: 
                 screen.blit(self.plate_alt_img, (x_f, y_f))
             pygame.display.update(pygame.Rect(x_f, y_f, self.settings.rect_len, self.settings.rect_len))
+        offset = int(self.config.settings['cOffset'])
         for location in self.map.clones:
             x_f, y_f = (location[0] + x0)*rect_len, (location[1] + y0)*rect_len
             if self.snake_clone.init:
-                screen.blit(self.clonea_img, (x_f, y_f))
+                screen.blit(self.clonea_img[offset], (x_f, y_f))
             else:
-                screen.blit(self.clone_img, (x_f, y_f))
+                screen.blit(self.clone_img[offset], (x_f, y_f))
             pygame.display.update(pygame.Rect(x_f, y_f, self.settings.rect_len, self.settings.rect_len))

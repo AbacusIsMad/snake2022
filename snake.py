@@ -76,6 +76,8 @@ class Snake:
 
     def dir_to_pos(self):
         self.reset_img_source()
+        offset = int(self.parent.config.settings['cOffset'])
+
         #lets start
         buf = []
         buf.append([self.segments[0][0], self.segments[0][1]])
@@ -89,6 +91,10 @@ class Snake:
         #going thru the direction form one by one now, logic copied from below
         for direction in self.segments[1:]:
             print(direction)
+            #rotate if necessary:
+
+
+
             bufpos[0] += direction[0]
             bufpos[1] += direction[1]
             if self.parent.map.tiles[bufpos[1]][bufpos[0]].type == 'Solid':
@@ -106,6 +112,8 @@ class Snake:
                             return False
                         bufpos[0] -= direction[0]
                         bufpos[1] -= direction[1]
+                        if bufpos in buf: #own segment
+                            return False
                 else:
                     #solid block somehow
                     return False
@@ -146,7 +154,7 @@ class Snake:
         elif tile.wrap_plate == 2:
             overlap = self.parent.platea_alt_img
         elif tile.pad_clone:
-            overlap = self.parent.clonea_img
+            overlap = self.parent.clonea_img[int(self.parent.config.settings['cOffset'])]
 
         if dire == [0, 1]:
             rotation = 0
@@ -179,7 +187,7 @@ class Snake:
         elif tile.wrap_plate == 2:
             overlap = self.parent.platea_alt_img
         elif tile.pad_clone:
-            overlap = self.parent.clonea_img
+            overlap = self.parent.clonea_img[int(self.parent.config.settings['cOffset'])]
 
         if tail_direction == [0, 1]:
             rotation = 0
@@ -317,9 +325,23 @@ class Snake:
         #clone mechanics
         if (not self.parent.snake_clone.init) and (headpos in self.parent.map.clones):
             #setup clone
+
+            offset = int(self.parent.config.settings['cOffset'])
+
             clone_pos = self.parent.map.clones[(self.parent.map.clones.index(headpos) + 1) % 2]
-            self.parent.snake_clone.facing = self.facing
-            self.parent.snake_clone.segments = copy.deepcopy(self.segments)
+            self.parent.snake_clone.facing = self.parent.move_dict\
+                        [(self.parent.direction_to_int(self.facing) + offset)%4]
+            self.parent.snake_clone.segments = []
+
+            #copy direction form:
+            
+            for coord in self.segments:
+                temp = coord.copy()
+                for i in range(offset):
+                    temp = [temp[1], -temp[0]]
+                self.parent.snake_clone.segments.append([temp[0], temp[1]])
+
+            #self.parent.snake_clone.segments = copy.deepcopy(self.segments)
             self.parent.snake_clone.segments[0] = [clone_pos[0], clone_pos[1]]
             if not self.parent.snake_clone.dir_to_pos():
                 return -2, []
