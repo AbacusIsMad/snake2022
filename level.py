@@ -354,6 +354,11 @@ def magic(game, start_pos, direction):
 
 def create_level(config=None, game=None, edit=False, mapdir=None):
 
+    with open(game.srcreal + '/snakeData/style.txt', "r") as f:
+        game.style = f.read()
+    game.reset_img_source()
+    game.snake.reset_img_source()
+
     #setup config:
     if edit:
         game.config = Config(parent=game, mapdir=mapdir)

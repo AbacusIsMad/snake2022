@@ -3,4 +3,4 @@ mapY:=15
 xOffset:=6
 yOffset:=6
 strawberry:=1
-maxS:=0
+maxS:=3

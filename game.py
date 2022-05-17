@@ -79,6 +79,7 @@ class Game:
         self.src = package_data
         self.srcreal = file_location
         self.custom = False
+        self.won = False
 
         with open(self.srcreal + '/snakeData/style.txt') as f:
             self.style = f.read()
@@ -139,11 +140,12 @@ class Game:
         self.snake_clone.score = 0
         #set stawberry if it exists.
         self.strawberry.times_called = 0
-        if int(self.config.settings['strawberry']):
+        if int(self.config.settings['strawberry']) or int(self.config.settings['maxS']) == 0:
             self.strawberry.random_pos()
         else:
             self.strawberry.position = [-100, -100]
         self.snake.won = False
+        self.won = False
     
     def direction_to_int(self, direction):
         direction_dict = {value : key for key,value in self.move_dict.items()}

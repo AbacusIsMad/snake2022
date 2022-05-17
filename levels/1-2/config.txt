@@ -2,5 +2,5 @@ mapX:=24
 mapY:=16
 xOffset:=2
 yOffset:=6
-strawberry:=0
-maxS:=0
+strawberry:=2
+maxS:=10

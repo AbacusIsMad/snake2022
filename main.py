@@ -11,6 +11,7 @@ import sys
 import os
 import math
 import datetime
+import json
 from pygame.locals import KEYDOWN, K_RIGHT, K_LEFT, K_UP, K_DOWN, K_ESCAPE
 from pygame.locals import QUIT
 from snake import Snake
@@ -59,7 +60,8 @@ if __name__ == "__main__":
             print("style written")
     if not os.path.exists(real_path + '/playerData.txt'):
         with open(real_path + '/playerData.txt', 'w') as f:
-            f.write('0')
+            playerData = [0 for i in range(50)] #no levels done yet
+            json.dump(playerData, f)
             print("playerData written")
 
     
@@ -227,6 +229,12 @@ def settings(directory):
 
 
 def level_select():
+
+    with open(real_path + '/playerData.txt', "r") as f:
+        playerData = json.load(f)
+
+    print(playerData)
+
     intro = True
     restart = [0, ""]
     screen.fill(black)
@@ -241,9 +249,16 @@ def level_select():
             if event.type == pygame.QUIT:
                 pygame.quit()
         #screen.fill(black)
-        message_display('Select Level', game.settings.width / 2 * game.settings.rect_len, game.settings.height / 8 * game.settings.rect_len, color=white)
-        message_display('Preset levels', game.settings.width / 4 * game.settings.rect_len, game.settings.height / 5 * game.settings.rect_len, color=white, size=30)
-        message_display('Custom levels', 3*game.settings.width / 4 * game.settings.rect_len, game.settings.height / 5 * game.settings.rect_len, color=white, size=30)
+
+        with open(real_path + '/playerData.txt', "r") as f:
+            playerData = json.load(f)
+
+        message_display('Select Level', game.settings.width / 2 * game.settings.rect_len, \
+                        game.settings.height / 8 * game.settings.rect_len, color=white)
+        message_display('Preset levels', game.settings.width / 4 * game.settings.rect_len, \
+                        game.settings.height / 5 * game.settings.rect_len, color=white, size=30)
+        message_display('Custom levels', 3*game.settings.width / 4 * game.settings.rect_len, \
+                        game.settings.height / 5 * game.settings.rect_len, color=white, size=30)
 
         if button('Home', 410, 150, 80, 40, red, bright_red, yes):
             screen.fill(white)
@@ -252,7 +267,12 @@ def level_select():
         dontrender = False
         #generate buttons for preset levels. Sorts them first
         for idx, d in enumerate(sorted(os.listdir(os.path.dirname(package_path) + '/levels'), key=lambda name: int(name.split('-')[0])*11 + int(name.split('-')[1]))):
-            temp = button(d, 80 + 60*(idx%5), 220 + 50*(idx//5), 50, 40, green, bright_green, game_loop, level=d, custom=False)
+            if playerData[idx]:
+                temp = button(d, 80 + 60*(idx%5), 220 + 50*(idx//5), 50, 40,\
+                                blue, bright_blue, game_loop, level=d, custom=False)
+            else:
+                temp = button(d, 80 + 60*(idx%5), 220 + 50*(idx//5), 50, 40,\
+                                green, bright_green, game_loop, level=d, custom=False)
             if isinstance(temp, list):
                 restart = temp
                 if restart[0] or restart[1]:
@@ -289,8 +309,7 @@ def game_loop(level, custom=False):
     space_img = game.space_img
     #whether the game is stopped
     stop = False
-    #if the snake has crashed or lost
-    #cont = 1
+
 
     #always blit once before doing stuff, and sleep for a little bit! This allows for some time preparation.
     game.snake.blit(rect_len, screen, 1, 0)
@@ -304,6 +323,13 @@ def game_loop(level, custom=False):
     #the phase of the process, split into 5
     phase = 0
     move = game.direction_to_int(snake.facing)
+
+    #information for winning
+    maxS = int(game.config.settings['maxS'])
+    mode = int(game.config.settings['strawberry'])
+    plates_pressed_goal = len(game.map.goals) + len(game.map.alt_goals)
+    plates_pressed = 0
+
 
     fps = 5
     delay = 1000/(fps*5)
@@ -334,9 +360,12 @@ def game_loop(level, custom=False):
             fpsClock.tick(30)
             continue
         if phase == 0:
+
             #the first section and basically decides the next 4 frames.
             state, state1, result, result1 = game.do_move(move)
-            
+
+
+
             print(state, state1, result, result1)
             if state < 0 or state1 < 0:
                 break
@@ -384,17 +413,64 @@ def game_loop(level, custom=False):
                 if coord:
                     x_f, y_f = (coord[0] + x0)*rect_len, (coord[1] + y0)*rect_len
                     pygame.display.update(pygame.Rect(x_f, y_f, rect_len, rect_len))
-            if game.snake.won:
-                message_display('You Won!', 450, 800, green, 60)
-                pygame.time.delay(2000)
-                screen.fill(black)
-                pygame.display.update()
-                return restart
 
         else:
             game.snake.blit(rect_len, screen, state, phase)
             if game.snake_clone.init:
                 game.snake_clone.blit(rect_len, screen, state1, phase)
+            if phase == 1: #winning mechanics
+                if mode == 0 or mode == 2:
+                    plates_pressed = len(game.map.alt_goals)
+                    for coord in (game.snake.segmentd + game.snake_clone.segmentd):
+                        if coord in game.map.goals:
+                            plates_pressed += 1
+                        elif coord in game.map.alt_goals:
+                            plates_pressed -= 1
+
+                if mode == 0 and plates_pressed == plates_pressed_goal:
+                    game.won = True
+                elif mode == 1 and game.snake.score + game.snake_clone.score >= maxS:
+                    game.won = True
+                elif mode == 2 and plates_pressed == plates_pressed_goal and\
+                game.snake.score + game.snake_clone.score >= maxS:
+                    game.won = True
+
+                if game.won:
+                    if not custom:
+                        #write progress to file
+                        with open(real_path + '/playerData.txt', "r+") as f:
+                            compon = level.split('-')
+                            playerData = json.load(f)
+                            playerData[(int(compon[0]) - 1)*10 + (int(compon[1]) - 1)] = 1
+                            f.seek(0, 0)
+                            json.dump(playerData, f)
+                    message_display('You Won!', 450, 800, green, 60)
+
+
+            if phase == 4 and game.won:
+                fadeout = pygame.Surface((rect_len*game.settings.width, rect_len*game.settings.height))
+                fadeout = fadeout.convert()
+                fadeout.fill(white)
+                pygame.time.delay(100)
+                for i in range(20):
+                    fadeout.set_alpha(3)
+                    screen.blit(fadeout, (0, 0))
+                    pygame.display.update()
+                    pygame.time.delay(50)
+                for i in range(20):
+                    fadeout.set_alpha(10)
+                    screen.blit(fadeout, (0, 0))
+                    pygame.display.update()
+                    pygame.time.delay(50)
+                for i in range(20):
+                    fadeout.set_alpha(30)
+                    screen.blit(fadeout, (0, 0))
+                    pygame.display.update()
+                    pygame.time.delay(40)
+                pygame.time.delay(100)
+                screen.fill(black)
+                pygame.display.update()
+                return restart
             
 
         phase = (phase + 1) % 5
