@@ -385,7 +385,10 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
     y_max = int(game.config.settings['mapY'])
     x_offset = int(game.config.settings['xOffset'])
     y_offset = int(game.config.settings['yOffset'])
-    game.config.settings['cOffset'] = 0
+    try:
+        game.config.settings['cOffset']
+    except Exception:
+        game.config.settings['cOffset'] = 0
 
 
     #visualising the borsers of the map
@@ -568,7 +571,7 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
                             tile.wrap_plate = 1                 
 
                     something_changed = 1
-                #C: rotate, behaviour maintained in snake mode
+                #C: rotate, or change clone plate behaviour
                 if event.key == ord('c'):
                     tile = game.map.tiles[pointer[1]][pointer[0]]
                     if tile.type == "Solid":
@@ -578,8 +581,8 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
                         tile.pad_clone = tile.pad_clone % 16 + tile.pad_clone // 16
 
                     elif tile.type == "Empty" and tile.pad_clone:
-                        game.config.settings['cOffset'] += 1
-                        game.config.settings['cOffset'] %= 4
+                        game.config.settings['cOffset'] = str(int(game.config.settings['cOffset']) + 1)
+                        game.config.settings['cOffset'] = str(int(game.config.settings['cOffset']) % 4)
 
                     something_changed = 1
 
