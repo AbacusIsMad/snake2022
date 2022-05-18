@@ -351,6 +351,39 @@ def magic(game, start_pos, direction):
 
 
 
+def flood_fill(game, initial_pos):
+    potential = [initial_pos]
+    selected = []
+
+    target = game.map.tiles[initial_pos[1]][initial_pos[0]].type
+
+    x_max = int(game.config.settings['mapX'])
+    y_max = int(game.config.settings['mapY'])
+
+    #inefficient algo let's go
+    while potential:
+        process = potential.pop()
+        rotation = [1, 0]
+        for i in range(4):
+            #process rotation
+            temp = [process[0] + rotation[0], process[1] + rotation[1]]
+            rotation = [rotation[1], -rotation[0]]
+            #check validity, all failing criteria (wow theres a lot)
+            if temp[0] < 0 or temp[1] < 0\
+            or temp[0] >= x_max or temp[1] >= y_max\
+            or (temp in potential) or (temp in selected)\
+            or game.map.tiles[temp[1]][temp[0]].type != target:
+                pass
+            else:
+                potential.append([temp[0], temp[1]])
+
+        selected.append([process[0], process[1]])
+
+    return selected
+
+
+
+
 
 def create_level(config=None, game=None, edit=False, mapdir=None):
 
@@ -406,6 +439,17 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
     
     #theres an option to switch between drawing map and drawing snake
     snake_mode = False
+    #rectangle select mode
+    rect_mode = False
+    #flood fill select mode
+    flood_mode = False
+
+    #list to support adding multiple coordinates
+    select_buf = []
+    #list to get the inital two positions
+    track_buf = [0, 0]
+
+
     #indicators to show where the snake can be placed: 0 means not potential
     potential_pos = [0, 0, 0, 0]
 
@@ -426,7 +470,7 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
 
     blit_cursor(pointer_img, pointer, game)
 
-    message_display("Position (0, 0), tile type Other", screen, 200, 30, white, 20)
+    message_display("Position (0, 0), tile type Other", screen, 100, 20, white, 15)
 
     pygame.display.update()
 
@@ -466,7 +510,49 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
 
                 #F: toggle between map and snake mode
                 if event.key == ord('f'):
-                    snake_mode = not snake_mode
+                    if not (rect_mode or flood_mode):
+                        snake_mode = not snake_mode
+                    something_changed = 1
+
+                #press g: enter
+                #press at 2 different spots: rectangle
+                #press twice at the same spot: floodfill
+                if event.key == ord('g'):
+                    #always reset to make good sense of it
+                        #I'm not sure if this is more helpful or not
+                    if isinstance(track_buf[0], list) and isinstance(track_buf[0], list):
+                        track_buf = [0, 0]
+                        select_buf = []
+
+
+                    if not rect_mode:
+                        rect_mode = True
+                        track_buf = [0, 0]
+                    if len(track_buf) >= 2:
+                            del track_buf[0]
+                    #track the last two 'g' presses
+                    track_buf.append([pointer[0], pointer[1]])
+
+                    #determine if they mean anything
+                    if isinstance(track_buf[0], list) and isinstance(track_buf[0], list):
+                        #rectangle mode:
+                        if track_buf[0] != track_buf[1]:
+                            select_buf = []
+                            #everything else changes with this.
+                            tile = [track_buf[0], track_buf[1]]
+                            corner_1 = [min(track_buf[0][0], track_buf[1][0]),\
+                                        min(track_buf[0][1], track_buf[1][1])]
+                            corner_2 = [max(track_buf[0][0], track_buf[1][0]),\
+                                        max(track_buf[0][1], track_buf[1][1])]
+                            for i in range(corner_2[1] - corner_1[1] + 1):
+                                for j in range(corner_2[0] - corner_1[0] + 1):
+                                    select_buf.append([corner_1[0] + j, corner_1[1] + i])
+
+                        #flood fill mode:
+                        else:
+                            select_buf = []
+                            select_buf = flood_fill(game, track_buf[1])
+
                     something_changed = 1
 
                 #Z: change tile type OR add/remove snake segment
@@ -571,8 +657,8 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
                             tile.wrap_plate = 1                 
 
                     something_changed = 1
-                #C: rotate, or change clone plate behaviour
-                if event.key == ord('c'):
+                #E: rotate, or change clone plate behaviour
+                if event.key == ord('e'):
                     tile = game.map.tiles[pointer[1]][pointer[0]]
                     if tile.type == "Solid":
                         tile.wrap_plate <<= 1
@@ -583,6 +669,15 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
                     elif tile.type == "Empty" and tile.pad_clone:
                         game.config.settings['cOffset'] = str(int(game.config.settings['cOffset']) + 1)
                         game.config.settings['cOffset'] = str(int(game.config.settings['cOffset']) % 4)
+
+                    something_changed = 1
+
+                if event.key == K_ESCAPE:
+                    snake_mode = False
+                    rect_mode = False
+                    flood_mode = False
+                    select_buf = []
+                    track_buf = [0, 0]
 
                     something_changed = 1
 
@@ -630,8 +725,8 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
                                                                         tile.true_empty)
             else:
                 extra_information = ""
-            message_display(msg, screen, 200, 30, white, 20)
-            message_display(extra_information, screen, 200, 60, white, 20)
+            message_display(msg, screen, 100, 20, white, 15)
+            message_display(extra_information, screen, 120, 40, white, 15)
 
 
             pygame.draw.rect(screen, dark_gray, working_rect)
@@ -644,6 +739,13 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
                 blit_cursor(pointer_img2, pointer, game)
             else:
                 blit_cursor(pointer_img, pointer, game)
+
+            if rect_mode:
+                for cell in select_buf:
+                    blit_cursor(potential_img, cell, game)
+                for coord in track_buf:
+                    if coord != 0:
+                        blit_cursor(pointer_img2, coord, game)
 
             game.blit_features(rect_len, screen)
 
