@@ -23,9 +23,6 @@ class Settings:
         self.rect_len = 30
 
         #size of game, and then size of individual grids. 
-        # self.width = 52
-        # self.height = 52
-        # self.rect_len = 15
 
 class Strawberry():
     def __init__(self, settings, parent):
