@@ -13,8 +13,21 @@ from map import Map
 from snake import Snake
 from config import Config
 
-#change this to 1 to make it big
-correction_factor = 2
+
+black = pygame.Color(0, 0, 0)
+white = pygame.Color(255, 255, 255)
+
+green = pygame.Color(0, 200, 0)
+bright_green = pygame.Color(0, 255, 0)
+red = pygame.Color(200, 0, 0)
+bright_red = pygame.Color(255, 0, 0)
+blue = pygame.Color(32, 178, 170)
+bright_blue = pygame.Color(32, 200, 200)
+yellow = pygame.Color(255, 205, 0)
+bright_yellow = pygame.Color(255, 255, 0)
+purple = pygame.Color(135, 7, 255)
+bright_purple = pygame.Color(189, 58, 255)
+
 
 class Settings:
     def __init__(self):
@@ -212,10 +225,40 @@ class Game:
             end = True
         return end
     
-    def blit_score(self, color, screen):
+    def blit_score(self, color, s_color, screen):
         font = pygame.font.Font(self.src + '/arial.ttf', 25)
-        text = font.render('Score: ' + str(self.snake.score + self.snake_clone.score), True, color)
-        screen.blit(text, (0, 0))
+
+        straw = "strawberries: " + str(self.snake.score + self.snake_clone.score) + '/' +\
+                    str(self.config.settings['maxS'])
+
+        plate = "plates: " + str(self.plates_pressed) + '/' +\
+                    str(self.plates_pressed_goal)
+
+        color2 = color
+
+        if self.config.settings['strawberry'] == '0':
+            if self.plates_pressed == self.plates_pressed_goal:
+                color = s_color
+            text = font.render(plate, True, color)
+            screen.blit(text, (0, 0))
+
+        elif self.config.settings['strawberry'] == '1':
+            if self.snake.score + self.snake_clone.score >= int(self.config.settings['maxS']):
+                color = s_color
+            text = font.render(straw, True, color)
+            screen.blit(text, (0, 0))
+
+        elif self.config.settings['strawberry'] == '2':
+            if self.snake.score + self.snake_clone.score >= int(self.config.settings['maxS']):
+                color = s_color
+
+            if self.plates_pressed == self.plates_pressed_goal:
+                color2 = s_color
+
+            text = font.render(straw, True, color)
+            text2 = font.render(plate, True, color2)
+            screen.blit(text, (0, 0))
+            screen.blit(text2, (0, 20))
 
     def blit_map(self, rect_len, screen, developer=False):
         x0 = int(self.config.settings["xOffset"])

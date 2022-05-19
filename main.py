@@ -99,7 +99,7 @@ pygame.display.set_caption('Gluttonous')
 
 #osx problem?
 #pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-crash_sound = pygame.mixer.Sound(os.path.dirname(package_path) + '/sound/crash.wav')
+crash_sound = pygame.mixer.Sound(game.src + '/sound/crash.wav')
 
 def yes():
     return True
@@ -147,8 +147,31 @@ def quitgame():
 
 def crash():
     pygame.mixer.Sound.play(crash_sound)
-    message_display('crashed', game.settings.width / 2 * 15, game.settings.height / 3 * 15, white)
-    time.sleep(1)
+    message_display('crashed', game.settings.width / 2 * 30,\
+                    game.settings.height / 6 * 30, red)
+    
+    fadeout = pygame.Surface((rect_len*game.settings.width, rect_len*game.settings.height))
+    fadeout = fadeout.convert()
+    fadeout.fill(black)
+    pygame.time.delay(500)
+    for i in range(10):
+       fadeout.set_alpha(5)
+       screen.blit(fadeout, (0, 0))
+       pygame.display.update()
+       pygame.time.delay(10)
+    for i in range(10):
+       fadeout.set_alpha(40)
+       screen.blit(fadeout, (0, 0))
+       pygame.display.update()
+       pygame.time.delay(10)
+    for i in range(10):
+       fadeout.set_alpha(80)
+       screen.blit(fadeout, (0, 0))
+       pygame.display.update()
+       pygame.time.delay(10)
+    screen.fill(black)
+    pygame.display.update()
+    pygame.time.delay(500)
 
 
 def initial_interface(invalid, directory):
@@ -307,9 +330,40 @@ def game_loop(level, custom=False):
         game.style = f.read()
 
     game.restart_game(mapdir=level, custom=custom)
+
+    #give instructions if necesssary:
+    msg = game.config.settings.get('intro', None)
+
+
     screen.fill(black)
     game.blit_map(rect_len, screen)
     
+    if msg is not None:
+        #draw box
+
+        pygame.draw.rect(screen, white, pygame.Rect(200, 300, 500, 300))
+        #draw message
+        msg = msg.split('-')
+        for index, line in enumerate(msg):
+            message_display(line, 450, 320 + index*30, black, 20)
+
+        pygame.display.update()
+        while True:
+            pygame.event.pump()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+
+            if button('OK', 410, 550, 80, 40, blue, bright_blue, yes):
+                break
+            pygame.display.update()
+            pygame.time.delay(40)
+
+    screen.fill(black)
+    game.blit_map(rect_len, screen)
+
+
     space_img = game.space_img
     #whether the game is stopped
     stop = False
@@ -319,10 +373,15 @@ def game_loop(level, custom=False):
     game.snake.blit(rect_len, screen, 1, 0)
     game.strawberry.blit(screen, int(game.config.settings["xOffset"]), int(game.config.settings["yOffset"]))
     game.blit_features(rect_len, screen)
-    game.blit_score(white, screen)
+
+    game.plates_pressed_goal = len(game.map.goals) + len(game.map.alt_goals)
+    game.plates_pressed = 0
+
+    game.blit_score(white, yellow, screen)
     pygame.display.update()
     pygame.time.delay(1000)
-    score_cover = pygame.Rect(0, 0, 400, 80)
+    score_cover = pygame.Rect(0, 0, 300, 50)
+    button_cover = pygame.Rect(300, 0, 200, 50)
 
     #the phase of the process, split into 5
     phase = 0
@@ -331,8 +390,6 @@ def game_loop(level, custom=False):
     #information for winning
     maxS = int(game.config.settings['maxS'])
     mode = int(game.config.settings['strawberry'])
-    plates_pressed_goal = len(game.map.goals) + len(game.map.alt_goals)
-    plates_pressed = 0
 
 
     fps = 5
@@ -354,8 +411,8 @@ def game_loop(level, custom=False):
         if stop:
             #build restart screen
             #xOffset, yOffset, width, height
-            restart[1] = button('Restart', 270, 20, 80, 40, yellow, bright_yellow, yes) * level
-            restart[0] += button('Home', 20, 20, 80, 40, green, bright_green, yes)
+            restart[1] = button('Restart', 400, 10, 80, 40, yellow, bright_yellow, yes) * level
+            restart[0] += button('Home', 300, 10, 80, 40, green, bright_green, yes)
             if restart[0] or restart[1]:
                 if restart[0]: 
                     screen.fill(white)
@@ -408,9 +465,9 @@ def game_loop(level, custom=False):
             game.blit_features(rect_len, screen)
             game.strawberry.blit(screen, int(game.config.settings["xOffset"]), int(game.config.settings["yOffset"]))
             #covers up the score and home, restart buttons.
-            pygame.draw.rect(screen, black, score_cover)
-            game.blit_score(white, screen)
-            pygame.display.update(score_cover)
+            pygame.draw.rect(screen, black, button_cover)
+            #game.blit_score(white, yellow, screen)
+            pygame.display.update(button_cover)
 
             #update everything around the snake
             for coord in game.snake.segmentd + game.snake_clone.segmentd + [result] + [result1]:
@@ -424,18 +481,24 @@ def game_loop(level, custom=False):
                 game.snake_clone.blit(rect_len, screen, state1, phase)
             if phase == 1: #winning mechanics
                 if mode == 0 or mode == 2:
-                    plates_pressed = len(game.map.alt_goals)
+                    game.plates_pressed = len(game.map.alt_goals)
                     for coord in (game.snake.segmentd + game.snake_clone.segmentd):
                         if coord in game.map.goals:
-                            plates_pressed += 1
+                            game.plates_pressed += 1
                         elif coord in game.map.alt_goals:
-                            plates_pressed -= 1
+                            game.plates_pressed -= 1
 
-                if mode == 0 and plates_pressed == plates_pressed_goal:
+                pygame.draw.rect(screen, black, score_cover)
+
+                game.blit_score(white, yellow, screen)
+                pygame.display.update(score_cover)
+
+
+                if mode == 0 and game.plates_pressed == game.plates_pressed_goal:
                     game.won = True
                 elif mode == 1 and game.snake.score + game.snake_clone.score >= maxS:
                     game.won = True
-                elif mode == 2 and plates_pressed == plates_pressed_goal and\
+                elif mode == 2 and game.plates_pressed == game.plates_pressed_goal and\
                 game.snake.score + game.snake_clone.score >= maxS:
                     game.won = True
 
