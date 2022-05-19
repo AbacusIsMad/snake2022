@@ -95,7 +95,7 @@ pygame.init()
 fpsClock = pygame.time.Clock()
 screen = pygame.display.set_mode((game.settings.width * game.settings.rect_len, game.settings.height * game.settings.rect_len))
 game.screen = screen
-pygame.display.set_caption('Gluttonous')
+pygame.display.set_caption('Gluttonous++')
 
 #osx problem?
 #pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
@@ -184,7 +184,7 @@ def initial_interface(invalid, directory):
                 pygame.quit()
 
         #screen.fill(white)
-        message_display('Gluttonous', game.settings.width / 2 * game.settings.rect_len, game.settings.height / 4 * game.settings.rect_len)
+        message_display('Gluttonous++', game.settings.width / 2 * game.settings.rect_len, game.settings.height / 4 * game.settings.rect_len)
         if invalid_loc:
             message_display('Error', game.settings.width / 4 * game.settings.rect_len, game.settings.height / 2 * game.settings.rect_len)
 
@@ -264,7 +264,7 @@ def level_select():
             break
         if restart[1]:
             print("restarted!")
-            restart = game_loop(restart[1], game.custom)
+            restart = game_loop(restart[1], game.custom, restart=True)
             continue
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -325,7 +325,7 @@ def level_select():
         pygame.time.Clock().tick(15)
 
 
-def game_loop(level, custom=False):
+def game_loop(level, custom=False, restart=False):
     with open(os.path.join(game.srcreal, "snakeData/style.txt"), 'r') as f:
         game.style = f.read()
 
@@ -338,14 +338,14 @@ def game_loop(level, custom=False):
     screen.fill(black)
     game.blit_map(rect_len, screen)
     
-    if msg is not None:
+    if msg is not None and restart == False:
         #draw box
 
-        pygame.draw.rect(screen, white, pygame.Rect(200, 300, 500, 300))
+        pygame.draw.rect(screen, white, pygame.Rect(200, 350, 500, 200))
         #draw message
         msg = msg.split('-')
         for index, line in enumerate(msg):
-            message_display(line, 450, 320 + index*30, black, 20)
+            message_display(line, 450, 400 + index*30, black, 20)
 
         pygame.display.update()
         while True:
@@ -355,7 +355,7 @@ def game_loop(level, custom=False):
                 if event.type == pygame.QUIT:
                     pygame.quit()
 
-            if button('OK', 410, 550, 80, 40, blue, bright_blue, yes):
+            if button('OK', 410, 500, 80, 40, blue, bright_blue, yes):
                 break
             pygame.display.update()
             pygame.time.delay(40)

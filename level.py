@@ -283,7 +283,7 @@ def edit_level(game=None):
 
         for idx, d in enumerate(sorted(os.listdir(game.srcreal + '/snakeData/levels'))):
             if button(d, screen, 520 + 160*(idx%2), 220 + 50*(idx//2), 150, 40, yellow, bright_yellow, \
-                    create_level, game=game, edit=True, mapdir=d):
+                    create_level, game=game, edit=True, mapdir=str(d)):
                 screen.fill(white)
                 return 1
 
@@ -394,7 +394,7 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
 
     #setup config:
     if edit:
-        game.config = Config(parent=game, mapdir=mapdir)
+        game.config = Config(parent=game, mapdir=str(mapdir))
     else:
         game.config = Config(parent=game)
         game.config.settings = config
@@ -402,13 +402,12 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
    
     #setup blank map (of course this will remove past progress)
     if edit:
-        game.map = Map(parent=game, mapdir=mapdir)
+        game.map = Map(parent=game, mapdir=str(mapdir))
 
     else:
         game.map = Map(parent=game)
         game.map.tiles = [[Tile(game.map, "Other", i, j, 0, 0) for i in range(int(config['mapX']))]\
                      for j in range(int(config['mapY']))]
-
 
  
     screen = game.screen

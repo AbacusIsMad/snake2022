@@ -1,8 +1,9 @@
-mapX:=19
-mapY:=16
-xOffset:=4
-yOffset:=6
-strawberry:=1
+name:=3
+mapX:=20
+mapY:=20
+xOffset:=5
+yOffset:=5
 maxS:=10
+strawberry:=1
 cOffset:=0
-intro:=welcome-lol-yay
+intro:=see the top left corner-for how to win.

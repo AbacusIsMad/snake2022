@@ -18,7 +18,7 @@ class Config():
 
         #  Reads the config info for the specific level
         #  Reads info pertaining to level size from this, appends it to a lsit
-        with open(path + "/levels/" + mapdir + "/config.txt", "r") as c:
+        with open(path + "/levels/" + str(mapdir) + "/config.txt", "r") as c:
             l = c.readlines()
             new = []
         for line in l:

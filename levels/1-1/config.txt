@@ -1,7 +1,9 @@
-mapX:=15
-mapY:=15
-xOffset:=6
-yOffset:=6
+name:=1
+mapX:=12
+mapY:=12
+xOffset:=9
+yOffset:=9
+maxS:=5
 strawberry:=1
-maxS:=3
 cOffset:=0
+intro:=welcome to Glutonous++!
