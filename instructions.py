@@ -71,7 +71,11 @@ def display_instructions(package_path=None, screen=None, game=None):
         
 
         #  Setting the style of instructions to the style of the game
-        path = os.path.dirname(package_path) +'/styles/' + game.style + "/"
+        # read in the style from the data textfile
+        f = open("snakeData/style.txt", "r")
+        style = f.readline()
+        print(style)
+        path = os.path.dirname(package_path) +'/styles/' + style + "/"
             
         message_display("How to Play Gluttonous!", screen, 428, 108, color=white, size=60)
         

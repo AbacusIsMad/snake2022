@@ -4,7 +4,6 @@ A to P describes a solid tile and the config of its wrap walls
 Q, R, S, T, U describes empty space, non-strawberry empty space, pressure plate, reverse plate, and clone plate.
     Strawberries can only spawn on completely empty space, ie Q! (if it even spawns)
 
-map2 just describes padded walls or movable blocks now (padded cannot be on movable blocks)
+map2 just describes padded walls 
 A to P describes padded wall config
-Q describes movable
 Everything below A is treated as 'not_modified'

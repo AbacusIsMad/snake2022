@@ -222,8 +222,6 @@ def settings(directory):
                 style = 'pop'
 
 
-        #button('Instructions', 155, 300, 120, 40, blue, bright_blue, display_instructions)
-
         pygame.display.update()
         pygame.time.Clock().tick(15)
 
