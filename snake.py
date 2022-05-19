@@ -6,6 +6,7 @@ import datetime
 
 class Snake:
     def __init__(self, parent, clone=False):
+        #  parent game 
         self.parent = parent
         self.clone = clone
         self.init = False
@@ -13,7 +14,8 @@ class Snake:
         #the direction and coordinate form of the snake
         self.segments = []
         self.segmentd = []
-        #score
+
+        #score is initialised at 0
         self.score = 0
         self.won = False
         #flags to control the animations
@@ -33,6 +35,7 @@ class Snake:
         clone = self.clone
         path = self.parent.src + "/styles/" + self.parent.style + "/images/"
 
+        # sourcing images from the relative path 
         self.image_up = pygame.transform.scale(pygame.image.load(path + 'clone'*clone + 'head_up.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
         self.tail_up = pygame.transform.scale(pygame.image.load(path + 'clone'*clone + 'tail_up.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
         self.image_body_s = pygame.transform.scale(pygame.image.load(path + 'clone'*clone + 'body_s.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
@@ -44,6 +47,8 @@ class Snake:
 
 
     def initialize(self, mapdir=None):
+
+        # initialising the snake in the correct position 
         if mapdir is not None:
             if not self.parent.custom:
                 with open(self.parent.src + "/" + mapdir + "/snake.txt", "r") as f:
@@ -78,7 +83,7 @@ class Snake:
         self.reset_img_source()
         offset = int(self.parent.config.settings['cOffset'])
 
-        #lets start
+        
         buf = []
         buf.append([self.segments[0][0], self.segments[0][1]])
         bufpos = [self.segments[0][0], self.segments[0][1]]
@@ -145,6 +150,8 @@ class Snake:
 
 
     def blit_head(self, loc, dire, screen, size, x0, y0, pad, phase):
+
+        # Blitting the head of the snake to the screen
         x, y = (loc[0] + x0)*size, (loc[1] + y0)*size
         #plates only have one varient, due to them being stepped on.
         overlap = None
@@ -341,7 +348,7 @@ class Snake:
                     temp = [temp[1], -temp[0]]
                 self.parent.snake_clone.segments.append([temp[0], temp[1]])
 
-            #self.parent.snake_clone.segments = copy.deepcopy(self.segments)
+
             self.parent.snake_clone.segments[0] = [clone_pos[0], clone_pos[1]]
             if not self.parent.snake_clone.dir_to_pos():
                 return -2, []
@@ -351,5 +358,6 @@ class Snake:
         return 0 + int(dont_move) + 2*int(longer), last_tail
 
     def eatSound(self):
-            eat_sound = pygame.mixer.Sound(self.parent.src + '/sound/eat.wav')
-            pygame.mixer.Sound.play(eat_sound)
+        #  plays a sound (for when snake consumes strawberry )
+        eat_sound = pygame.mixer.Sound(self.parent.src + '/sound/eat.wav')
+        pygame.mixer.Sound.play(eat_sound)
