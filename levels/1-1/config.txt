@@ -4,3 +4,4 @@ xOffset:=6
 yOffset:=6
 strawberry:=1
 maxS:=3
+cOffset:=0

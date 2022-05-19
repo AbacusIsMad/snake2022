@@ -32,6 +32,44 @@ class Tile():
                 self.pad_clone = 1
                 self.parent.clones.append([self.x, self.y])
 
+    #copy the contents of a tile by making another tile object and puts it in a clipboard
+    def copy(self, x, y):
+        temp = Tile(self.parent, self.type, x, y, 0, 0)
+        temp.true_empty = self.true_empty
+        temp.wrap_plate = self.wrap_plate
+        temp.pad_clone = self.pad_clone
+        return temp
+
+    #give a tile object copied by the clipboard, paste its properties to another tile
+    def paste(self, dest_x, dest_y):
+        target = self.parent.tiles[dest_y][dest_x]
+
+        #remove old listings
+        if target.type == "Empty":
+            if target.wrap_plate == 1:
+                del self.parent.goals[self.parent.goals.index([target.x, target.y])]
+            elif target.wrap_plate == 2:
+                del self.parent.alt_goals[self.parent.alt_goals.index([target.x, target.y])]
+            elif target.pad_clone == 1:
+                del self.parent.clones[self.parent.clones.index([target.x, target.y])]
+
+        #transfer new listings
+        target.type = self.type
+        target.true_empty = self.true_empty
+        target.wrap_plate = self.wrap_plate
+        target.pad_clone = self.pad_clone
+        
+        if target.type == "Empty":
+            if target.wrap_plate == 1:
+                self.parent.goals.append([target.x, target.y])
+            elif target.wrap_plate == 2:
+                self.parent.alt_goals.append([target.x, target.y])
+            elif target.pad_clone == 1:
+                self.parent.clones.append([target.x, target.y])
+        
+        
+
+
     def __repr__(self):
         return("{}, {}".format(self.x, self.y))
 

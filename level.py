@@ -439,16 +439,16 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
     
     #theres an option to switch between drawing map and drawing snake
     snake_mode = False
-    #rectangle select mode
+    #rectangle/flood select mode
     rect_mode = False
-    #flood fill select mode
-    flood_mode = False
 
     #list to support adding multiple coordinates
     select_buf = []
     #list to get the inital two positions
     track_buf = [0, 0]
 
+    #initialise empty clipboard
+    clipboard = None
 
     #indicators to show where the snake can be placed: 0 means not potential
     potential_pos = [0, 0, 0, 0]
@@ -510,7 +510,7 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
 
                 #F: toggle between map and snake mode
                 if event.key == ord('f'):
-                    if not (rect_mode or flood_mode):
+                    if not rect_mode:
                         snake_mode = not snake_mode
                     something_changed = 1
 
@@ -525,38 +525,39 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
                         select_buf = []
 
 
-                    if not rect_mode:
+                    if not rect_mode and not snake_mode:
                         rect_mode = True
                         track_buf = [0, 0]
-                    if len(track_buf) >= 2:
-                            del track_buf[0]
-                    #track the last two 'g' presses
-                    track_buf.append([pointer[0], pointer[1]])
 
-                    #determine if they mean anything
-                    if isinstance(track_buf[0], list) and isinstance(track_buf[0], list):
-                        #rectangle mode:
-                        if track_buf[0] != track_buf[1]:
-                            select_buf = []
-                            #everything else changes with this.
-                            tile = [track_buf[0], track_buf[1]]
-                            corner_1 = [min(track_buf[0][0], track_buf[1][0]),\
-                                        min(track_buf[0][1], track_buf[1][1])]
-                            corner_2 = [max(track_buf[0][0], track_buf[1][0]),\
-                                        max(track_buf[0][1], track_buf[1][1])]
-                            for i in range(corner_2[1] - corner_1[1] + 1):
-                                for j in range(corner_2[0] - corner_1[0] + 1):
-                                    select_buf.append([corner_1[0] + j, corner_1[1] + i])
+                    if rect_mode:
+                        del track_buf[0]
+                        #track the last two 'g' presses
+                        track_buf.append([pointer[0], pointer[1]])
 
-                        #flood fill mode:
-                        else:
-                            select_buf = []
-                            select_buf = flood_fill(game, track_buf[1])
+                        #determine if they mean anything
+                        if isinstance(track_buf[0], list) and isinstance(track_buf[0], list):
+                            #rectangle mode:
+                            if track_buf[0] != track_buf[1]:
+                                select_buf = []
+                                #everything else changes with this.
+                                tile = [track_buf[0], track_buf[1]]
+                                corner_1 = [min(track_buf[0][0], track_buf[1][0]),\
+                                            min(track_buf[0][1], track_buf[1][1])]
+                                corner_2 = [max(track_buf[0][0], track_buf[1][0]),\
+                                            max(track_buf[0][1], track_buf[1][1])]
+                                for i in range(corner_2[1] - corner_1[1] + 1):
+                                    for j in range(corner_2[0] - corner_1[0] + 1):
+                                        select_buf.append([corner_1[0] + j, corner_1[1] + i])
+
+                            #flood fill mode:
+                            else:
+                                select_buf = []
+                                select_buf = flood_fill(game, track_buf[1])
 
                     something_changed = 1
 
                 #Z: change tile type OR add/remove snake segment
-                if event.key == ord('z'):
+                if event.key == ord('z') and (snake_mode or not rect_mode):
                     tile = game.map.tiles[pointer[1]][pointer[0]]
                     if snake_mode:
                         #first segment, anywhere except clone plate
@@ -608,11 +609,39 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
                             tile.pad_clone = 0
 
                     something_changed = 1
+                #mass select mode
+                elif event.key == ord('z') and select_buf:
+                    #get the tile
+                    clipboard = game.map.tiles[track_buf[1][1]][track_buf[1][0]].copy(0, 0)
+                    #get result of the change
+                    if clipboard.type == "Other":
+                        clipboard.type = "Empty"
+                        tile.true_empty = False
+                    elif clipboard.type == "Empty":
+                        clipboard.type = "Solid"
+                        clipboard.wrap_plate = 0
+                        clipboard.pad_clone = 0
+                        clipboard.true_empty = False
+                    elif clipboard.type == "Solid":
+                        clipboard.type = "Other"
+                        clipboard.wrap_plate = 0
+                        clipboard.pad_clone = 0
+
+                    #paste this across every element of the selection
+                    for coord in select_buf:
+                        clipboard.paste(coord[0], coord[1])
+                        if coord in game.snake.segmentd:
+                            game.snake.segmentd = []
+                            game.snake.segments = []
+
+                    something_changed = 1
+
+
 
                 #X: change tile subtype, behaviour maintained in snake mode, make sure to remove snake if bad
                 #Solid: None, wrap, pad
                 #empty: None, true_empty, plate, alt_plate, clone (limit number)
-                if event.key == ord('x'):
+                if event.key == ord('x') and (snake_mode or not rect_mode):
                     tile = game.map.tiles[pointer[1]][pointer[0]]
                     if tile.type == "Solid":
                         if tile.wrap_plate % 2:
@@ -627,12 +656,10 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
 
                     elif tile.type == "Empty":
                         if tile.wrap_plate == 1:
-                            print("alt_plate!")
                             game.map.goals.remove(pointer)
                             game.map.alt_goals.append([pointer[0], pointer[1]])
                             tile.wrap_plate = 2
                         elif tile.wrap_plate == 2:
-                            print("clone/space!")
                             game.map.alt_goals.remove(pointer)
                             if pointer not in game.snake.segmentd\
                             and len(game.map.clones) < 2:
@@ -643,22 +670,61 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
                                 tile.wrap_plate = 0
                                 tile.pad_clone = 0
                         elif tile.pad_clone:
-                            print("empty!")
                             tile.wrap_plate = 0
                             tile.pad_clone = 0
                             game.map.clones.remove(pointer)
                         elif not (tile.wrap_plate or tile.pad_clone or tile.true_empty):
-                            print("true empty!")
                             tile.true_empty = True
                         elif tile.true_empty:
-                            print("plate!")
                             tile.true_empty = False
                             game.map.goals.append([pointer[0], pointer[1]])
                             tile.wrap_plate = 1                 
 
                     something_changed = 1
+
+                elif event.key == ord('x') and select_buf:
+                    #the same as 'z', but changed a little but
+                    tile = game.map.tiles[track_buf[1][1]][track_buf[1][0]].copy(0, 0)
+                    #same thing, but copied around
+                    if tile.type == "Solid":
+                        if tile.wrap_plate % 2:
+                            tile.wrap_plate -= tile.wrap_plate & 1
+                            tile.pad_clone = tile.pad_clone | 1
+                        elif tile.pad_clone % 2:
+                            tile.wrap_plate -= tile.wrap_plate & 1
+                            tile.pad_clone -= tile.pad_clone & 1
+                        else:
+                            tile.pad_clone -= tile.pad_clone & 1
+                            tile.wrap_plate = tile.wrap_plate | 1
+
+                    elif tile.type == "Empty":
+                        if tile.wrap_plate == 1:
+                            tile.wrap_plate = 2
+                        elif tile.wrap_plate == 2:
+                            tile.wrap_plate = 0
+                            tile.pad_clone = 1
+
+                        elif tile.pad_clone:
+                            tile.wrap_plate = 0
+                            tile.pad_clone = 0
+                        elif not (tile.wrap_plate or tile.pad_clone or tile.true_empty):
+                            tile.true_empty = True
+                        elif tile.true_empty:
+                            tile.true_empty = False
+                            tile.wrap_plate = 1 
+
+                    for coord in select_buf:
+                        tile.paste(coord[0], coord[1])
+                        if coord in game.snake.segmentd:
+                            game.snake.segmentd = []
+                            game.snake.segments = []
+
+                    something_changed = 1
+
+
+
                 #E: rotate, or change clone plate behaviour
-                if event.key == ord('e'):
+                if event.key == ord('e') and (snake_mode or not rect_mode):
                     tile = game.map.tiles[pointer[1]][pointer[0]]
                     if tile.type == "Solid":
                         tile.wrap_plate <<= 1
@@ -672,10 +738,46 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
 
                     something_changed = 1
 
+                elif event.key == ord('e') and select_buf:
+                    tile = game.map.tiles[track_buf[1][1]][track_buf[1][0]].copy(0, 0)
+                    if tile.type == "Solid":
+                        tile.wrap_plate <<= 1
+                        tile.wrap_plate = tile.wrap_plate % 16 + tile.wrap_plate // 16
+                        tile.pad_clone <<= 1
+                        tile.pad_clone = tile.pad_clone % 16 + tile.pad_clone // 16
+
+                    elif tile.type == "Empty" and tile.pad_clone:
+                        game.config.settings['cOffset'] = str(int(game.config.settings['cOffset']) + 1)
+                        game.config.settings['cOffset'] = str(int(game.config.settings['cOffset']) % 4)
+
+                    for coord in select_buf:
+                        tile.paste(coord[0], coord[1])
+                        if coord in game.snake.segmentd:
+                            game.snake.segmentd = []
+                            game.snake.segments = []
+
+
+                    something_changed = 1
+
+
+                #copy and pasting
+                if event.key == ord('c'):
+                    clipboard = game.map.tiles[pointer[1]][pointer[0]].copy(0, 0)
+
+
+                    something_changed = 1
+
+                if event.key == ord('v'):
+                    if clipboard:
+                        clipboard.paste(pointer[0], pointer[1])
+
+                    something_changed = 1
+
+
+
                 if event.key == K_ESCAPE:
                     snake_mode = False
                     rect_mode = False
-                    flood_mode = False
                     select_buf = []
                     track_buf = [0, 0]
 
@@ -718,6 +820,19 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
             tile = game.map.tiles[pointer[1]][pointer[0]]
 
             msg = "Position ({}, {}), tile type {}".format(tile.x, tile.y, tile.type)
+
+            if snake_mode:
+                mode_msg = "Snake mode"
+                message_display(mode_msg, screen, 250, 20, green, 15)
+            elif rect_mode:
+                mode_msg = "Select mode"
+                message_display(mode_msg, screen, 250, 20, blue, 15)
+            else:
+                mode_msg = "Normal mode"
+                message_display(mode_msg, screen, 250, 20, yellow, 15)
+
+
+
             if tile.type == "Solid":
                 extra_information = "wrap value: {}, pad value: {}".format(tile.wrap_plate, tile.pad_clone)
             if tile.type == "Empty":
@@ -740,6 +855,7 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
             else:
                 blit_cursor(pointer_img, pointer, game)
 
+            #blit the mass select methods
             if rect_mode:
                 for cell in select_buf:
                     blit_cursor(potential_img, cell, game)
@@ -761,15 +877,17 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
             pygame.display.update()
             pygame.time.delay(30)
 
+
+        
+
+
         #yeets progress and just doesn't do anything
-        if button('Back', screen, 400, 20, 80, 40, red, bright_red, yes):
+        if button('Back', screen, 420, 10, 60, 40, red, bright_red, yes):
             screen.fill(black)
             pygame.display.update()
             return 0
 
-
-
-        if button('Save', screen, 500, 20, 80, 40, blue, bright_blue, yes):
+        if button('Save', screen, 500, 10, 60, 40, blue, bright_blue, yes):
             pygame.draw.rect(screen, black, pygame.Rect(500, 0, 400, 100))
             invalid = False
             #scan for snake
@@ -798,7 +916,7 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
                     message_display('No plates!', screen, 620, 50, white, 15)
                     invalid = True
 
-            if len(game.map.clones) == 1:
+            if len(game.map.clones) == 1 or len(game.map.clones) > 2:
                 message_display('Invalid clone configuration!', screen, 680, 65, white, 15)
                 invalid = True
 

@@ -18,9 +18,9 @@ correction_factor = 2
 
 class Settings:
     def __init__(self):
-        self.width = 30 * correction_factor
-        self.height = 30 * correction_factor
-        self.rect_len = 30 // correction_factor
+        self.width = 30
+        self.height = 30
+        self.rect_len = 30
 
         #size of game, and then size of individual grids. 
         # self.width = 52
@@ -122,14 +122,24 @@ class Game:
                         (self.settings.rect_len, self.settings.rect_len)) for i in range(4)]
 
     def restart_game(self, mapdir, custom=False): 
-        #update visuals at the start of the game
+        
         self.custom = custom
+        #set config. This has a bunch of options that control stuff.
+        self.config = Config(parent=self, mapdir=mapdir)
+        #set game size:
+        if int(self.config.settings['mapX']) > 30 or int(self.config.settings['mapY']) > 26:
+            self.settings.rect_len = 15
+        else:
+            self.settings.rect_len = 30
+
+
+        #update visuals at the start of the game
         self.reset_img_source()
         self.snake.reset_img_source()
         self.strawberry.reset_img_source()
 
-        #set config. This has a bunch of options that control stuff.
-        self.config = Config(parent=self, mapdir=mapdir)
+
+
         #set map
         self.map = Map(parent=self, mapdir=mapdir)
         self.map.generate_spaces()
