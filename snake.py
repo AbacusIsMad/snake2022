@@ -351,5 +351,5 @@ class Snake:
         return 0 + int(dont_move) + 2*int(longer), last_tail
 
     def eatSound(self):
-            eat_sound = pygame.mixer.Sound('./sound/eat.wav')
+            eat_sound = pygame.mixer.Sound(self.parent.src + '/sound/eat.wav')
             pygame.mixer.Sound.play(eat_sound)

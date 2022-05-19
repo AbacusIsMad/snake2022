@@ -11,3 +11,4 @@ pyinstaller -F -n BingQi_Ling --add-data "levels:levels" --add-data "sound:sound
 
 python3 -m nuitka --onefile --include-data-dir=.=. main.py
 
+python3 -m nuitka --onefile --include-data-dir=./data=. main.py
