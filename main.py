@@ -476,6 +476,9 @@ def game_loop(level, custom=False):
                 pygame.time.delay(100)
                 screen.fill(black)
                 pygame.display.update()
+
+                #reset screen size so nothing messes up
+                game.settings.rect_len = 30
                 return restart
             
 
@@ -490,6 +493,7 @@ def game_loop(level, custom=False):
     if not (restart[0] or restart[1]):
         crash()
         restart[1] = level
+    game.settings.rect_len = 30
     return restart
 
 def options():
