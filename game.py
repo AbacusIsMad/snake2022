@@ -210,6 +210,7 @@ class Game:
 
             offset = int(self.config.settings['cOffset'])
 
+            #apply clone offset to input
             clone_change_direction = move_dict[(move + offset) % 4]
 
             if clone_change_direction == 'right' and not self.snake_clone.segments[1] == [1, 0]:
@@ -221,7 +222,7 @@ class Game:
             if clone_change_direction == 'down' and not self.snake_clone.segments[1] == [0, 1]:
                 self.snake_clone.facing = clone_change_direction
         
-        # returns the state of the snake
+        # returns if the snake crashed, and what the tail segement is to fill in with empty space
         if self.snake_clone.init:
             state1, replace1 = self.snake_clone.update()
         else:
@@ -229,18 +230,6 @@ class Game:
         state, replace = self.snake.update()
 
         return state, state1, replace, replace1
-    
-    def game_end(self):
-        end = False
-
-        # if the snake hits the edge of any border, the snake crashes and game ends
-        if self.snake.position[0] >= (self.settings.width-2) or self.snake.position[0] < 2:
-            end = True
-        if self.snake.position[1] >= (self.settings.height-2) or self.snake.position[1] < 2:
-            end = True
-        if self.snake.segments[0] in self.snake.segments[1:]:
-            end = True
-        return end
     
 
     def blit_score(self, color, s_color, screen):

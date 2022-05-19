@@ -334,6 +334,14 @@ def game_loop(level, custom=False, restart=False):
     #give instructions if necesssary:
     msg = game.config.settings.get('intro', None)
 
+    if int(game.config.settings['mapX']) > 30 or int(game.config.settings['mapY']) > 26:
+        game.settings.rect_len = 15
+    else:
+        game.settings.rect_len = 30
+
+    rect_len = game.settings.rect_len
+
+
 
     screen.fill(black)
     game.blit_map(rect_len, screen)

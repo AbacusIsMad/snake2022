@@ -26,10 +26,6 @@ purple = pygame.Color(135, 7, 255)
 bright_purple = pygame.Color(189, 58, 255)
 
 
-
-def yes():
-    return True
-
 def text_objects(text, font, color=black):
     text_surface = font.render(text, True, color)
     return text_surface, text_surface.get_rect()
@@ -48,7 +44,7 @@ def button(msg, screen, x, y, w, h, inactive_color, active_color, action, **kwar
     click = pygame.mouse.get_pressed()
     if x + w > mouse[0] > x and y + h > mouse[1] > y:
         pygame.draw.rect(screen, active_color, (x, y, w, h))
-        if click[0] == 1 and action != None:
+        if click[0] == 1 and action != None and inactive_color != active_color:
             if kwargs:
                 return action(**kwargs)
             else:
@@ -77,8 +73,8 @@ warning_dict = {'name' : 'name must not already exist',
 
 comparison_dict = {'name' : lambda line: line.strip() not in os.listdir(os.path.abspath('.') + '/snakeData/levels')\
                         and len(line) > 0,
-                    'mapX' : lambda value: int(value) <= 30 and int(value) >= 1,
-                    'mapY' : lambda value: int(value) <= 30 and int(value) >= 1,
+                    'mapX' : lambda value: int(value) <= 60 and int(value) >= 1,
+                    'mapY' : lambda value: int(value) <= 60 and int(value) >= 1,
                     'xOffset' : lambda value: int(value) <= 10 and int(value) >= 0,
                     'yOffset' : lambda value: int(value) <= 10 and int(value) >= 4,
                     'maxS' : lambda value: int(value) <= 60 and int(value) >= 0,
@@ -156,7 +152,7 @@ class InputBox:
 
                 elif event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
-                elif len(self.text) <= 15:
+                elif not ((len(self.text) > 15) or (len(self.text) > 9 and self.datatype != "name")):
                     self.text += event.unicode
                 # Re-render the text.
         self.txt_surface = self.font.render(self.text, True, white)
@@ -164,7 +160,7 @@ class InputBox:
 
     def draw(self, screen):
         screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
-        screen.blit(self.txt_warning_surface, (self.rect.x + 5, self.rect.y - 30))
+        screen.blit(self.txt_warning_surface, (self.rect.x + 5, self.rect.y + 40))
         pygame.draw.rect(screen, self.color, self.rect, 2)
 
 
@@ -190,7 +186,7 @@ def level_maker(game=None):
             screen.fill(white)
             break
 
-        if button('Back', screen, 410, 600, 80, 40, red, bright_red, yes):
+        if button('Back', screen, 410, 600, 80, 40, red, bright_red, lambda:1):
             screen.fill(white)
             break
 
@@ -202,16 +198,18 @@ def level_maker(game=None):
 def new_level(game=None):
     screen = game.screen
     
+    screen.fill(black)
+
 
     font = pygame.font.Font(os.path.dirname(os.path.abspath(__file__)) + '/arial.ttf', 30)
     active = False
 
-    name_box = InputBox(game, 350, 100, 200, 32, 'name')
-    x_size_box = InputBox(game, 250, 300, 140, 32, 'mapX')
-    y_size_box = InputBox(game, 450, 300, 140, 32, 'mapY')
+    name_box = InputBox(game, 325, 100, 250, 32, 'name')
+    x_size_box = InputBox(game, 250, 250, 140, 32, 'mapX')
+    y_size_box = InputBox(game, 510, 250, 140, 32, 'mapY')
     x_offset_box = InputBox(game, 250, 400, 140, 32, 'xOffset')
-    y_offset_box = InputBox(game, 450, 400, 140, 32, 'yOffset')
-    max_straw_box = InputBox(game, 350, 500, 140, 32, 'maxS')
+    y_offset_box = InputBox(game, 510, 400, 140, 32, 'yOffset')
+    max_straw_box = InputBox(game, 380, 520, 140, 32, 'maxS')
     boxes = [name_box, x_size_box, y_size_box, x_offset_box, y_offset_box, max_straw_box]
 
     mode = 1
@@ -224,6 +222,14 @@ def new_level(game=None):
     while True:
         screen.fill(black)
 
+        button('Input Name', screen, 380, 50, 140, 40, white, white, lambda:0)
+        button('Map Width', screen, 250, 200, 140, 40, white, white, lambda:0)
+        button('Map Height', screen, 510, 200, 140, 40, white, white, lambda:0)
+        button('Width Offset', screen, 250, 350, 140, 40, white, white, lambda:0)
+        button('Height Offset', screen, 510, 350, 140, 40, white, white, lambda:0)
+
+
+
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -234,16 +240,17 @@ def new_level(game=None):
         for box in boxes:
             box.draw(screen)
 
-        if button(mode_txt[mode], screen, 390, 450, 120, 40, mode_c[mode], mode_ca[mode], yes) and cooldown == 4:
+        if button(mode_txt[mode], screen, 390, 470, 120, 40, mode_c[mode], mode_ca[mode], lambda:1)\
+        and cooldown == 6:
             mode = (mode + 1) % 3
             cooldown = 0
         #to prevent multi clicks
-        if cooldown < 4:
+        if cooldown < 6:
             cooldown += 1
         
 
         #progress onto next stage, but before that let's put stuff into an object
-        if button('Continue', screen, 410, 600, 80, 40, blue, bright_blue, yes):
+        if button('Continue', screen, 410, 600, 80, 40, blue, bright_blue, lambda:1):
             compare = dict((key.datatype, key.text) for key in boxes)
             compare['strawberry'] = mode
             for ty in compare:
@@ -260,7 +267,7 @@ def new_level(game=None):
                     pass
 
 
-        if button('Back', screen, 410, 700, 80, 40, red, bright_red, yes):
+        if button('Back', screen, 410, 700, 80, 40, red, bright_red, lambda:1):
             screen.fill(white)
             break        
         
@@ -287,7 +294,7 @@ def edit_level(game=None):
                 screen.fill(white)
                 return 1
 
-        if button('Back', screen, 410, 800, 80, 40, red, bright_red, yes):
+        if button('Back', screen, 410, 800, 80, 40, red, bright_red, lambda:1):
             screen.fill(white)
             break
 
@@ -389,8 +396,7 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
 
     with open(game.srcreal + '/snakeData/style.txt', "r") as f:
         game.style = f.read()
-    game.reset_img_source()
-    game.snake.reset_img_source()
+    
 
     #setup config:
     if edit:
@@ -408,6 +414,14 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
         game.map = Map(parent=game)
         game.map.tiles = [[Tile(game.map, "Other", i, j, 0, 0) for i in range(int(config['mapX']))]\
                      for j in range(int(config['mapY']))]
+
+    if int(game.config.settings['mapX']) > 30 or int(game.config.settings['mapY']) > 26:
+        game.settings.rect_len = 15
+    else:
+        game.settings.rect_len = 30
+
+    game.reset_img_source()
+    game.snake.reset_img_source()
 
  
     screen = game.screen
@@ -489,22 +503,22 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
                 if event.key == K_RIGHT or event.key == ord('d'):
                     pointer[0] += 1
                     if pointer[0] > x_max - 1: 
-                        pointer[0] = x_max - 1
+                        pointer[0] = 0
                     something_changed = 1
                 if event.key == K_LEFT or event.key == ord('a'):
                     pointer[0] -= 1
                     if pointer[0] < 0: 
-                        pointer[0] = 0
+                        pointer[0] = x_max - 1
                     something_changed = 1
                 if event.key == K_UP or event.key == ord('w'):
                     pointer[1] -= 1
                     if pointer[1] < 0: 
-                        pointer[1] = 0
+                        pointer[1] = y_max - 1
                     something_changed = 1
                 if event.key == K_DOWN or event.key == ord('s'):
                     pointer[1] += 1
                     if pointer[1] > y_max - 1: 
-                        pointer[1] = y_max - 1
+                        pointer[1] = 0
                     something_changed = 1
 
                 #F: toggle between map and snake mode
@@ -881,12 +895,13 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
 
 
         #yeets progress and just doesn't do anything
-        if button('Back', screen, 420, 10, 60, 40, red, bright_red, yes):
+        if button('Back', screen, 420, 10, 60, 40, red, bright_red, lambda:1):
             screen.fill(black)
             pygame.display.update()
+            game.settings.rect_len = 30
             return 0
 
-        if button('Save', screen, 500, 10, 60, 40, blue, bright_blue, yes):
+        if button('Save', screen, 500, 10, 60, 40, blue, bright_blue, lambda:1):
             pygame.draw.rect(screen, black, pygame.Rect(500, 0, 400, 100))
             invalid = False
             #scan for snake
@@ -928,6 +943,7 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
                     message_display('Level Created!', screen, 450, 800, green, 60)
                 pygame.display.update()
                 pygame.time.delay(2000)
+                game.settings.rect_len = 30
                 return 1
                     
 
