@@ -6,3 +6,4 @@ yOffset:=10
 maxS:=3
 strawberry:=2
 cOffset:=0
+intro:=these are wrap walls.
