@@ -501,24 +501,32 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
             elif event.type == KEYDOWN:
                 #moving the cursor around
                 if event.key == K_RIGHT or event.key == ord('d'):
-                    pointer[0] += 1
-                    if pointer[0] > x_max - 1: 
-                        pointer[0] = 0
+                    a = 1
+                    if pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                        a = max(x_max//5, 1)
+                    pointer[0] += a
+                    pointer[0] %= x_max
                     something_changed = 1
                 if event.key == K_LEFT or event.key == ord('a'):
-                    pointer[0] -= 1
-                    if pointer[0] < 0: 
-                        pointer[0] = x_max - 1
+                    a = 1
+                    if pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                        a = max(x_max//5, 1)
+                    pointer[0] -= a
+                    pointer[0] %= x_max
                     something_changed = 1
                 if event.key == K_UP or event.key == ord('w'):
-                    pointer[1] -= 1
-                    if pointer[1] < 0: 
-                        pointer[1] = y_max - 1
+                    a = 1
+                    if pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                        a = max(y_max//5, 1)
+                    pointer[1] -= a
+                    pointer[1] %= y_max
                     something_changed = 1
                 if event.key == K_DOWN or event.key == ord('s'):
-                    pointer[1] += 1
-                    if pointer[1] > y_max - 1: 
-                        pointer[1] = 0
+                    a = 1
+                    if pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                        a = max(y_max//5, 1)
+                    pointer[1] += a
+                    pointer[1] %= y_max
                     something_changed = 1
 
                 #F: toggle between map and snake mode
