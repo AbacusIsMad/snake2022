@@ -1,0 +1,9 @@
+name:=1-8
+mapX:=14
+mapY:=14
+xOffset:=8
+yOffset:=8
+maxS:=0
+strawberry:=0
+cOffset:=0
+intro:=sometimes,-plates can exist-without strawberries.

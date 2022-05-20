@@ -1,0 +1,9 @@
+name:=1-9
+mapX:=12
+mapY:=12
+xOffset:=9
+yOffset:=9
+maxS:=10
+strawberry:=2
+cOffset:=0
+intro:=alt_plates deactivate-when you step on them.
