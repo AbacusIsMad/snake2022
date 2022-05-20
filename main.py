@@ -71,6 +71,7 @@ if __name__ == "__main__":
 
 from game import Game
 
+# loading colours 
 black = pygame.Color(0, 0, 0)
 white = pygame.Color(255, 255, 255)
 
@@ -87,7 +88,7 @@ bright_purple = pygame.Color(189, 58, 255)
 
 
 
-
+# initialising all features of the game
 game = Game(os.path.dirname(package_path), os.path.dirname(real_path))
 rect_len = game.settings.rect_len
 snake = game.snake
@@ -96,30 +97,32 @@ fpsClock = pygame.time.Clock()
 screen = pygame.display.set_mode((game.settings.width * game.settings.rect_len, game.settings.height * game.settings.rect_len))
 game.screen = screen
 pygame.display.set_caption('Gluttonous++')
-
-#osx problem?
-#pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 crash_sound = pygame.mixer.Sound(game.src + '/sound/crash.wav')
 
 def yes():
+    # arbitrary function to utilise in buttons 
     return True
 
 def text_objects(text, font, color=black):
+    # rendering fonts and text
     text_surface = font.render(text, True, color)
     return text_surface, text_surface.get_rect()
 
 
 def message_display(text, x, y, color=black, size=50):
+    # displays messages on the screen
     large_text = pygame.font.Font(os.path.dirname(os.path.abspath(__file__)) + '/arial.ttf', size)
     text_surf, text_rect = text_objects(text, large_text, color)
     text_rect.center = (x, y)
     screen.blit(text_surf, text_rect)
     pygame.display.update()
 
-#def button(msg, x, y, w, h, inactive_color, active_color, action=None, parameter=None):
 def button(msg, x, y, w, h, inactive_color, active_color, action, **kwargs):
+    # initialising button  
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
+
+    # checks if button is hovered over, then clicked
     if x + w > mouse[0] > x and y + h > mouse[1] > y:
         pygame.draw.rect(screen, active_color, (x, y, w, h))
         if click[0] == 1 and action != None:
@@ -130,26 +133,29 @@ def button(msg, x, y, w, h, inactive_color, active_color, action, **kwargs):
     else:
         pygame.draw.rect(screen, inactive_color, (x, y, w, h))
 
-    #placeholder
+    # blits button to screen
     pressed = 0
     smallText = pygame.font.Font(os.path.dirname(package_path) + '/arial.ttf', 20)
     TextSurf, TextRect = text_objects(msg, smallText)
     TextRect.center = (x + (w / 2), y + (h / 2))
     screen.blit(TextSurf, TextRect)
-    #pygame.display.update(pygame.Rect(x, y, w, h))
     return pressed
 
 def quitgame():
+    # exits game 
     pygame.quit()
-    #quit()
     sys.exit()
 
 
 def crash():
+    # executes the crash of the snake 
+
+    # plays sound and displays message
     pygame.mixer.Sound.play(crash_sound)
     message_display('crashed', game.settings.width / 2 * 30,\
                     game.settings.height / 6 * 30, red)
     
+    # fades out screen
     fadeout = pygame.Surface((rect_len*game.settings.width, rect_len*game.settings.height))
     fadeout = fadeout.convert()
     fadeout.fill(black)
@@ -175,6 +181,8 @@ def crash():
 
 
 def initial_interface(invalid, directory):
+    # displays the landing page 
+
     restart = False
     screen.fill(white)
 
@@ -183,60 +191,71 @@ def initial_interface(invalid, directory):
             if event.type == pygame.QUIT:
                 pygame.quit()
 
-        #screen.fill(white)
+        # displays title 
         message_display('Gluttonous++', game.settings.width / 2 * game.settings.rect_len, game.settings.height / 4 * game.settings.rect_len)
+        
+        # error messages 
         if invalid_loc:
             message_display('Error', game.settings.width / 4 * game.settings.rect_len, game.settings.height / 2 * game.settings.rect_len)
 
+        # displays go button to take user to level select
         button('Go!', 410, 280, 80, 40, green, bright_green, level_select)
 
+        # displays settings button to take user to visual settings
         if not invalid:
             button('Settings', 410, 340, 80, 40, yellow, bright_yellow, settings, directory=directory)
         else:
             button('settings disabled', 390, 340, 120, 40, yellow, bright_yellow, yes)
 
+        # displays quit button to close game window
         button('Quit', 410, 400, 80, 40, red, bright_red, quitgame)
 
+        # displays level maker button 
         if not invalid:
             button('Level Maker', 390, 460, 120, 40, purple, bright_purple, level_maker, game=game)
         else:
             button('maker disabled', 390, 460, 120, 40, purple, bright_purple, yes)
 
+        # displays instructions button 
         button('Instructions', 390, 520, 120, 40, blue, bright_blue, display_instructions, package_path=package_path, screen=screen, game=game)
 
         pygame.display.update()
         pygame.time.Clock().tick(15)
 
 def settings(directory):
+    # allows users to change the style of the game features 
+
+    # reads in style from the data file  
     with open(directory + "/style.txt", 'r') as f:
         style = f.read()
 
     screen.fill(black)
+
+    # displays the page continuously until 'back' button is pressed or window is closed
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
 
-        
-
+        # returns user to landing page 
         if button('Home', 100, 200, 80, 40, red, bright_red, yes):
             screen.fill(white)
             return 0
 
+        # displays the selected style as green and other buttons as yellow
+        #  allows style to be changed between retro, goofy and pop
         if style == '0':
             button('retro', 20, 20, 40, 40, green, green, yes)
         elif button('retro', 20, 20, 40, 40, yellow, bright_yellow, yes):
             with open(directory + "/style.txt", 'w') as f:
                 f.write('0')
                 style = '0'
-
         if style == 'cringe':
             button('goofy', 80, 20, 40, 40, green, green, yes)
         elif button('goofy', 80, 20, 40, 40, yellow, bright_yellow, yes):
             with open(directory + "/style.txt", "w") as f:
                 f.write('cringe')
                 style = 'cringe'
-
         if style == 'pop':
             button('pop', 140, 20, 40, 40, green, green, yes)
         elif button('pop', 140, 20, 40, 40, yellow, bright_yellow, yes):
@@ -244,33 +263,31 @@ def settings(directory):
                 f.write('pop')
                 style = 'pop'
 
-
         pygame.display.update()
         pygame.time.Clock().tick(15)
 
 
 def level_select():
 
+    # opens the directory containing the level data 
     with open(real_path + '/playerData.txt', "r") as f:
         playerData = json.load(f)
 
-    print(playerData)
-
+    
     intro = True
     restart = [0, ""]
     screen.fill(black)
     while intro:
+        # displays level select page until something is selected
         if restart[0]:
             break
         if restart[1]:
-            print("restarted!")
             restart = game_loop(restart[1], game.custom, restart=True)
             continue
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-        #screen.fill(black)
-
+       
         with open(real_path + '/playerData.txt', "r") as f:
             playerData = json.load(f)
 
@@ -474,7 +491,6 @@ def game_loop(level, custom=False, restart=False):
             game.strawberry.blit(screen, int(game.config.settings["xOffset"]), int(game.config.settings["yOffset"]))
             #covers up the score and home, restart buttons.
             pygame.draw.rect(screen, black, button_cover)
-            #game.blit_score(white, yellow, screen)
             pygame.display.update(button_cover)
 
             #update everything around the snake
@@ -573,12 +589,15 @@ def options():
 
 
 def human_move():
+    # if the user selects something on their keypad, this is tracked
     direction = 'none'
     escape = False
 
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
+        
+        # player can use arrow keys or WASD to move 
         elif event.type == KEYDOWN:
             if event.key == K_RIGHT or event.key == ord('d'):
                 direction = 'right'
@@ -589,11 +608,11 @@ def human_move():
             if event.key == K_DOWN or event.key == ord('s'):
                 direction = 'down'
             if event.key == K_ESCAPE:
-                #pygame.event.post(pygame.event.Event(QUIT))
+
                 escape = True
 
+    # move is translated to an integer as per the function defined in the game class
     move = game.direction_to_int(direction)
-    #0 - 3 here
     return move, escape
 
 
