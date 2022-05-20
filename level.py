@@ -951,17 +951,3 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
         pygame.display.update(pygame.Rect(0, 0, 900, 100))
         pygame.time.delay(30)
         
-
-
-
-
-
-
-
-
-
-
-
-
-
-

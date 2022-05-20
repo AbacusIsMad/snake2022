@@ -14,6 +14,7 @@ from snake import Snake
 from config import Config
 
 
+# loading colours into game
 black = pygame.Color(0, 0, 0)
 white = pygame.Color(255, 255, 255)
 
