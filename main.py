@@ -358,8 +358,6 @@ def game_loop(level, custom=False, restart=False):
 
     rect_len = game.settings.rect_len
 
-
-
     screen.fill(black)
     game.blit_map(rect_len, screen)
     
@@ -367,6 +365,7 @@ def game_loop(level, custom=False, restart=False):
         #draw box
 
         pygame.draw.rect(screen, white, pygame.Rect(200, 350, 500, 200))
+        
         #draw message
         msg = msg.split('-')
         for index, line in enumerate(msg):
