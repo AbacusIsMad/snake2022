@@ -10,6 +10,8 @@ from snake import Snake
 from map import Map, Tile
 from config import Config
 
+
+# loading colours 
 black = pygame.Color(0, 0, 0)
 dark_gray = pygame.Color(20, 20, 20)
 white = pygame.Color(255, 255, 255)
@@ -27,11 +29,13 @@ bright_purple = pygame.Color(189, 58, 255)
 
 
 def text_objects(text, font, color=black):
+    # renders text and font
     text_surface = font.render(text, True, color)
     return text_surface, text_surface.get_rect()
 
 
 def message_display(text, screen, x, y, color=black, size=50):
+    # displays message on the screen
     large_text = pygame.font.Font(os.path.dirname(os.path.abspath(__file__)) + '/arial.ttf', size)
     text_surf, text_rect = text_objects(text, large_text, color)
     text_rect.center = (x, y)
