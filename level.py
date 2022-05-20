@@ -317,7 +317,7 @@ def magic(game, start_pos, direction):
     vector = ((not not direction[0])*25 + direction[0]*15 + (not not direction[1])*50 - direction[1]*30)//10
     opposite = ((not not direction[0])*25 - direction[0]*15 + (not not direction[1])*50 + direction[1]*30)//10
     x_max = int(game.config.settings['mapX'])
-    y_max = int(game.config.settings['mapX'])
+    y_max = int(game.config.settings['mapY'])
 
     analysis = start_pos.copy()
     analysis = [analysis[0] + direction[0], analysis[1] + direction[1]]
