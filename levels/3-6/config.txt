@@ -1,0 +1,9 @@
+name:=3-6
+mapX:=14
+mapY:=10
+xOffset:=8
+yOffset:=10
+maxS:=0
+strawberry:=0
+cOffset:=0
+intro:=introducing clones.

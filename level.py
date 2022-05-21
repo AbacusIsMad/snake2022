@@ -426,6 +426,9 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
 
     game.reset_img_source()
     game.snake.reset_img_source()
+    game.snake_clone.init = False
+    game.snake_clone.segmentd = []
+    game.snake_clone.segments = []
 
  
     screen = game.screen
@@ -839,9 +842,8 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
 
                 print(potential_pos)
 
-            #screen.fill(black)
             #draw descriptive text
-            pygame.draw.rect(screen, black, pygame.Rect(0, 0, 400, 100))
+            pygame.draw.rect(screen, black, pygame.Rect(0, 0, 400, 50))
             tile = game.map.tiles[pointer[1]][pointer[0]]
 
             msg = "Position ({}, {}), tile type {}".format(tile.x, tile.y, tile.type)
@@ -914,7 +916,7 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
             return 0
 
         if button('Save', screen, 500, 10, 60, 40, blue, bright_blue, lambda:1):
-            pygame.draw.rect(screen, black, pygame.Rect(500, 0, 400, 100))
+            pygame.draw.rect(screen, black, pygame.Rect(500, 0, 400, 50))
             invalid = False
             #scan for snake
             if len(game.snake.segments) < 3:

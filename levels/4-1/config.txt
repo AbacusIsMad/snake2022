@@ -1,0 +1,9 @@
+name:=4-1
+mapX:=27
+mapY:=21
+xOffset:=1
+yOffset:=6
+strawberry:=0
+maxS:=0
+cOffset:=0
+intro:=levels are a-little harder now.

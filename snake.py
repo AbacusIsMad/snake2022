@@ -89,8 +89,6 @@ class Snake:
         bufpos = [self.segments[0][0], self.segments[0][1]]
         
         print("starting clone")
-        print(self.segments)
-        print(self.segments[1:])
         x_max = int(self.parent.config.settings['mapX'])
         y_max = int(self.parent.config.settings['mapY'])
         #going thru the direction form one by one now, logic copied from below
@@ -117,8 +115,9 @@ class Snake:
                             return False
                         bufpos[0] -= direction[0]
                         bufpos[1] -= direction[1]
-                        if bufpos in buf: #own segment
-                            return False
+                    if bufpos in buf: #own segment
+                        print('over')
+                        return False
                 else:
                     #solid block somehow
                     return False

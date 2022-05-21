@@ -1,0 +1,9 @@
+name:=4-2
+mapX:=12
+mapY:=13
+xOffset:=9
+yOffset:=9
+maxS:=0
+strawberry:=0
+cOffset:=0
+intro:=think fast

@@ -538,7 +538,7 @@ def game_loop(level, custom=False, restart=False):
 
 
             if phase == 4 and game.won:
-                fadeout = pygame.Surface((rect_len*game.settings.width, rect_len*game.settings.height))
+                fadeout = pygame.Surface((900, 900))
                 fadeout = fadeout.convert()
                 fadeout.fill(white)
                 pygame.time.delay(100)

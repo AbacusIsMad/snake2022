@@ -1,0 +1,9 @@
+name:=3-2
+mapX:=15
+mapY:=19
+xOffset:=7
+yOffset:=6
+maxS:=10
+strawberry:=2
+cOffset:=0
+intro:=me whenthe

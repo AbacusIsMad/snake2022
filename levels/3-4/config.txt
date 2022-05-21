@@ -1,0 +1,9 @@
+name:=3-4
+mapX:=32
+mapY:=32
+xOffset:=14
+yOffset:=14
+maxS:=20
+strawberry:=1
+cOffset:=0
+intro:=dead inside energy
