@@ -1,0 +1,10 @@
+    AA    
+   ARRA   
+  ARRRRA  
+ ARRRRRRA 
+ARRRGDRRRA
+ARRRMJRRRA
+ ARRRRRRA 
+  ARRRRA  
+   ARRA   
+    AA    
