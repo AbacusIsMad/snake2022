@@ -1,0 +1,9 @@
+name:=4-6
+mapX:=22
+mapY:=10
+xOffset:=4
+yOffset:=10
+maxS:=10
+strawberry:=1
+cOffset:=2
+intro:=clones can spawn in different-orientations too.

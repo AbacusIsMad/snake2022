@@ -1,0 +1,9 @@
+name:=5-2
+mapX:=24
+mapY:=20
+xOffset:=3
+yOffset:=5
+maxS:=20
+strawberry:=2
+cOffset:=3
+intro:=enjoy the ride.

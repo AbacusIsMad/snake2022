@@ -1,7 +1,0 @@
-name:=plate
-mapX:=5
-mapY:=5
-xOffset:=5
-yOffset:=5
-maxS:=5
-strawberry:=0

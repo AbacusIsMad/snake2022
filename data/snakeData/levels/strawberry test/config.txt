@@ -1,7 +1,0 @@
-name:=strawberry test
-mapX:=10
-mapY:=10
-xOffset:=10
-yOffset:=10
-maxS:=5
-strawberry:=1

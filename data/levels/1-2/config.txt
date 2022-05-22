@@ -1,7 +1,9 @@
-mapX:=24
-mapY:=16
-xOffset:=2
+name:=2
+mapX:=18
+mapY:=18
+xOffset:=6
 yOffset:=6
-strawberry:=2
-maxS:=10
+maxS:=20
+strawberry:=1
 cOffset:=0
+intro:=you can eat-strawberries to make-the snake longer.

@@ -1,0 +1,9 @@
+name:=2-3
+mapX:=22
+mapY:=22
+xOffset:=4
+yOffset:=4
+maxS:=10
+strawberry:=2
+cOffset:=0
+intro:=wrap walls don't have to cover all of-the screen. they simply search for-the wall closest to it.

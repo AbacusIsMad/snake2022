@@ -1,0 +1,9 @@
+name:=3-9
+mapX:=16
+mapY:=26
+xOffset:=7
+yOffset:=2
+maxS:=0
+strawberry:=0
+cOffset:=0
+intro:=remember, a crash-is still a crash!

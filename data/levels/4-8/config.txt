@@ -1,0 +1,9 @@
+name:=4-8
+mapX:=30
+mapY:=21
+xOffset:=0
+yOffset:=6
+strawberry:=0
+maxS:=0
+cOffset:=2
+intro:=you've seen this maze-a couple of times now.

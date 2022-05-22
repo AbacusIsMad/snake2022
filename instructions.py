@@ -156,8 +156,8 @@ def instructions_pagetwo(package_path=None, screen=None, game=None):
         wrap = pygame.transform.scale(pygame.image.load(path + "images/wrap.bmp"), (45, 45))
         pad = pygame.transform.scale(pygame.image.load(path + "images/pad.bmp"), (45, 45))
 
-        cross = pygame.transform.scale(pygame.image.load("images/cross.bmp"), (90, 90))
-        tick = pygame.transform.scale(pygame.image.load("images/tick.bmp"), (45, 45))
+        cross = pygame.transform.scale(pygame.image.load(path + "images/cross.bmp"), (90, 90))
+        tick = pygame.transform.scale(pygame.image.load(path + "images/tick.bmp"), (45, 45))
 
         #  Explaining how crashing into walls works with graphics and text
         message_display("Don't crash into the walls!", screen, 430, 85, color=white, size=40)

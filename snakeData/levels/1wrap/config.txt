@@ -1,7 +1,0 @@
-name:=1wrap
-mapX:=10
-mapY:=10
-xOffset:=10
-yOffset:=10
-maxS:=10
-strawberry:=1

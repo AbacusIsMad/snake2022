@@ -1,6 +1,9 @@
-mapX:=14
-mapY:=9
-xOffset:=8
-yOffset:=11
-strawberry:=0
-maxS:=0
+name:=1-5
+mapX:=16
+mapY:=16
+xOffset:=7
+yOffset:=7
+maxS:=10
+strawberry:=1
+cOffset:=0
+intro:=you lose if you collide-onto a solid tile-or yourself.

@@ -1,0 +1,9 @@
+name:=5-10
+mapX:=28
+mapY:=10
+xOffset:=1
+yOffset:=10
+maxS:=1
+strawberry:=1
+cOffset:=0
+intro:=Just...-One more...-Snack...

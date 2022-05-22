@@ -1,0 +1,9 @@
+name:=3-5
+mapX:=30
+mapY:=24
+xOffset:=0
+yOffset:=4
+maxS:=10
+strawberry:=1
+cOffset:=0
+intro:=the interlude ends after this level.

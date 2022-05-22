@@ -1,7 +1,0 @@
-name:=name2
-mapX:=11
-mapY:=11
-xOffset:=10
-yOffset:=10
-maxS:=10
-strawberry:=1
