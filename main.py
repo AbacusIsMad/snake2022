@@ -147,13 +147,17 @@ def quitgame():
     sys.exit()
 
 
-def crash():
+def crash(state):
     # executes the crash of the snake 
 
     # plays sound and displays message
     pygame.mixer.Sound.play(crash_sound)
-    message_display('crashed', game.settings.width / 2 * 30,\
-                    game.settings.height / 6 * 30, red)
+    if state != -2:
+        message_display('crashed!', game.settings.width / 2 * 30,\
+                        game.settings.height / 6 * 30, red) 
+    else:
+        message_display('TELEFRAGGED!', game.settings.width / 2 * 30,\
+                        game.settings.height / 6 * 30, blue)
     
     # fades out screen
     fadeout = pygame.Surface((rect_len*game.settings.width, rect_len*game.settings.height))
@@ -268,11 +272,6 @@ def settings(directory):
 
 
 def level_select():
-
-    # opens the directory containing the level data 
-    with open(real_path + '/playerData.txt', "r") as f:
-        playerData = json.load(f)
-
     
     intro = True
     restart = [0, ""]
@@ -287,14 +286,19 @@ def level_select():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-       
-        with open(real_path + '/playerData.txt', "r") as f:
-            playerData = json.load(f)
 
-        if button('Reset finished levels', 130, 800, 200, 40, red, bright_red, yes):
-            with open(real_path + '/playerData.txt', "w") as f:
-                playerData = [0 for i in range(50)]
-                json.dump(playerData, f)
+        if not invalid_loc:
+            with open(real_path + '/playerData.txt', "r") as f:
+                playerData = json.load(f)
+
+            if button('Reset finished levels', 130, 800, 200, 40, red, bright_red, yes):
+                with open(real_path + '/playerData.txt', "w") as f:
+                    playerData = [0 for i in range(50)]
+                    json.dump(playerData, f)
+
+        else:
+            button('Finished level indicator disabled', 130, 800, 200, 40, red, bright_red, yes)
+            playerData = [0 for i in range(50)]
 
 
         message_display('Select Level', game.settings.width / 2 * game.settings.rect_len, \
@@ -316,7 +320,9 @@ def level_select():
                                 blue, bright_blue, game_loop, level=d, custom=False)
             else:
                 temp = button(d, 80 + 60*(idx%5), 220 + 50*(idx//5), 50, 40,\
-                                green, bright_green, game_loop, level=d, custom=False)
+                                pygame.Color((idx//10)*40, 200 - (idx//10)*40, 0),\
+                                pygame.Color((idx//10)*45, 255 - (idx//10)*45, 0),\
+                                game_loop, level=d, custom=False)
             if isinstance(temp, list):
                 restart = temp
                 if restart[0] or restart[1]:
@@ -409,12 +415,12 @@ def game_loop(level, custom=False, restart=False):
 
     #the phase of the process, split into 5
     phase = 0
+    state = 0
     move = game.direction_to_int(snake.facing)
 
     #information for winning
     maxS = int(game.config.settings['maxS'])
     mode = int(game.config.settings['strawberry'])
-
 
     fps = 5
     delay = 1000/(fps*5)
@@ -445,6 +451,9 @@ def game_loop(level, custom=False, restart=False):
             fpsClock.tick(30)
             continue
         if phase == 0:
+            if state == -2:
+                break
+
 
             #the first section and basically decides the next 4 frames.
             state, state1, result, result1 = game.do_move(move)
@@ -452,7 +461,7 @@ def game_loop(level, custom=False, restart=False):
 
 
             print(state, state1, result, result1)
-            if state < 0 or state1 < 0:
+            if state == -1 or state1 < 0:
                 break
 
             #blit everything with spaces where the snake is so clones don't affect each other.
@@ -575,7 +584,7 @@ def game_loop(level, custom=False, restart=False):
         pygame.time.delay(math.ceil(delay - diff/1000))
 
     if not (restart[0] or restart[1]):
-        crash()
+        crash(state)
         restart[1] = level
     game.settings.rect_len = 30
     return restart

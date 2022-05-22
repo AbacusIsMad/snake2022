@@ -811,7 +811,9 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
 
                     something_changed = 1
 
-        
+        if button('Help', screen, 360, 10, 60, 40, yellow, bright_yellow, lambda:1):
+            help_page(screen)
+            something_changed = 1        
 
 
 
@@ -843,7 +845,7 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
                 print(potential_pos)
 
             #draw descriptive text
-            pygame.draw.rect(screen, black, pygame.Rect(0, 0, 400, 50))
+            pygame.draw.rect(screen, black, pygame.Rect(0, 0, 300, 50))
             tile = game.map.tiles[pointer[1]][pointer[0]]
 
             msg = "Position ({}, {}), tile type {}".format(tile.x, tile.y, tile.type)
@@ -903,13 +905,10 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
 
             pygame.display.update()
             pygame.time.delay(30)
-
-
         
 
-
         #yeets progress and just doesn't do anything
-        if button('Back', screen, 420, 10, 60, 40, red, bright_red, lambda:1):
+        if button('Back', screen, 430, 10, 60, 40, red, bright_red, lambda:1):
             screen.fill(black)
             pygame.display.update()
             game.settings.rect_len = 30
@@ -965,3 +964,62 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
         pygame.display.update(pygame.Rect(0, 0, 900, 100))
         pygame.time.delay(30)
         
+
+def help_page(screen):
+    screen.fill(black)
+
+    msg = []
+    msg.append('WASD/Arrows - move cursor')
+    msg.append('Hold Shift to move faster')
+    msg.append('F - toggle between snake and normal mode')
+    msg.append('G - press once for select mode, press a second time to select rectangle,')
+    msg.append('press at the same place to flood select')
+    msg.append('Esc - get out of snake or select mode')
+    msg.append('')
+    msg.append('Z - if in normal mode, switch between tile types on the cursor')
+    msg.append('if in snake mode, draws or undraws a snake segment')
+    msg.append('X - switch between wall subtypes (if solid) or plates (if empty)')
+    msg.append('E - rotate counterclockwise (if solid) or clone offset (if empty)')
+    msg.append('Z, X and E applies to the selection only if in select mode')
+    msg.append('C - copy a tile')
+    msg.append('V - paste a tile at the location. Works in select mode')
+
+
+    for idx, line in enumerate(msg):
+        message_display(line, screen, 450, 100 + 25*idx, white, 20)
+
+    pygame.display.update()
+
+    while True:
+        pygame.event.pump()
+        
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+
+        if button('Back', screen, 410, 600, 80, 40, red, bright_red, lambda:1):
+            screen.fill(black)
+            pygame.display.update()
+            return 0
+
+        pygame.display.update(pygame.Rect(410, 600, 80, 40))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
