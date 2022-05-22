@@ -1,0 +1,8 @@
+name:=5-6
+mapX:=20
+mapY:=10
+xOffset:=5
+yOffset:=5
+maxS:=60
+strawberry:=0
+cOffset:=0
