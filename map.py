@@ -149,7 +149,6 @@ class Map():
             tiles = "Line " + str(i) + ":"
             for k in range(len(self.tiles[0])): 
                 tiles = tiles + self.tiles[i][k].type + " "
-            print(tiles)
 
     
     def writeMap(self, dest):

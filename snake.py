@@ -80,6 +80,8 @@ class Snake:
 
 
     def dir_to_pos(self):
+        #A function to convert the "inferior" coordinate method of storing the snake's body to a vector form.
+        #The position of each subsequent body part is a vector transformation of the previous body part.
         self.reset_img_source()
         offset = int(self.parent.config.settings['cOffset'])
 
@@ -88,16 +90,11 @@ class Snake:
         buf.append([self.segments[0][0], self.segments[0][1]])
         bufpos = [self.segments[0][0], self.segments[0][1]]
         
-        print("starting clone")
         x_max = int(self.parent.config.settings['mapX'])
         y_max = int(self.parent.config.settings['mapY'])
         #going thru the direction form one by one now, logic copied from below
         for direction in self.segments[1:]:
-            print(direction)
             #rotate if necessary:
-
-
-
             bufpos[0] += direction[0]
             bufpos[1] += direction[1]
             if self.parent.map.tiles[bufpos[1]][bufpos[0]].type == 'Solid':
@@ -121,13 +118,12 @@ class Snake:
                     #solid block somehow
                     return False
             buf.append([bufpos[0], bufpos[1]])
-        print(buf)
         self.segmentd = copy.deepcopy(buf)
-        print("ending clone")
         return True
 
 
     def blit_body(self, loc, cur, next, screen, size, x0, y0):
+        #Blitting the actual body to the screen
         x, y = (loc[0] + x0)*size, (loc[1] + y0)*size
         direction = [2*cur[0] + next[0], 2*cur[1] + next[1]]
         if direction[0] == 0:
@@ -182,6 +178,7 @@ class Snake:
 
 
     def blit_tail(self, x, y, screen, size, x0, y0, pad, phase):
+        #Tail direction and drawing
         tail_direction = self.segments[-1]
         x1 = (x + x0)*size
         y1 = (y + y0)*size
@@ -214,6 +211,7 @@ class Snake:
 
 
     def blit(self, rect_len, screen, pad, phase):
+        #Function for drawing the snake.
         x0 = int(self.parent.config.settings["xOffset"])
         y0 = int(self.parent.config.settings["yOffset"])
         if phase == 0 and len(self.segments) > 2:
@@ -227,7 +225,6 @@ class Snake:
             self.blit_head(self.segmentd[0], [1, 0], screen, rect_len, x0, y0, pad, phase)
 
     def animate(self, screen, images, x, y, rotation, overlap):
-        #not connected with fps but i couldn't care less
         prev = datetime.datetime.now()
         attr = (images == self.tail_ups)*'t' + 'animation_offset'
         #for i in range(5):
@@ -242,7 +239,6 @@ class Snake:
                 screen.blit(overlap, (x, y))
             pygame.display.update(pygame.Rect(x, y, 30, 30))
             prev = datetime.datetime.now()
-            #if it still doesnt work then reduce the time lol
             if diff.microseconds > 47000:
                 pygame.time.delay(47 - max((diff.microseconds - 46000)*2, 5000)//1000)
             else:
@@ -250,6 +246,7 @@ class Snake:
 
 
     def update(self):
+        # Changes the headpos based on the next move occuring
         pos = [0, 0]
         if self.facing == 'right':
             pos[0] += 1
@@ -288,9 +285,6 @@ class Snake:
                 dont_move = True
             else:   
                 return -1, []
-        
-        print(self.segments)
-        print(self.segmentd, "\n")
 
 
         #check for body collision, if yes the snake doesnt move forward.
@@ -323,14 +317,12 @@ class Snake:
             self.segments.pop()
             #unblit tail
             last_tail = self.segmentd.pop()
-            print(last_tail)
         if not dont_move:
             self.segments[1] = [-pos[0], -pos[1]]
 
         #clone mechanics
         if (not self.parent.snake_clone.init) and (headpos in self.parent.map.clones):
             #setup clone
-
             offset = int(self.parent.config.settings['cOffset'])
 
             clone_pos = self.parent.map.clones[(self.parent.map.clones.index(headpos) + 1) % 2]
@@ -339,7 +331,6 @@ class Snake:
             self.parent.snake_clone.segments = []
 
             #copy direction form:
-            
             for coord in self.segments:
                 temp = coord.copy()
                 for i in range(offset):

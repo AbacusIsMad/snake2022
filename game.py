@@ -3,10 +3,8 @@
 Created on Wed Apr 25 15:19:25 2018
 
 @author: zou
-BingQi Ling
 """
 import pygame, random
-#import numpy as np
 import threading
 import time
 from map import Map
@@ -54,8 +52,8 @@ class Strawberry():
         self.initialize()
         
     def random_pos(self):
+        
         # randomly generates the strawberry's new random position
-
         self.style = str(random.randint(1, 8))             
         
         # confirms if the position of the strawberry is valid 
