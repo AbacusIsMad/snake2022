@@ -116,7 +116,6 @@ class Snake:
                         bufpos[0] -= direction[0]
                         bufpos[1] -= direction[1]
                     if bufpos in buf: #own segment
-                        print('over')
                         return False
                 else:
                     #solid block somehow
