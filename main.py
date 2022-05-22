@@ -242,28 +242,36 @@ def settings(directory):
                 pygame.quit()
 
         # returns user to landing page 
-        if button('Home', 100, 200, 80, 40, red, bright_red, yes):
+        if button('Home', 410, 300, 80, 40, red, bright_red, yes):
             screen.fill(white)
             return 0
 
         # displays the selected style as green and other buttons as yellow
         #  allows style to be changed between retro, goofy and pop
         if style == '0':
-            button('retro', 20, 20, 40, 40, green, green, yes)
-        elif button('retro', 20, 20, 40, 40, yellow, bright_yellow, yes):
+            button('retro', 280, 50, 100, 40, green, green, yes)
+            message_display('A simple but clear style.', 450, 150, white, 30)
+        elif button('retro', 280, 50, 100, 40, yellow, bright_yellow, yes):
             with open(directory + "/style.txt", 'w') as f:
+                pygame.draw.rect(screen, black, pygame.Rect(250, 100, 400, 200))
                 f.write('0')
                 style = '0'
         if style == 'cringe':
-            button('goofy', 80, 20, 40, 40, green, green, yes)
-        elif button('goofy', 80, 20, 40, 40, yellow, bright_yellow, yes):
+            button('goofy', 400, 50, 100, 40, green, green, yes)
+            message_display('Wacky!', 450, 150, white, 30)
+            message_display('Quite good fun.', 450, 200, white, 30)
+        elif button('goofy', 400, 50, 100, 40, yellow, bright_yellow, yes):
             with open(directory + "/style.txt", "w") as f:
+                pygame.draw.rect(screen, black, pygame.Rect(250, 100, 400, 200))
                 f.write('cringe')
                 style = 'cringe'
         if style == 'pop':
-            button('pop', 140, 20, 40, 40, green, green, yes)
-        elif button('pop', 140, 20, 40, 40, yellow, bright_yellow, yes):
+            button('pop', 520, 50, 100, 40, green, green, yes)
+            message_display('Very stylish palette,', 450, 150, white, 30)
+            message_display('soothing and nice.', 450, 200, white, 30)
+        elif button('pop', 520, 50, 100, 40, yellow, bright_yellow, yes):
             with open(directory + "/style.txt", "w") as f:
+                pygame.draw.rect(screen, black, pygame.Rect(250, 100, 400, 200))
                 f.write('pop')
                 style = 'pop'
 
@@ -320,8 +328,8 @@ def level_select():
                                 blue, bright_blue, game_loop, level=d, custom=False)
             else:
                 temp = button(d, 80 + 60*(idx%5), 220 + 50*(idx//5), 50, 40,\
-                                pygame.Color((idx//10)*40, 200 - (idx//10)*40, 0),\
-                                pygame.Color((idx//10)*45, 255 - (idx//10)*45, 0),\
+                                pygame.Color((idx//5)*20, 200 - (idx//5)*20, 0),\
+                                pygame.Color((idx//5)*22, 255 - (idx//5)*22, 0),\
                                 game_loop, level=d, custom=False)
             if isinstance(temp, list):
                 restart = temp
