@@ -451,9 +451,6 @@ def game_loop(level, custom=False, restart=False):
             fpsClock.tick(30)
             continue
         if phase == 0:
-            if state == -2:
-                break
-
 
             #the first section and basically decides the next 4 frames.
             state, state1, result, result1 = game.do_move(move)
@@ -461,7 +458,7 @@ def game_loop(level, custom=False, restart=False):
 
 
             print(state, state1, result, result1)
-            if state == -1 or state1 < 0:
+            if state < 0 or state1 < 0:
                 break
 
             #blit everything with spaces where the snake is so clones don't affect each other.
@@ -512,6 +509,9 @@ def game_loop(level, custom=False, restart=False):
             if game.snake_clone.init:
                 game.snake_clone.blit(rect_len, screen, state1, phase)
             if phase == 1: #winning mechanics
+                
+
+
                 if mode == 0 or mode == 2:
                     game.plates_pressed = len(game.map.alt_goals)
                     for coord in (game.snake.segmentd + game.snake_clone.segmentd):
