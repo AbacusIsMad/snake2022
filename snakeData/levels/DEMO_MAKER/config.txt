@@ -1,0 +1,8 @@
+name:=DEMO_MAKER
+mapX:=24
+mapY:=24
+xOffset:=3
+yOffset:=4
+maxS:=5
+strawberry:=2
+cOffset:=0

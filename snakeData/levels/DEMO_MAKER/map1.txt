@@ -1,0 +1,24 @@
+                        
+     AAAAAAAAAAAAAAAA   
+     AQQQQQQQQQQQQQQA   
+  A  AQQQQQQQQQQQQQQA   
+     AQQQQQQQQQQTQQQA   
+  R  AQQQQQQQQQQQQQQA   
+     AQQQQQQQQQQQQSQAAA 
+  C  AQQQQQQQQQQQQQQQQA 
+     AQQQQQQQQQQTQQQQQA 
+     AAAAQQQQQQQQQQQQQA 
+        AQQQQQQQQQQQQQA 
+        AQQQQQQQQQQQQQA 
+        AAAAAAAAAAAAAAA 
+                        
+              AAAA      
+     AAAAAA   A  A      
+     A    AAAAA  A      
+   AAA           A AAAAA
+   A        AAAAAA A   A
+   A        A      A AAA
+   AAAA  AA A      A AAA
+      A AAA AAAAAAAA   A
+      A A A          AAA
+      AAA AAAAAAAAAAAA  
