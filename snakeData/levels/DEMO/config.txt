@@ -1,0 +1,8 @@
+name:=DEMO
+mapX:=12
+mapY:=12
+xOffset:=8
+yOffset:=8
+maxS:=2
+strawberry:=2
+cOffset:=0
