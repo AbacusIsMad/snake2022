@@ -13,7 +13,7 @@ We were provided with `Gluttonous`, it is now `Gluttonous++`.
     - Empty space that doesn't allow strawberries to spawn
     - Pressure plates: some activate when the snake is on them, the others deactivate
     - Wrap walls: makes the snake go through it and come out of the closest opposite-facing wrap wall
-    <p align="center"><img src="https://github.com/AbacusIsMad/snake2022/blob/master/README_images/clone1.png" width="300"/></p>
+    - <p align="center"><img src="https://github.com/AbacusIsMad/snake2022/blob/master/README_images/clone1.png" width="300"/></p>
     - Padded walls: the snake doesn't die when it collides with it
     - Clone plates: generates a copy of the snake with their natural orientation
         - The clone follows the same movements as the original
@@ -23,15 +23,15 @@ We were provided with `Gluttonous`, it is now `Gluttonous++`.
     - Levels have a requirement to eat `n` strawberries, activate all pressure plates, or both
     - Levels are marked as completed once won (can be reset)
     - 50 homebrewed levels of varying difficulties!
-    <p align="center"><img src="https://github.com/AbacusIsMad/snake2022/blob/master/README_images/levels.png" width="300"/></p>
+    - <p align="center"><img src="https://github.com/AbacusIsMad/snake2022/blob/master/README_images/levels.png" width="300"/></p>
 - Level maker
     - Hotkeys to allow easy edits
-    <p align="center"><img src="https://github.com/AbacusIsMad/snake2022/blob/master/README_images/levelmaker.png" /></p>
+    - <p align="center"><img src="https://github.com/AbacusIsMad/snake2022/blob/master/README_images/levelmaker.png" /></p>
     - Rectangular and flood select allows for easy manipulation of large areas
       - Select two corners to select a retangle
-      <p align="center"><img src="https://github.com/AbacusIsMad/snake2022/blob/master/README_images/select1.png" width="300"/> </p>
+      - <p align="center"><img src="https://github.com/AbacusIsMad/snake2022/blob/master/README_images/select1.png" width="300"/> </p>
       - Selecting the same space twice selects all adjacent tiles with of the same type
-      <p align="center"><img src="https://github.com/AbacusIsMad/snake2022/blob/master/README_images/select2.png" width="300"/></p>
+      - <p align="center"><img src="https://github.com/AbacusIsMad/snake2022/blob/master/README_images/select2.png" width="300"/></p>
     - Snake mode allows placment of a snake, and gives hints on where the next segment needs to be
     <p align="center"><img src="https://github.com/AbacusIsMad/snake2022/blob/master/README_images/snakemode.png" width="300"/></p>
 - Texture packs, can be configured in `styles`
