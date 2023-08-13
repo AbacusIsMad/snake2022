@@ -37,10 +37,10 @@ We were provided with `Gluttonous`, it is now `Gluttonous++`.
     - Hotkeys to allow easy edits
     - Rectangular and flood select allows for easy manipulation of large areas
         - Select two corners to select a retangle
+        - Selecting the same space twice selects all adjacent tiles with of the same type
         <p align="center">
             <img src="https://github.com/AbacusIsMad/snake2022/blob/master/README_images/select1.png" />
         </p>
-        - Selecting the same space twice selects all adjacent tiles with of the same type
         <p align="center">
           <img src="https://github.com/AbacusIsMad/snake2022/blob/master/README_images/select2.png" />
         </p>
