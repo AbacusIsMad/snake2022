@@ -28,10 +28,10 @@ We were provided with `Gluttonous`, it is now `Gluttonous++`.
     <p align="center"><img src="https://github.com/AbacusIsMad/snake2022/blob/master/README_images/levelmaker.png" /></p>
     - Hotkeys to allow easy edits
     - Rectangular and flood select allows for easy manipulation of large areas
-        - Select two corners to select a retangle
-        <p align="center"><img src="https://github.com/AbacusIsMad/snake2022/blob/master/README_images/select1.png" width="300"/> </p>
-        - Selecting the same space twice selects all adjacent tiles with of the same type
-        <p align="center"><img src="https://github.com/AbacusIsMad/snake2022/blob/master/README_images/select2.png" width="300"/></p>
+      - Select two corners to select a retangle
+      <p align="center"><img src="https://github.com/AbacusIsMad/snake2022/blob/master/README_images/select1.png" width="300"/> </p>
+      - Selecting the same space twice selects all adjacent tiles with of the same type
+      <p align="center"><img src="https://github.com/AbacusIsMad/snake2022/blob/master/README_images/select2.png" width="300"/></p>
     - Snake mode allows placment of a snake, and gives hints on where the next segment needs to be
     <p align="center"><img src="https://github.com/AbacusIsMad/snake2022/blob/master/README_images/snakemode.png" width="300"/></p>
 - Texture packs, can be configured in `styles`
