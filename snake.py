@@ -6,8 +6,7 @@ import datetime
 
 class Snake:
     def __init__(self, parent, clone=False):
-        # Snake is initialised with a 'parent game' (the game it exists in)
-        # Snake is initialised with a boolean representing whether or not they are a clone snake
+        #  parent game 
         self.parent = parent
         self.clone = clone
         self.init = False
@@ -16,9 +15,9 @@ class Snake:
         self.segments = []
         self.segmentd = []
 
-        #score, must start at 0 
+        #score is initialised at 0
         self.score = 0
-
+        self.won = False
         #flags to control the animations
         self.animation = None
         self.animation_offset = 0
@@ -37,6 +36,8 @@ class Snake:
         #  Images are sourced. If there is a clone, the images will be of the clone snake
         clone = self.clone
         path = self.parent.src + "/styles/" + self.parent.style + "/images/"
+
+        # sourcing images from the relative path 
         self.image_up = pygame.transform.scale(pygame.image.load(path + 'clone'*clone + 'head_up.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
         self.tail_up = pygame.transform.scale(pygame.image.load(path + 'clone'*clone + 'tail_up.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
         self.image_body_s = pygame.transform.scale(pygame.image.load(path + 'clone'*clone + 'body_s.bmp'), (self.parent.settings.rect_len, self.parent.settings.rect_len))
@@ -48,10 +49,15 @@ class Snake:
 
 
     def initialize(self, mapdir=None):
-        # Can read in the snake information from a directory 
+
+        # initialising the snake in the correct position 
         if mapdir is not None:
-            with open(self.parent.src + "/levels/" + mapdir + "/snake.txt", "r") as f:
-                t = f.readlines()
+            if not self.parent.custom:
+                with open(self.parent.src + "/" + mapdir + "/snake.txt", "r") as f:
+                    t = f.readlines()
+            else:
+                with open(self.parent.srcreal + "/" + mapdir + "/snake.txt", "r") as f:
+                    t = f.readlines()
             self.segments = []
             self.segmentd = []
             
@@ -80,40 +86,50 @@ class Snake:
 
 
     def dir_to_pos(self):
-        # Transforming direction to position
+        #A function to convert the "inferior" coordinate method of storing the snake's body to a vector form.
+        #The position of each subsequent body part is a vector transformation of the previous body part.
+        self.reset_img_source()
+        offset = int(self.parent.config.settings['cOffset'])
+
+        
         buf = []
         buf.append([self.segments[0][0], self.segments[0][1]])
         bufpos = [self.segments[0][0], self.segments[0][1]]
         
-        print("starting clone")
-        print(self.segments)
-        print(self.segments[1:])
+        x_max = int(self.parent.config.settings['mapX'])
+        y_max = int(self.parent.config.settings['mapY'])
         #going thru the direction form one by one now, logic copied from below
         for direction in self.segments[1:]:
-            print(direction)
+            #rotate if necessary:
             bufpos[0] += direction[0]
             bufpos[1] += direction[1]
             if self.parent.map.tiles[bufpos[1]][bufpos[0]].type == 'Solid':
-                vector = ((not not direction[0])*25 + direction[0]*15 + (not not direction[1])*50 - direction[1]*30)//10
-                opposite = ((not not direction[0])*25 - direction[0]*15 + (not not direction[1])*50 + direction[1]*30)//10
+                vector = ((not not direction[0])*25 + direction[0]*15 + (not not direction[1])*50\
+                         - direction[1]*30)//10
+                opposite = ((not not direction[0])*25 - direction[0]*15 + (not not direction[1])*50\
+                         + direction[1]*30)//10
             
                 if self.parent.map.tiles[bufpos[1]][bufpos[0]].wrap_plate & vector:
-                    while not self.parent.map.tiles[bufpos[1]- direction[1]][bufpos[0] - direction[0]].wrap_plate & opposite:
+                    while not ((self.parent.map.tiles[bufpos[1]- direction[1]][bufpos[0] - direction[0]].wrap_plate\
+                    & opposite) and \
+                    self.parent.map.tiles[bufpos[1]- direction[1]][bufpos[0] - direction[0]].type == "Solid"):
+                        if bufpos[0] - direction[0] < 1 or bufpos[0] - direction[0] > x_max - 2\
+                        or bufpos[1] - direction[1] < 1 or bufpos[1] - direction[1] > y_max - 2:
+                            return False
                         bufpos[0] -= direction[0]
                         bufpos[1] -= direction[1]
+                    if bufpos in buf: #own segment
+                        return False
                 else:
                     #solid block somehow
                     return False
             buf.append([bufpos[0], bufpos[1]])
-        print(buf)
         self.segmentd = copy.deepcopy(buf)
-        print("ending clone")
         return True
 
 
     def blit_body(self, loc, cur, next, screen, size, x0, y0):
-        # Blitting the body onto the screen 
-
+        #Blitting the actual body to the screen
         x, y = (loc[0] + x0)*size, (loc[1] + y0)*size
         direction = [2*cur[0] + next[0], 2*cur[1] + next[1]]
 
@@ -136,8 +152,8 @@ class Snake:
 
 
     def blit_head(self, loc, dire, screen, size, x0, y0, pad, phase):
-        #  Blitting the head onto the screen
 
+        # Blitting the head of the snake to the screen
         x, y = (loc[0] + x0)*size, (loc[1] + y0)*size
         #Checking to see if the plate should be blitted underneath the head 
         overlap = None
@@ -147,7 +163,7 @@ class Snake:
         elif tile.wrap_plate == 2:
             overlap = self.parent.platea_alt_img
         elif tile.pad_clone:
-            overlap = self.parent.clonea_img
+            overlap = self.parent.clonea_img[int(self.parent.config.settings['cOffset'])]
 
         # The direction that the snake is facing determines the rotation of the image on the screen
         if dire == [0, 1]:
@@ -171,7 +187,7 @@ class Snake:
         pygame.display.update(pygame.Rect(x, y, 30, 30))
 
     def blit_tail(self, x, y, screen, size, x0, y0, pad, phase):
-        # Blitting the tail onto the screen 
+        #Tail direction and drawing
         tail_direction = self.segments[-1]
         x1 = (x + x0)*size
         y1 = (y + y0)*size
@@ -182,7 +198,7 @@ class Snake:
         elif tile.wrap_plate == 2:
             overlap = self.parent.platea_alt_img
         elif tile.pad_clone:
-            overlap = self.parent.clonea_img
+            overlap = self.parent.clonea_img[int(self.parent.config.settings['cOffset'])]
 
         # Rotation of the tail .bmp is dependent on the direction the snake is facing 
         if tail_direction == [0, 1]:
@@ -207,23 +223,20 @@ class Snake:
 
 
     def blit(self, rect_len, screen, pad, phase):
-        # Calls all of the blit functions 
-
+        #Function for drawing the snake.
         x0 = int(self.parent.config.settings["xOffset"])
         y0 = int(self.parent.config.settings["yOffset"])
-        if phase == 0:
-            #  Goes through all of the segments to blit a body for each one
+        if phase == 0 and len(self.segments) > 2:
             for index, position in enumerate(self.segments[1:-1]):
                 self.blit_body(self.segmentd[index + 1], position, self.segments[index + 2], screen, rect_len, x0, y0)
-        
-        #  Finally, blits the head and the tail
-        self.blit_tail(self.segmentd[-1][0], self.segmentd[-1][1], screen, rect_len, x0, y0, pad, phase)
 
-        self.blit_head(self.segmentd[0], self.segments[1], screen, rect_len, x0, y0, pad, phase)
-    
+        if len(self.segments) > 1:
+            self.blit_tail(self.segmentd[-1][0], self.segmentd[-1][1], screen, rect_len, x0, y0, pad, phase)
+            self.blit_head(self.segmentd[0], self.segments[1], screen, rect_len, x0, y0, pad, phase)
+        else:
+            self.blit_head(self.segmentd[0], [1, 0], screen, rect_len, x0, y0, pad, phase)
 
     def animate(self, screen, images, x, y, rotation, overlap):
-        #  Animation cycle described for the blitting process
         prev = datetime.datetime.now()
         attr = (images == self.tail_ups)*'t' + 'animation_offset'
        
@@ -238,7 +251,6 @@ class Snake:
                 screen.blit(overlap, (x, y))
             pygame.display.update(pygame.Rect(x, y, 30, 30))
             prev = datetime.datetime.now()
-            
             if diff.microseconds > 47000:
                 pygame.time.delay(47 - max((diff.microseconds - 46000)*2, 5000)//1000)
             else:
@@ -246,7 +258,7 @@ class Snake:
 
 
     def update(self):
-        # The snake will continue to move in the direction it's facing 
+        # Changes the headpos based on the next move occuring
         pos = [0, 0]
         if self.facing == 'right':
             pos[0] += 1
@@ -257,8 +269,10 @@ class Snake:
         if self.facing == 'down':
             pos[1] += 1
 
-        #The headpos is converted in order to check for wrap or solid tile collision
-        headpos = [self.segments[0][0] + pos[0], self.segments[0][1] + pos[1]]
+        x_max = int(self.parent.config.settings['mapX'])
+        y_max = int(self.parent.config.settings['mapY'])
+
+        
         dont_move = False
         if self.parent.map.tiles[headpos[1]][headpos[0]].type == 'Solid':
             #transforms direction to a power of 2 to compare
@@ -268,7 +282,12 @@ class Snake:
             #actual comparison
             if self.parent.map.tiles[headpos[1]][headpos[0]].wrap_plate & vector:
                 #go on that specific direction
-                while not self.parent.map.tiles[headpos[1]- pos[1]][headpos[0] - pos[0]].wrap_plate & opposite:
+                while not ((self.parent.map.tiles[headpos[1]- pos[1]][headpos[0] - pos[0]].wrap_plate & opposite)\
+                and self.parent.map.tiles[headpos[1]- pos[1]][headpos[0] - pos[0]].type == "Solid"):
+                    if headpos[0] - pos[0] < 1 or headpos[0] - pos[0] > x_max - 2\
+                    or headpos[1]- pos[1] < 1 or headpos[1]- pos[1] > y_max - 2:
+                        return -1, []
+
                     headpos[0] -= pos[0]
                     headpos[1] -= pos[1]
             
@@ -277,26 +296,12 @@ class Snake:
                 dont_move = True
             else:   
                 return -1, []
-        
-        print(self.segments)
-        print(self.segmentd, "\n")
 
         #check for body collision, if there is then the snake doesnt move forward.
         if headpos in self.segmentd[:-1]:
             return -1, []
-        #Pressure plates
-        platesPressed = 0
-        for location in self.parent.map.goals:
-            if location in self.segmentd:
-                platesPressed += 1
-        if platesPressed == len(self.parent.map.goals):
-            self.parent.map.goalsMet = True
-        altPlatesPressed = 0
-        for location in self.parent.map.alt_goals:
-            if location in self.segmentd:
-                altPlatesPressed += 1
-        if altPlatesPressed == len(self.parent.map.alt_goals):
-            self.parent.map.alt_goalsMet = True
+
+        
         #  If the snake is able to move, the headposition is re-inserted
         if not dont_move:
             self.segments.insert(0, headpos)
@@ -306,37 +311,52 @@ class Snake:
         #We then check for strawberry at head position, to see if the snake's score and size will increment
         longer = False
         if self.segments[0] == self.parent.strawberry.position:
-            self.parent.strawberry.random_pos()
+            if (self.parent.strawberry.times_called < int(self.parent.config.settings['maxS']) - 1)\
+                or int(self.parent.config.settings['maxS']) == 0:
+                self.parent.strawberry.times_called += 1
+                self.parent.strawberry.random_pos()
+            else:
+                self.parent.strawberry.position = [-100, -100]
             reward = 1
             longer = True
             self.score += 1
+            self.eatSound()
 
         #padded mechanics
         elif not dont_move:
             self.segments.pop()
             #unblit tail
             last_tail = self.segmentd.pop()
-            print(last_tail)
         if not dont_move:
             self.segments[1] = [-pos[0], -pos[1]]
 
         #clone mechanics are set up here
         if (not self.parent.snake_clone.init) and (headpos in self.parent.map.clones):
-            #setting up the clone
+            #setup clone
+            offset = int(self.parent.config.settings['cOffset'])
+
             clone_pos = self.parent.map.clones[(self.parent.map.clones.index(headpos) + 1) % 2]
-            self.parent.snake_clone.facing = self.facing
-            self.parent.snake_clone.segments = copy.deepcopy(self.segments)
+            self.parent.snake_clone.facing = self.parent.move_dict\
+                        [(self.parent.direction_to_int(self.facing) + offset)%4]
+            self.parent.snake_clone.segments = []
+
+            #copy direction form:
+            for coord in self.segments:
+                temp = coord.copy()
+                for i in range(offset):
+                    temp = [temp[1], -temp[0]]
+                self.parent.snake_clone.segments.append([temp[0], temp[1]])
+
+
             self.parent.snake_clone.segments[0] = [clone_pos[0], clone_pos[1]]
             if not self.parent.snake_clone.dir_to_pos():
                 return -2, []
             self.parent.snake_clone.init = True
         
-        #Winning mechanics
-        if (self.parent.map.mainGoal == 'score') and (self.score == 10):
-            print("u win")
-        if (self.parent.map.mainGoal == 'plates') and (self.parent.map.goalsMet):
-            print("u win")
-        if (self.parent.map.mainGoal == 'hybrid') and (self.score == 10) and (self.parent.map.goalsMet):
-            print("u win")
-        print(self.parent.map.mainGoal)
+        
         return 0 + int(dont_move) + 2*int(longer), last_tail
+
+    def eatSound(self):
+        #  plays a sound (for when snake consumes strawberry )
+        eat_sound = pygame.mixer.Sound(self.parent.src + '/sound/eat.wav')
+        pygame.mixer.Sound.play(eat_sound)

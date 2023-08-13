@@ -1,0 +1,9 @@
+name:=1-7
+mapX:=28
+mapY:=18
+xOffset:=1
+yOffset:=6
+maxS:=10
+strawberry:=2
+cOffset:=0
+intro:=strawberries can-spawn with plates.

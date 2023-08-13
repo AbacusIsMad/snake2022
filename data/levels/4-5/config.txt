@@ -1,0 +1,9 @@
+name:=4-5
+mapX:=14
+mapY:=22
+xOffset:=8
+yOffset:=4
+maxS:=1
+strawberry:=1
+cOffset:=0
+intro:=I've laid out pressure plates for you so-you know where to go.-you don't have to activate all this time.

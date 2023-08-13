@@ -1,0 +1,9 @@
+name:=2-8
+mapX:=20
+mapY:=24
+xOffset:=5
+yOffset:=4
+maxS:=0
+strawberry:=0
+cOffset:=0
+intro:=you can even turn into them!

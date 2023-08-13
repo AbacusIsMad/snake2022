@@ -1,0 +1,9 @@
+name:=1-6
+mapX:=10
+mapY:=10
+xOffset:=10
+yOffset:=10
+maxS:=2
+strawberry:=2
+cOffset:=0
+intro:=sometimes, you-can win by-pressing plates.

@@ -1,0 +1,9 @@
+name:=5-1
+mapX:=28
+mapY:=20
+xOffset:=1
+yOffset:=5
+maxS:=0
+strawberry:=0
+cOffset:=0
+intro:=the pause button (ESC) is-really helpful if you-use it a lot.

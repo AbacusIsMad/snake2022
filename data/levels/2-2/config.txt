@@ -1,0 +1,9 @@
+name:=2-2
+mapX:=20
+mapY:=14
+xOffset:=5
+yOffset:=8
+maxS:=20
+strawberry:=1
+cOffset:=0
+intro:=wrap walls wrap.-or do they wrap the wrap?-wrapping the wrap wrapper?

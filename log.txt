@@ -1,0 +1,247 @@
+* 362ea13	Josh	Sun May 22 23:33:32 2022 +1000	Final Commit!
+* 277f655	Josh	Sun May 22 22:54:06 2022 +1000	yyeess
+* 87b03e2	Josh	Sun May 22 22:18:23 2022 +1000	Please
+* 93dc125	Josh	Sun May 22 22:13:04 2022 +1000	Please
+* b49ba35	Ruize Geng	Sun May 22 21:45:59 2022 +1000	integration
+* 03db0f1	Ruize Geng	Sun May 22 21:45:02 2022 +1000	integration
+* f043c9b	Ruize Geng	Sun May 22 20:07:34 2022 +1000	I did something but my mind blanking rn
+* eac3426	Ruize Geng	Sun May 22 19:34:13 2022 +1000	bro
+* b20ad22	Ruize Geng	Sun May 22 18:53:58 2022 +1000	better visuals
+* de6d78a	Ruize Geng	Sun May 22 16:40:23 2022 +1000	first 14 levels done
+* 9ac3a18	Ruize Geng	Sat May 21 22:29:02 2022 +1000	first 40 levels added
+* 445f036	Ruize Geng	Sat May 21 15:45:13 2022 +1000	first 20 levels done
+* 0175f4b	Ruize Geng	Fri May 20 21:35:11 2022 +1000	first 15 levels done
+*   5b4f491	Ruize Geng	Fri May 20 21:34:54 2022 +1000	Merge branch 'level_maker' of https://github.com/AbacusIsMad/snake2022 into level_maker
+|\  
+| *   77c13d9	charkai	Fri May 20 14:19:59 2022 +1000	Merge branch 'level_maker' of https://github.com/AbacusIsMad/snake2022 into level_maker
+| |\  
+| * | 5767bbe	charkai	Fri May 20 14:19:47 2022 +1000	comments level.py
+* | | 52adb3e	Ruize Geng	Fri May 20 21:24:54 2022 +1000	first 15 levels done
+| |/  
+|/|   
+* | f8e6cb0	Ruize Geng	Fri May 20 14:04:19 2022 +1000	Merge branch 'level_maker' of https://github.com/AbacusIsMad/snake2022 into level_maker
+|\| 
+| *   d50b3ac	charkai	Fri May 20 13:23:55 2022 +1000	Merge branch 'level_maker' of https://github.com/AbacusIsMad/snake2022 into level_maker
+| |\  
+| * | ee8ede0	charkai	Fri May 20 10:41:17 2022 +1000	small change to comments main.py
+* | | 4713bc0	Ruize Geng	Fri May 20 13:48:01 2022 +1000	first 10 levels done
+| |/  
+|/|   
+* | 58cc818	Ruize Geng	Fri May 20 10:50:57 2022 +1000	Merge branch 'level_maker' of https://github.com/AbacusIsMad/snake2022 into level_maker
+|\| 
+| * af7960e	charkai	Fri May 20 10:29:41 2022 +1000	adding comments to main.py
+* | 6b506f2	Ruize Geng	Fri May 20 10:49:25 2022 +1000	better cursor movement
+|/  
+* ba279c3	Ruize Geng	Fri May 20 09:52:13 2022 +1000	support with larger maps
+* 2e17bc2	Ruize Geng	Thu May 19 22:46:28 2022 +1000	first 5 levels done
+*   841a321	AbacusIsMad	Thu May 19 21:55:13 2022 +1000	Merge pull request #20 from AbacusIsMad/comments_conflict
+|\  
+| *   47a952c	AbacusIsMad	Thu May 19 21:55:01 2022 +1000	Merge branch 'level_maker' into comments_conflict
+| |\  
+| |/  
+|/|   
+* | d07441a	charkai	Thu May 19 21:33:22 2022 +1000	comments to game.py
+* | 0335fa7	charkai	Thu May 19 18:58:24 2022 +1000	Clarifying Comments added to config, instructions and map
+| * 7a8a93c	Ruize Geng	Thu May 19 21:49:44 2022 +1000	custom intro messages
+|/  
+* 3f14056	Ruize Geng	Thu May 19 15:38:21 2022 +1000	adding compilation data
+*   6619a58	charkai	Thu May 19 10:53:02 2022 +1000	Merge branch 'level_maker' of https://github.com/AbacusIsMad/snake2022 into level_maker
+|\  
+| * ad1baed	Ruize Geng	Thu May 19 10:20:35 2022 +1000	select changes
+* | d24c972	charkai	Thu May 19 10:52:59 2022 +1000	Reading in style from datafile for instructions
+|/  
+* ad7db23	Ruize Geng	Wed May 18 23:44:42 2022 +1000	better select methods for maker
+* f0d6939	charkai	Wed May 18 12:58:19 2022 +1000	adding extra comments and commenting out code to snakeunittest.py
+* e4f52bc	charkai	Wed May 18 11:48:37 2022 +1000	changing wrap texture for pop syle
+* 8e73edf	charkai	Wed May 18 11:44:44 2022 +1000	fixing up instructions
+* 81829dc	Ruize Geng	Tue May 17 16:02:38 2022 +1000	preserve value
+* e43338a	Ruize Geng	Tue May 17 15:55:29 2022 +1000	probably working
+* 1813f80	Ruize Geng	Tue May 17 12:00:19 2022 +1000	remembers success
+* 1e953c1	Josh	Mon May 16 21:33:22 2022 +1000	Level maker and plates
+* 963ac07	Ruize Geng	Mon May 16 19:56:49 2022 +1000	fixed critical wrapping issue
+* d9e6749	Ruize Geng	Mon May 16 19:41:38 2022 +1000	fixed wrap issue
+*   2ae8f53	AbacusIsMad	Mon May 16 18:07:20 2022 +1000	Merge pull request #18 from AbacusIsMad/level_conflict
+|\  
+| * fa526f0	Ruize Geng	Mon May 16 17:46:01 2022 +1000	fixed comflict
+* |   7a014d0	Ruize Geng	Mon May 16 17:48:26 2022 +1000	fixed merges?
+|\ \  
+| |/  
+|/|   
+| * 05cb42d	charkai	Mon May 16 16:44:40 2022 +1000	update instrucitons.py
+| * e215c82	charkai	Mon May 16 13:34:37 2022 +1000	playing eating sound added back in
+* | dbba824	Ruize Geng	Mon May 16 17:40:04 2022 +1000	better strawberry algorithm
+|/  
+* 5117cf3	Ruize Geng	Mon May 16 13:23:15 2022 +1000	fixed clone body image for pop
+* e72ea78	charkai	Mon May 16 12:50:02 2022 +1000	remaining files for pop style
+* 9070b49	charkai	Mon May 16 12:33:47 2022 +1000	pad and wrap added
+*   6672f60	charkai	Mon May 16 11:41:06 2022 +1000	Merge branch 'level_maker' of https://github.com/AbacusIsMad/snake2022 into level_maker
+|\  
+| *   7161e05	AbacusIsMad	Mon May 16 10:50:10 2022 +1000	Merge pull request #17 from AbacusIsMad/level_maker_temp
+| |\  
+| | * eb94826	Ruize Geng	Mon May 16 10:48:06 2022 +1000	first version of level writing
+* | | f316a97	charkai	Mon May 16 11:41:02 2022 +1000	adding plates and body parts to pop style
+|/ /  
+* | be46d10	charkai	Mon May 16 10:42:28 2022 +1000	Merge branch 'level_maker' of https://github.com/AbacusIsMad/snake2022 into level_maker
+|\| 
+| * aa5022b	Ruize Geng	Sun May 15 23:29:57 2022 +1000	better switching
+| * 9be151a	Ruize Geng	Sun May 15 23:24:07 2022 +1000	added support for style 'pop'
+| *   6cef2d9	Ruize Geng	Sun May 15 23:12:52 2022 +1000	Merge branch 'level_maker' of https://github.com/AbacusIsMad/snake2022 into level_maker
+| |\  
+| * | c1c1e7d	Ruize Geng	Sun May 15 23:12:07 2022 +1000	except plates and stuff
+* | | 0bf9262	charkai	Sun May 15 21:26:40 2022 +1000	adding more clonetail .bmps
+* | | 2f61ea7	charkai	Sun May 15 21:22:44 2022 +1000	adding the heads and tails
+| |/  
+|/|   
+* | f1da0c7	charkai	Sun May 15 20:46:31 2022 +1000	ADDING New sprites for Pop style
+|/  
+* dee48d6	Ruize Geng	Sun May 15 15:18:08 2022 +1000	more keys added
+*   1a90cc0	Ruize Geng	Sun May 15 08:55:51 2022 +1000	Merge branch 'level_maker' of https://github.com/AbacusIsMad/snake2022 into level_maker
+|\  
+| * e924a7a	charkai	Fri May 13 17:27:35 2022 +1000	update instructions.py!
+| * 9761afd	charkai	Fri May 13 15:05:09 2022 +1000	updating instructions to be based on game-size
+* | b691122	Ruize Geng	Sun May 15 08:55:21 2022 +1000	difficulty
+|/  
+*   9e024d3	charkai	Fri May 13 10:25:25 2022 +1000	Merge branch 'level_maker' of https://github.com/AbacusIsMad/snake2022 into level_maker
+|\  
+| * 0585cb6	Ruize Geng	Fri May 13 09:00:50 2022 +1000	textboxes
+| * cff21a1	Ruize Geng	Thu May 12 21:30:05 2022 +1000	text input
+| * 1111e27	Ruize Geng	Thu May 12 19:57:13 2022 +1000	strawberry variations
+* | 064f365	charkai	Fri May 13 10:25:15 2022 +1000	instructions updated
+* | a42fd2d	charkai	Thu May 12 14:57:31 2022 +1000	Merge branch 'level_maker' of https://github.com/AbacusIsMad/snake2022 into level_maker
+|\| 
+| * a3facbb	Ruize Geng	Thu May 12 14:02:53 2022 +1000	more
+* | 046b0ba	charkai	Thu May 12 14:57:28 2022 +1000	update
+* | ab3dcf0	charkai	Thu May 12 14:04:16 2022 +1000	update instructions.py
+|/  
+* 9df2ec0	Ruize Geng	Thu May 12 13:42:29 2022 +1000	oops
+* 3a34f73	Ruize Geng	Thu May 12 10:50:54 2022 +1000	fixes2
+* 4a9e210	Ruize Geng	Thu May 12 10:25:57 2022 +1000	fix for flashing screen
+* 5ce088e	Ruize Geng	Wed May 11 16:18:45 2022 +1000	initial path configs
+| *   29058fd	AbacusIsMad	Mon May 16 20:16:15 2022 +1000	Merge pull request #19 from AbacusIsMad/mapGoals
+| |\  
+| | * 76246a1	Josh	Mon May 16 19:46:11 2022 +1000	Pressure plates and map goals
+| |/  
+| * d531540	charkai	Thu May 12 10:43:05 2022 +1000	update main.py
+| * 4a18572	charkai	Thu May 12 10:31:43 2022 +1000	Update map.py with comments
+| * 7846355	charkai	Thu May 12 10:23:54 2022 +1000	Adding more comments to game.py
+| * 32efd33	charkai	Thu May 12 09:57:54 2022 +1000	Addition of more comments to snake.py
+| *   fb145f5	charkai	Thu May 12 09:21:26 2022 +1000	Merge branch 'master' of https://github.com/AbacusIsMad/snake2022
+| |\  
+| |/  
+|/|   
+* |   76d8945	AbacusIsMad	Wed May 11 16:07:36 2022 +1000	Merge pull request #15 from AbacusIsMad/level-select
+|\ \  
+| * \   7718a81	AbacusIsMad	Wed May 11 16:07:19 2022 +1000	Merge branch 'master' into level-select
+| |\ \  
+| |/ /  
+|/| |   
+| * |   cf3c792	charkai	Wed May 11 15:58:01 2022 +1000	Merge pull request #11 from AbacusIsMad/extra_images
+| |\ \  
+| | * | 3f337e3	Ruize Geng	Wed May 11 15:11:04 2022 +1000	added eyes for first frame
+| | * | 1f9ef66	Ruize Geng	Wed May 11 14:26:31 2022 +1000	more stable animations
+| | * | e0d8b24	Ruize Geng	Tue May 10 20:11:45 2022 +1000	cleaning code
+| | * | 2b1b53b	Ruize Geng	Tue May 10 13:49:35 2022 +1000	better compilation
+| | * | dcf4209	Ruize Geng	Mon May 9 22:06:21 2022 +1000	still kinda more images, but now its animations instead lol
+| | * | 9e12314	Ruize Geng	Mon May 9 16:41:02 2022 +1000	a way to switch between styles
+| | * | ec1d634	Ruize Geng	Mon May 9 10:47:45 2022 +1000	starting to add externally-stored player data
+| | * | e20edf9	Ruize Geng	Sun May 8 22:21:28 2022 +1000	okay but I can't work with those images bruh
+| |/ /  
+| | * 48dcea7	charkai	Wed May 11 16:33:41 2022 +1000	updating instructions
+| |/  
+|/|   
+* |   1c2ecd8	charkai	Wed May 11 15:56:08 2022 +1000	Merge branch 'master' of https://github.com/AbacusIsMad/snake2022
+|\ \  
+* | | 6c4bacf	charkai	Wed May 11 15:42:27 2022 +1000	Test driver unfortunately no longer works because of changes to the function, so just updating it :)
+| | | * 08c938f	charkai	Wed May 11 15:54:25 2022 +1000	Revert "Adding Instructions! Not fully complete yet "
+| | |/  
+| |/|   
+| * | 7340775	charkai	Wed May 11 15:54:19 2022 +1000	Merge pull request #13 from AbacusIsMad/instructions
+|/| | 
+| * |   29f002e	charkai	Wed May 11 15:53:53 2022 +1000	Merge branch 'master' into instructions
+| |\ \  
+| |/ /  
+|/| |   
+* | |   4e22d49	charkai	Wed May 11 15:26:51 2022 +1000	Merge pull request #12 from AbacusIsMad/Implementing-UnitTesting
+|\ \ \  
+| * \ \   57d73c7	charkai	Wed May 11 15:26:40 2022 +1000	Merge branch 'master' into Implementing-UnitTesting
+| |\ \ \  
+| |/ / /  
+|/| | |   
+* | | |   e717171	AbacusIsMad	Sat May 7 16:50:18 2022 +1000	Merge pull request #6 from AbacusIsMad/dir_form
+|\ \ \ \  
+| * \ \ \   1e6c9b2	AbacusIsMad	Sat May 7 16:49:23 2022 +1000	Merge branch 'master' into dir_form
+| |\ \ \ \  
+| |/ / / /  
+|/| | | |   
+| | * | | 3e29bb1	charkai	Wed May 11 15:20:53 2022 +1000	Adding game methods tests
+| | * | | 9f36835	charkai	Wed May 11 15:09:08 2022 +1000	Finish strawberry tests
+| | * | | c66e676	charkai	Mon May 9 11:46:08 2022 +1000	Update snakeunittest.py
+| | * | | 9480bb8	charkai	Sun May 8 22:09:11 2022 +1000	Update snakeunittest.py
+| | * | | 6a12463	charkai	Sat May 7 14:06:25 2022 +1000	Updating the test to implement unittest so that we can metricise coverage
+| | * | | 5b4e43e	charkai	Sat May 7 10:31:58 2022 +1000	Creating a Unit Test to confirm whether the snake initialises correctly
+| |/ / /  
+|/| | |   
+* | | |   c0529b6	charkai	Sat May 7 09:50:03 2022 +1000	Merge pull request #5 from AbacusIsMad/AddingWalls
+|\ \ \ \  
+| * | | | ea79ce0	charkai	Thu May 5 10:59:13 2022 +1000	Loading the map into the game from a textfile
+* | | | |   93a3c0a	AbacusIsMad	Thu May 5 19:57:13 2022 +1000	Merge pull request #3 from AbacusIsMad/Adding-Sounds
+|\ \ \ \ \  
+| * | | | | a8d0b45	charkai	Tue May 3 20:31:10 2022 +1000	Adding an Eating Sound
+* | | | | |   f530163	AbacusIsMad	Tue May 3 15:44:59 2022 +1000	Merge pull request #2 from AbacusIsMad/AddingWalls
+|\ \ \ \ \ \  
+| |/ / / / /  
+|/| / / / /   
+| |/ / / /    
+| | | * | 53abcf4	charkai	Wed May 11 14:26:49 2022 +1000	fix second page
+| | | * | 94744fd	charkai	Wed May 11 13:13:24 2022 +1000	Update first instructions page
+| | | * | 0b3e14e	charkai	Tue May 10 22:14:27 2022 +1000	update of instructions page one
+| | | * | f05bed7	charkai	Tue May 10 21:54:40 2022 +1000	Update main.py
+| | | * | a8fa342	charkai	Tue May 10 21:54:06 2022 +1000	Update instructions page 1
+| | | * | e80b7f8	charkai	Mon May 9 12:32:44 2022 +1000	update main.py
+| | | * | e27a687	charkai	Mon May 9 12:28:58 2022 +1000	update default for message_display
+| | | * | 54cc7b0	charkai	Mon May 9 12:21:44 2022 +1000	Update main.py
+| | | * | 5794d57	charkai	Mon May 9 12:17:36 2022 +1000	Added instructions page (instructions not visible yet), Home button now on this page
+| | | |/  
+| | | * 82125be	Ruize Geng	Sun May 8 21:18:03 2022 +1000	clones now work lol
+| | | * d0f5fbe	Ruize Geng	Sat May 7 20:07:52 2022 +1000	forgot to add the actual executable
+| | | * ac5c420	Ruize Geng	Sat May 7 20:01:38 2022 +1000	working executable
+| | | * 2676c7a	Ruize Geng	Sat May 7 17:28:08 2022 +1000	home button for select page
+| | | * 5803fb3	Ruize Geng	Sat May 7 16:43:25 2022 +1000	created multiple levels and navigation too
+| | |/  
+| | * 8adac9d	Ruize Geng	Sat May 7 09:57:03 2022 +1000	git log testing
+| | * 29ff0ef	Ruize Geng	Fri May 6 21:38:05 2022 +1000	fixed bug related to padded walls and snake stopping
+| | * 9e5da77	Ruize Geng	Fri May 6 21:32:58 2022 +1000	minimal
+| | *   56ba1a1	AbacusIsMad	Fri May 6 18:19:45 2022 +1000	Merge pull request #8 from AbacusIsMad/wrappingStart
+| | |\  
+| | | *   e34705b	AbacusIsMad	Fri May 6 18:19:30 2022 +1000	Merge branch 'dir_form' into wrappingStart
+| | | |\  
+| | | |/  
+| | |/|   
+| | * | 1432df4	Ruize Geng	Fri May 6 18:13:37 2022 +1000	compare
+| | | * 05c2a9f	Josh	Fri May 6 17:17:34 2022 +1000	Wrapping fundementals
+| | |/  
+| | * acc720c	Ruize Geng	Fri May 6 11:28:19 2022 +1000	walls rendering
+| | * c4adc91	Ruize Geng	Fri May 6 08:10:28 2022 +1000	further modulisation
+| | * 5d39b41	Ruize Geng	Thu May 5 19:31:23 2022 +1000	serialised
+| | * 4ece9ea	Ruize Geng	Thu May 5 16:56:30 2022 +1000	here
+| | * 9ab339d	Ruize Geng	Thu May 5 12:29:13 2022 +1000	integration
+| | * 2447fad	Ruize Geng	Thu May 5 12:29:04 2022 +1000	integration
+| | * f98b0bf	Ruize Geng	Thu May 5 12:19:58 2022 +1000	integration
+| | * 16cd143	Ruize Geng	Wed May 4 21:24:02 2022 +1000	I forgor
+| | * 62ea32f	Ruize Geng	Wed May 4 20:15:01 2022 +1000	buttons and fix
+| | * c9312d6	Ruize Geng	Wed May 4 18:35:07 2022 +1000	better snake drawing
+| | * eb0e1a9	Ruize Geng	Wed May 4 16:10:41 2022 +1000	working
+| | * b747800	Ruize Geng	Wed May 4 15:26:30 2022 +1000	strawberry
+| | * 2eec736	Ruize Geng	Wed May 4 15:01:23 2022 +1000	direction form
+| | * d0de1e5	charkai	Wed May 4 12:11:53 2022 +1000	Update game.py to change border rules
+| |/  
+| * 172af37	charkai	Tue May 3 15:34:21 2022 +1000	Loading Border Into Game
+|/  
+*   861f04c	AbacusIsMad	Sun May 1 14:25:37 2022 +1000	Merge pull request #1 from AbacusIsMad/debug1
+|\  
+| * 2eacfa2	Ruize Geng	Sun May 1 14:23:58 2022 +1000	comments
+| * 6d686f4	Ruize Geng	Mon Apr 18 09:39:50 2022 +1000	branch
+|/  
+* 8876bcc	AbacusIsMad	Mon Apr 18 09:34:09 2022 +1000	Delete PAT.txt
+* 82610e3	Ruize	Thu Apr 14 15:09:11 2022 +1000	PAT
+* d144f97	Ruize	Thu Apr 14 15:06:23 2022 +1000	initial commit

@@ -1,0 +1,9 @@
+name:=5-9
+mapX:=21
+mapY:=15
+xOffset:=5
+yOffset:=5
+maxS:=1
+strawberry:=0
+cOffset:=0
+intro:=Apologies in advance.

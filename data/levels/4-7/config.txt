@@ -1,0 +1,9 @@
+name:=4-7
+mapX:=24
+mapY:=24
+xOffset:=3
+yOffset:=4
+maxS:=5
+strawberry:=2
+cOffset:=1
+intro:=how does it feel,-the disorientating clones?

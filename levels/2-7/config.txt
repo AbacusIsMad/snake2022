@@ -1,0 +1,9 @@
+name:=2-7
+mapX:=16
+mapY:=16
+xOffset:=7
+yOffset:=7
+maxS:=10
+strawberry:=2
+cOffset:=0
+intro:=you can't crash into-padded walls.

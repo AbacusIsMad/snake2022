@@ -1,0 +1,9 @@
+name:=3-1
+mapX:=24
+mapY:=24
+xOffset:=3
+yOffset:=4
+maxS:=10
+strawberry:=2
+cOffset:=0
+intro:=start the interlude.

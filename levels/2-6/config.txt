@@ -1,0 +1,9 @@
+name:=2-6
+mapX:=16
+mapY:=10
+xOffset:=7
+yOffset:=10
+maxS:=10
+strawberry:=1
+cOffset:=0
+intro:=there are also-padded walls.
