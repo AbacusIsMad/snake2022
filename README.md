@@ -25,8 +25,8 @@ We were provided with `Gluttonous`, it is now `Gluttonous++`.
     - 50 homebrewed levels of varying difficulties!
     <p align="center"><img src="https://github.com/AbacusIsMad/snake2022/blob/master/README_images/levels.png" width="300"/></p>
 - Level maker
-    <p align="center"><img src="https://github.com/AbacusIsMad/snake2022/blob/master/README_images/levelmaker.png" /></p>
     - Hotkeys to allow easy edits
+    <p align="center"><img src="https://github.com/AbacusIsMad/snake2022/blob/master/README_images/levelmaker.png" /></p>
     - Rectangular and flood select allows for easy manipulation of large areas
       - Select two corners to select a retangle
       <p align="center"><img src="https://github.com/AbacusIsMad/snake2022/blob/master/README_images/select1.png" width="300"/> </p>
