@@ -117,8 +117,6 @@ class Map():
             for i in range(0, int(self.parent.config.settings["mapY"])): 
                 line = f.readline()
                 line2 = g.readline()
-
-                # Creates a list for each row 
                 tileLine = []
 
                 # Read each character in the line 
@@ -126,28 +124,12 @@ class Map():
                 for k in range(0, int(self.parent.config.settings["mapX"])): 
                     letter = line[k]
                     letter2 = line2[k]
-
-                    #  If the letter represents a solid tile, this is put in the map (with its respective variants)
-                    #  Translates the letter to a unicode code and then checks it against our criteria 
                     if (ord(letter) >= 65 and ord(letter) <= 80):
                         tile = Tile(self, "Solid", k, i, varient=ord(letter)-65, varient2=ord(letter2)-65)
-                    
-                    # If the letter represents an empty tile, this is put in the map with its respective variations
                     elif (ord(letter) >= 81 and ord(letter) <= 85):
                         tile = Tile(self, "Empty", k, i, varient=ord(letter)-65)
-
-                    # If the letter is blank, this is an 'other' space
                     elif (letter == ' '): 
                         tile = Tile(self, "Other", k, i)
-                    elif (letter == '!'): 
-                        tile = Tile(self, "Empty", k, i)
-                        self.mainGoal = 'score'
-                    elif (letter == '@'): 
-                        tile = Tile(self, "Empty", k, i)
-                        self.mainGoal = 'plates'
-                    elif (letter == '#'): 
-                        tile = Tile(self, "Empty", k, i)
-                        self.mainGoal = 'hybrid'
                     tileLine.append(tile)
 
                 # Adds to tiles list

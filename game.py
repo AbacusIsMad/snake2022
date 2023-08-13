@@ -283,7 +283,6 @@ class Game:
         #  based on their x and y coordiantes 
         for i in range(0, int(self.config.settings["mapX"])):
             for k in range(0, int(self.config.settings["mapY"])):
-                
                 tile = self.map.tiles[k][i]
                 if tile.type == "Other":
                     pass
@@ -293,11 +292,9 @@ class Game:
                     screen.blit(self.tile_img, ((i + x0)*rect_len, (k + y0)*rect_len))
                     for j in range(4):
                         if tile.wrap_plate & (1 << j):
-                            # If the tile has a wrap plate, this is blitted too
                             screen.blit(pygame.transform.rotate(self.wrap_img, j*90), ((i + x0)*rect_len, (k + y0)*rect_len))
                     for j in range(4):
                         if tile.pad_clone & (1 << j):
-                            # If the tile has a pad plate, this is blitted 
                             screen.blit(pygame.transform.rotate(self.pad_img, j*90), ((i + x0)*rect_len, (k + y0)*rect_len))
                 
                 #  empty tiles are blitted

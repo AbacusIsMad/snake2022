@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed May 16 15:22:20 2018 
+Created on Wed May 16 15:22:20 2018 bruh are you serious
 
 @author: zou
 """
@@ -63,6 +63,8 @@ if __name__ == "__main__":
             playerData = [0 for i in range(50)] #no levels done yet
             json.dump(playerData, f)
             print("playerData written")
+
+    
 
     
 
