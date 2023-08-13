@@ -8,11 +8,11 @@ We were provided with `Gluttonous`, it is now `Gluttonous++`.
 - Smooth snake connections and animation (borders and connections are clearly shown)
 ![image](https://github.com/AbacusIsMad/snake2022/assets/101756598/42276059-7d53-45d8-83f7-74bb56b271df)
 - Lots of different tile types!
-    ![image](https://github.com/AbacusIsMad/snake2022/assets/101756598/968269ec-3d1d-480c-b812-a51592fd27b7)
     - Wall tiles
     - Empty space that doesn't allow strawberries to spawn
     - Pressure plates: some activate when the snake is on them, the others deactivate
     - Wrap walls: makes the snake go through it and come out of the closest opposite-facing wrap wall
+    ![image](https://github.com/AbacusIsMad/snake2022/assets/101756598/968269ec-3d1d-480c-b812-a51592fd27b7)
     - Padded walls: the snake doesn't die when it collides with it
     - Clone plates: generates a copy of the snake with their natural orientation
         - The clone follows the same movements as the original
