@@ -22,32 +22,19 @@ from level import level_maker
 if __name__ == "__main__":
     #get locally stored config file
     invalid_loc = False
-    print(os.path.abspath(sys.executable))
     if getattr(sys, 'frozen', False):
-        print("okay we are in executable probably")
         real_path = os.path.join(os.path.abspath(sys.executable), 'snakeData')
     else:
-        print("apparently we are not, but perhaps I'm just stupid")
         real_path = os.path.join(os.path.abspath('.'), 'snakeData')
-
-    #temporary location to test like everything
-    #real_path = '/home/ruize/Desktop/snakeData'
 
 
     package_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'snakeData')
-    print("real path:", real_path)
-    print("unpackaged path:", package_path)
-    if real_path == package_path:
-        print("inside a python script. No need to do anything more.")
-    else:
-        print("we are inside the executable.")
 
 
     if not os.path.exists(real_path + '/levels'):
         try:
             os.makedirs(real_path + '/levels')
         except Exception:
-            print("failed to make directory or file! Returning to normal dir.")
             real_path = package_path
             invalid_loc = True
 
@@ -57,12 +44,10 @@ if __name__ == "__main__":
     if not os.path.exists(real_path + '/style.txt'):
         with open(real_path + '/style.txt', 'w') as f:
             f.write('0')
-            print("style written")
     if not os.path.exists(real_path + '/playerData.txt'):
         with open(real_path + '/playerData.txt', 'w') as f:
             playerData = [0 for i in range(50)] #no levels done yet
             json.dump(playerData, f)
-            print("playerData written")
 
     
 
@@ -152,6 +137,7 @@ def crash(state):
 
     # plays sound and displays message
     pygame.mixer.Sound.play(crash_sound)
+    #differentiate between normal crash and clone crash
     if state != -2:
         message_display('crashed!', game.settings.width / 2 * 30,\
                         game.settings.height / 6 * 30, red) 
@@ -196,11 +182,13 @@ def initial_interface(invalid, directory):
                 pygame.quit()
 
         # displays title 
-        message_display('Gluttonous++', game.settings.width / 2 * game.settings.rect_len, game.settings.height / 4 * game.settings.rect_len)
+        message_display('Gluttonous++', game.settings.width / 2 * game.settings.rect_len,\
+                        game.settings.height / 4 * game.settings.rect_len)
         
         # error messages 
         if invalid_loc:
-            message_display('Error', game.settings.width / 4 * game.settings.rect_len, game.settings.height / 2 * game.settings.rect_len)
+            message_display('Error', game.settings.width / 4 * game.settings.rect_len,\
+                        game.settings.height / 2 * game.settings.rect_len)
 
         # displays go button to take user to level select
         button('Go!', 410, 280, 80, 40, green, bright_green, level_select)
@@ -221,7 +209,8 @@ def initial_interface(invalid, directory):
             button('maker disabled', 390, 460, 120, 40, purple, bright_purple, yes)
 
         # displays instructions button 
-        button('Instructions', 390, 520, 120, 40, blue, bright_blue, display_instructions, package_path=package_path, screen=screen, game=game)
+        button('Instructions', 390, 520, 120, 40, blue, bright_blue, display_instructions,\
+                package_path=package_path, screen=screen, game=game)
 
         pygame.display.update()
         pygame.time.Clock().tick(15)
@@ -289,12 +278,14 @@ def level_select():
         if restart[0]:
             break
         if restart[1]:
+            #receives a restart signal - go to that level immediately
             restart = game_loop(restart[1], game.custom, restart=True)
             continue
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
 
+        #where to load the file, if it exists
         if not invalid_loc:
             with open(real_path + '/playerData.txt', "r") as f:
                 playerData = json.load(f)
@@ -304,6 +295,7 @@ def level_select():
                     playerData = [0 for i in range(50)]
                     json.dump(playerData, f)
 
+        #error protection
         else:
             button('Finished level indicator disabled', 130, 800, 200, 40, red, bright_red, yes)
             playerData = [0 for i in range(50)]
@@ -320,6 +312,7 @@ def level_select():
             screen.fill(white)
             return 0
 
+        #prevent buttons from generating if a 'home' signal is geven
         dontrender = False
         #generate buttons for preset levels. Sorts them first
         for idx, d in enumerate(sorted(os.listdir(os.path.dirname(package_path) + '/levels'), key=lambda name: int(name.split('-')[0])*11 + int(name.split('-')[1]))):
@@ -360,6 +353,7 @@ def game_loop(level, custom=False, restart=False):
     with open(os.path.join(game.srcreal, "snakeData/style.txt"), 'r') as f:
         game.style = f.read()
 
+    #regenerate everything
     game.restart_game(mapdir=level, custom=custom)
 
     #give instructions if necesssary:
@@ -375,6 +369,7 @@ def game_loop(level, custom=False, restart=False):
     screen.fill(black)
     game.blit_map(rect_len, screen)
     
+    #custom messages for preset levels to give some information
     if msg is not None and restart == False:
         #draw box
 
@@ -421,7 +416,7 @@ def game_loop(level, custom=False, restart=False):
     score_cover = pygame.Rect(0, 0, 300, 50)
     button_cover = pygame.Rect(300, 0, 200, 50)
 
-    #the phase of the process, split into 5
+    #the phase of the process, split into 5 subframes
     phase = 0
     state = 0
     move = game.direction_to_int(snake.facing)
@@ -440,6 +435,7 @@ def game_loop(level, custom=False, restart=False):
         #measures time between the two to make sure the speed stays the same
         before = datetime.datetime.now()
         
+        #always capture input in order to move at the right times
         stop = stop ^ escape
         if move_temp >= 0 and not stop:
             move = move_temp
@@ -464,8 +460,7 @@ def game_loop(level, custom=False, restart=False):
             state, state1, result, result1 = game.do_move(move)
 
 
-
-            print(state, state1, result, result1)
+            #snake crashed
             if state < 0 or state1 < 0:
                 break
 
@@ -475,20 +470,20 @@ def game_loop(level, custom=False, restart=False):
             for coord in game.snake.segmentd:
                 x_f, y_f = (coord[0] + x0)*rect_len, (coord[1] + y0)*rect_len
                 screen.blit(space_img, (x_f, y_f))
-                #pygame.display.update(pygame.Rect(x_f, y_f, rect_len, rect_len))
+
             if game.snake_clone.init:
                 for coord in game.snake_clone.segmentd:
                     x_f, y_f = (coord[0] + x0)*rect_len, (coord[1] + y0)*rect_len
                     screen.blit(space_img, (x_f, y_f))
-                    #pygame.display.update(pygame.Rect(x_f, y_f, rect_len, rect_len))
+
             if result:
                 x_f, y_f = (result[0] + x0)*rect_len, (result[1] + y0)*rect_len
                 screen.blit(space_img, (x_f, y_f))
-                #pygame.display.update(pygame.Rect(x_f, y_f, rect_len, rect_len))
+
             if result1:
                 x_f, y_f = (result1[0] + x0)*rect_len, (result1[1] + y0)*rect_len
                 screen.blit(space_img, (x_f, y_f))
-                #pygame.display.update(pygame.Rect(x_f, y_f, rect_len, rect_len))
+
 
             #update strawberry
             if (game.snake.score + game.snake_clone.score < int(game.config.settings['maxS']))\
@@ -553,7 +548,7 @@ def game_loop(level, custom=False, restart=False):
                             json.dump(playerData, f)
                     message_display('You Won!', 450, 800, green, 60)
 
-
+            #do winning message when snake finishes animating that block
             if phase == 4 and game.won:
                 fadeout = pygame.Surface((900, 900))
                 fadeout = fadeout.convert()

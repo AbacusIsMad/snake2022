@@ -11,7 +11,7 @@ from map import Map, Tile
 from config import Config
 
 
-# loading colours 
+#loading colours from the main file, just copied around
 black = pygame.Color(0, 0, 0)
 dark_gray = pygame.Color(20, 20, 20)
 white = pygame.Color(255, 255, 255)
@@ -42,7 +42,6 @@ def message_display(text, screen, x, y, color=black, size=50):
     screen.blit(text_surf, text_rect)
     pygame.display.update()
 
-#def button(msg, x, y, w, h, inactive_color, active_color, action=None, parameter=None):
 def button(msg, screen, x, y, w, h, inactive_color, active_color, action, **kwargs):
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
@@ -56,7 +55,7 @@ def button(msg, screen, x, y, w, h, inactive_color, active_color, action, **kwar
     else:
         pygame.draw.rect(screen, inactive_color, (x, y, w, h))
 
-    #placeholder
+
     pressed = 0
     smallText = pygame.font.Font(os.path.dirname(os.path.abspath(__file__)) + '/arial.ttf', 20)
     TextSurf, TextRect = text_objects(msg, smallText)
@@ -65,15 +64,13 @@ def button(msg, screen, x, y, w, h, inactive_color, active_color, action, **kwar
     return pressed
 
 
-
+#messages and error checking mechanisms for the different text boxes
 warning_dict = {'name' : 'name must not already exist',
                 'mapX': 'must be integer between 1-30',
                 'mapY': 'must be integer between 1-30',
                 'xOffset': 'must be integer between 0-10',
                 'yOffset': 'must be integer between 4-10',
                 'maxS': 'must be integer between 0-60'}
-
-
 
 comparison_dict = {'name' : lambda line: line.strip() not in os.listdir(os.path.abspath('.') + '/snakeData/levels')\
                         and len(line) > 0,
@@ -85,6 +82,7 @@ comparison_dict = {'name' : lambda line: line.strip() not in os.listdir(os.path.
                     'strawberry': lambda empty : True}
 
 
+#inputbox class for better organisation.
 class InputBox:
 
     def __init__(self, game, x, y, w, h, datatype=None):
@@ -92,12 +90,14 @@ class InputBox:
         self.datatype = datatype
         self.game = game
 
+        #whats inside
         self.text = ''
         self.font = pygame.font.Font(os.path.dirname(os.path.abspath(__file__)) + '/arial.ttf', 20)
         self.txt_surface = self.font.render(self.text, True, white)
         self.color = red
         self.active = False
 
+        #whats displayed for the warning
         self.font_warning = pygame.font.Font(os.path.dirname(os.path.abspath(__file__)) + '/arial.ttf', 15)
         self.text_warning = ''
         self.txt_warning_surface = self.font_warning.render(self.text_warning, True, red)
@@ -112,7 +112,7 @@ class InputBox:
                 self.active_warning = False
                 self.text_warning = ''
             else:
-                #display warning if necessary. I need to search up this part.
+                #display warning if necessary and hide it if it is good.
                 try:
                     if not comparison_dict[self.datatype](self.text):
                         raise ValueError
@@ -133,7 +133,7 @@ class InputBox:
             else:
                 self.color = red
 
-
+        #same thing, but captures mouse input instead.
         if event.type == pygame.KEYDOWN:
             if self.active:
                 if event.key == pygame.K_RETURN:
@@ -158,7 +158,7 @@ class InputBox:
                     self.text = self.text[:-1]
                 elif not ((len(self.text) > 15) or (len(self.text) > 9 and self.datatype != "name")):
                     self.text += event.unicode
-                # Re-render the text.
+        #Re-render the text.
         self.txt_surface = self.font.render(self.text, True, white)
         self.txt_warning_surface = self.font_warning.render(self.text_warning, True, red)
 
@@ -170,7 +170,7 @@ class InputBox:
 
 
 
-
+#the interface that connects main to this module
 def level_maker(game=None):
     screen = game.screen
     screen.fill(white)
@@ -198,7 +198,7 @@ def level_maker(game=None):
         pygame.time.Clock().tick(15)
 
 
-
+#new level. A number of text inputs here to setup the config.
 def new_level(game=None):
     screen = game.screen
     
@@ -213,7 +213,7 @@ def new_level(game=None):
     y_size_box = InputBox(game, 510, 250, 140, 32, 'mapY')
     x_offset_box = InputBox(game, 250, 400, 140, 32, 'xOffset')
     y_offset_box = InputBox(game, 510, 400, 140, 32, 'yOffset')
-    max_straw_box = InputBox(game, 380, 520, 140, 32, 'maxS')
+    max_straw_box = InputBox(game, 380, 620, 140, 32, 'maxS')
     boxes = [name_box, x_size_box, y_size_box, x_offset_box, y_offset_box, max_straw_box]
 
     mode = 1
@@ -221,18 +221,19 @@ def new_level(game=None):
     mode_c = [green, yellow, blue]
     mode_ca = [bright_green, bright_yellow, bright_blue]
 
+    #this is to prevent the strawberry button cycling too fast when its not supposed to.
     cooldown = 4
 
     while True:
         screen.fill(black)
 
+        #the texts that indicate which text input is which
         button('Input Name', screen, 380, 50, 140, 40, white, white, lambda:0)
         button('Map Width', screen, 250, 200, 140, 40, white, white, lambda:0)
         button('Map Height', screen, 510, 200, 140, 40, white, white, lambda:0)
         button('Width Offset', screen, 250, 350, 140, 40, white, white, lambda:0)
         button('Height Offset', screen, 510, 350, 140, 40, white, white, lambda:0)
-
-
+        button('Max strawberry count', screen, 350, 550, 200, 40, white, white, lambda:0)
 
 
         for event in pygame.event.get():
@@ -254,7 +255,7 @@ def new_level(game=None):
         
 
         #progress onto next stage, but before that let's put stuff into an object
-        if button('Continue', screen, 410, 600, 80, 40, blue, bright_blue, lambda:1):
+        if button('Continue', screen, 410, 700, 80, 40, blue, bright_blue, lambda:1):
             compare = dict((key.datatype, key.text) for key in boxes)
             compare['strawberry'] = mode
             for ty in compare:
@@ -271,7 +272,7 @@ def new_level(game=None):
                     pass
 
 
-        if button('Back', screen, 410, 700, 80, 40, red, bright_red, lambda:1):
+        if button('Back', screen, 410, 750, 80, 40, red, bright_red, lambda:1):
             screen.fill(white)
             break        
         
@@ -280,6 +281,7 @@ def new_level(game=None):
         pygame.time.delay(30)
 
 
+#the edit level side.
 def edit_level(game=None):
     screen = game.screen
     screen.fill(black)
@@ -308,7 +310,7 @@ def edit_level(game=None):
 
 
 
-
+#supplementry: given position and image, draw a cursor.
 def blit_cursor(image, pointer, game):
     screen = game.screen
     x0 = int(game.config.settings["xOffset"])
@@ -317,6 +319,7 @@ def blit_cursor(image, pointer, game):
     screen.blit(image, (x_f, y_f))
 
 
+#the part that detects whether a wrap is successful or not. very magic.
 def magic(game, start_pos, direction):
     vector = ((not not direction[0])*25 + direction[0]*15 + (not not direction[1])*50 - direction[1]*30)//10
     opposite = ((not not direction[0])*25 - direction[0]*15 + (not not direction[1])*50 + direction[1]*30)//10
@@ -361,7 +364,7 @@ def magic(game, start_pos, direction):
 
 
 
-
+#flood select algorithm for 'G' button
 def flood_fill(game, initial_pos):
     potential = [initial_pos]
     selected = []
@@ -395,7 +398,7 @@ def flood_fill(game, initial_pos):
 
 
 
-
+#the level maker button interface
 def create_level(config=None, game=None, edit=False, mapdir=None):
 
     with open(game.srcreal + '/snakeData/style.txt', "r") as f:
@@ -408,7 +411,6 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
     else:
         game.config = Config(parent=game)
         game.config.settings = config
-    print(game.config.settings)
    
     #setup blank map (of course this will remove past progress)
     if edit:
@@ -424,6 +426,7 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
     else:
         game.settings.rect_len = 30
 
+    #reset a bunch of stuff just in case
     game.reset_img_source()
     game.snake.reset_img_source()
     game.snake_clone.init = False
@@ -601,7 +604,6 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
                             elif pointer in potential_pos: #add snake
                                 game.snake.segmentd.append([pointer[0], pointer[1]])
                                 index = potential_pos.index(pointer)
-                                print("index:", index)
                                 if index == 0:
                                     add = [1, 0]
                                 elif index == 1:
@@ -612,8 +614,7 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
                                     add = [0, 1]
                                 game.snake.segments.append([add[0], add[1]])
 
-                        print(game.snake.segments)
-                        print(game.snake.segmentd)
+
 
                     #extra protection. You can only change tile type if no snake on top
                     elif pointer not in game.snake.segmentd:
@@ -711,7 +712,7 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
                     something_changed = 1
 
                 elif event.key == ord('x') and select_buf:
-                    #the same as 'z', but changed a little but
+                    #the same as 'z', but changed a little bit
                     tile = game.map.tiles[track_buf[1][1]][track_buf[1][0]].copy(0, 0)
                     #same thing, but copied around
                     if tile.type == "Solid":
@@ -811,12 +812,13 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
 
                     something_changed = 1
 
+        #instructions page for things
         if button('Help', screen, 360, 10, 60, 40, yellow, bright_yellow, lambda:1):
             help_page(screen)
             something_changed = 1        
 
 
-
+        #only render when needed to prevent flashing
         if something_changed:
             
             if game.snake.segmentd: #recalculate snake
@@ -842,7 +844,6 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
                     else:
                         potential_pos[i] = 0
 
-                print(potential_pos)
 
             #draw descriptive text
             pygame.draw.rect(screen, black, pygame.Rect(0, 0, 300, 50))
@@ -872,7 +873,7 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
             message_display(msg, screen, 100, 20, white, 15)
             message_display(extra_information, screen, 120, 40, white, 15)
 
-
+            #update the tiles area only
             pygame.draw.rect(screen, dark_gray, working_rect)
             game.blit_map(rect_len, screen, developer=True)
             #snake blitting has more restrictions now. be careful!
@@ -968,6 +969,7 @@ def create_level(config=None, game=None, edit=False, mapdir=None):
 def help_page(screen):
     screen.fill(black)
 
+    #the help messages just as string literals
     msg = []
     msg.append('WASD/Arrows - move cursor')
     msg.append('Hold Shift to move faster')
